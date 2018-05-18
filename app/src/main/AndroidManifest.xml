@@ -45,6 +45,11 @@
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".SplashScreen"
@@ -52,11 +57,7 @@
             android:label="miine"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".LoginScreen"
@@ -82,7 +83,7 @@
         </provider>
 
         <activity android:name=".PictureStoryFragment" />
-        <activity android:name=".VideoStoryFragment"></activity>
+        <activity android:name=".VideoStoryFragment"/>
     </application>
 
 </manifest>

@@ -92,6 +92,7 @@ public class PictureStoryFragment extends Fragment {
 
         record_button.setImageResource(R.drawable.camera_on_min);
         record_instruction.setText("Camera starting...");
+        skip_button.setVisibility(View.INVISIBLE);
     }
 
     public int getPictureBoxWidth() {

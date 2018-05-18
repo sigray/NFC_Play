@@ -9,10 +9,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
@@ -26,6 +28,7 @@ import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -47,15 +50,16 @@ public class NFCRecord extends AppCompatActivity {
     boolean video_record_button_on;
     MediaRecorder recordStory;
     Layout pictureLayout;
-    String mCurrentPhotoPath;
+    String mCurrentPhotoPath, mCurrentVideoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     AudioStoryFragment audio_story_fragment;
     PictureStoryFragment picture_story_fragment;
+    VideoStoryFragment video_story_fragment;
     FragmentTransaction ft;
 
     private static final int CAMERA_REQUEST = 1888;
     private static final String LOG_TAG = "AudioRecordTest";
-    private static String audioFileName = null, pictureFileName = null;
+    private static String audioFileName = null, pictureFileName = null, videoFileName = null;
     private MediaRecorder mRecorder = null;
     private MediaPlayer mPlayer = null;
     boolean recordingStatus = false;
@@ -65,10 +69,13 @@ public class NFCRecord extends AppCompatActivity {
     MediaPlayer.OnCompletionListener audio_stop_listener;
     ArrayList<Fragment> fragmentNameArray;
     int fragmentArrayPosition = 0;
-    File image;
+    File image, video;
     Bitmap adjustedFullSizedBitmap;
     Bitmap adjustedBitmap;
     int rotationInDegrees;
+    Uri videoURI;
+    String testData="Lies";
+    boolean isFullSizedVideo = false;
 
 
 /*
@@ -99,6 +106,7 @@ public class NFCRecord extends AppCompatActivity {
         setContentView(R.layout.activity_record);
         audio_story_fragment = new AudioStoryFragment();
         picture_story_fragment = new PictureStoryFragment();
+        video_story_fragment = new VideoStoryFragment();
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, audio_story_fragment);
         ft.commit();
@@ -106,6 +114,20 @@ public class NFCRecord extends AppCompatActivity {
         fragmentNameArray = new ArrayList<Fragment>();
         fragmentNameArray.add(audio_story_fragment);
         fragmentNameArray.add(picture_story_fragment);
+        fragmentNameArray.add(video_story_fragment);
+
+        /*
+        findViewById(R.id.captured_video).setOnTouchListener(new View.OnTouchListener()
+        {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                return true;
+            }
+        });
+    }
+    */
+
     }
 
 
@@ -220,27 +242,21 @@ public class NFCRecord extends AppCompatActivity {
         audio_story_fragment.ResetView(view);
     }
 
-
     public void Skip(View view) {
 
-        if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
-            fragmentArrayPosition++;
-            ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
-            ft.commit();
-        }
+        UpdateFragment();
 
     }
 
     public void CompleteAudioRecording(View view) {
 
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_frame, picture_story_fragment);
-        ft.commit();
+        UpdateFragment();
+
     }
 
 
-    //Picture Record
+
+    //Picture Recording
 
     public void PictureRecordButton(View view) {
 
@@ -316,53 +332,67 @@ public class NFCRecord extends AppCompatActivity {
         Log.i("Result Code:", String.valueOf(resultCode));
         Log.i("Data:", String.valueOf(data));
 
-
+        //Picture Processing
         if(requestCode==100) {
            if (resultCode == RESULT_OK) {
 
-
-                ExifInterface exif = null;
-                try {
-                    exif = new ExifInterface(mCurrentPhotoPath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-                int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                rotationInDegrees = exifToDegrees(rotation);
-
-                // Get the dimensions of the bitmap
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                bmOptions.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-                int photoW = bmOptions.outWidth;
-                int photoH = bmOptions.outHeight;
-                int smallSizeScaleFactor = Math.min(photoW / 200, photoH / 200);
-
-
-                // Decode the image file into a Bitmap sized to fill the View
-                bmOptions.inJustDecodeBounds = false;
-                bmOptions.inSampleSize = smallSizeScaleFactor;
-                bmOptions.inPurgeable = true;
-                Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-                Matrix matrix = new Matrix();
-                if (rotation != 0f) {
-                    matrix.preRotate(rotationInDegrees);
-                }
-
-                if (rotationInDegrees == 90 || rotationInDegrees == 270) {
-                    adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                } else if (rotationInDegrees == 180) {
-                    adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                } else {
-                    // adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                    adjustedBitmap = bitmap;
-                }
-
-                picture_story_fragment.setPictureBoxDimensions(rotationInDegrees);
-                picture_story_fragment.ShowPicture(adjustedBitmap);
+                PictureProcessing();
             }
         }
+
+        if(requestCode==200) {
+            if (resultCode == RESULT_OK) {
+
+                VideoProcessing();
+            }
+        }
+
+
+    }
+
+    public void PictureProcessing() {
+
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(mCurrentPhotoPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        rotationInDegrees = exifToDegrees(rotation);
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int smallSizeScaleFactor = Math.min(photoW / 200, photoH / 200);
+
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = smallSizeScaleFactor;
+        bmOptions.inPurgeable = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Matrix matrix = new Matrix();
+        if (rotation != 0f) {
+            matrix.preRotate(rotationInDegrees);
+        }
+
+        if (rotationInDegrees == 90 || rotationInDegrees == 270) {
+            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } else if (rotationInDegrees == 180) {
+            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } else {
+            // adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            adjustedBitmap = bitmap;
+        }
+
+        picture_story_fragment.setPictureBoxDimensions(rotationInDegrees);
+        picture_story_fragment.ShowPicture(adjustedBitmap);
+
     }
 
     public void FullSizedPicture(View view) {
@@ -400,40 +430,111 @@ public class NFCRecord extends AppCompatActivity {
     public void CompletePictureRecording(View view) {
 
         pictureFileName = mCurrentPhotoPath;
+        UpdateFragment();
     }
 
 
 
 
-/*
+    //Video Recording
 
-    public void VideoSetup() {
+    public void VideoRecordButton(View view) {
 
-        video_button.setVisibility(View.VISIBLE);
-        audio_button.setVisibility(View.INVISIBLE);
-        camera_start_button.setVisibility(View.INVISIBLE);
+        video_story_fragment.TakeVideo(view);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                dispatchTakeVideoIntent();
+            }
+        }, 1000);
+
     }
 
-    public void VideoStartButton(View view) {
+    private void dispatchTakeVideoIntent() {
+        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
 
-        if(!video_record_button_on) {
+            // Create the File where the photo should go
+            File videoFile = null;
+            try {
+                videoFile = createVideoFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
 
-            video_record_button_on = true;
-            video_button.setImageResource(R.drawable.video_on_min);
-            record_instruction.setText("Video recording unavailable right now.");
+            // Continue only if the File was successfully created
+            if (videoFile != null) {
+                videoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        videoFile);
+                takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
+                startActivityForResult(takeVideoIntent, 200);
+            }
+        }
+    }
+
+    private File createVideoFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String videoFileName = "MPEG4_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        video = File.createTempFile(videoFileName, ".mp4", storageDir);
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentVideoPath = video.getAbsolutePath();
+        return video;
+    }
+
+    public void VideoProcessing() {
+
+        MediaMetadataRetriever m = new MediaMetadataRetriever();
+
+        m.setDataSource(mCurrentVideoPath);
+        Bitmap thumbnail = m.getFrameAtTime();
+//
+        if (Build.VERSION.SDK_INT >= 17) {
+            String s = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+
+            Log.e("Rotation", s);
         }
 
-        else {
-            video_record_button_on = false;
-            video_button.setImageResource(R.drawable.video_off_min);
-            record_instruction.setText("Touch the yellow button to start video camera.");
+        video_story_fragment.ShowVideo(videoURI);
+
+    }
+
+    public void UpdateFragment() {
+
+        if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
+            fragmentArrayPosition++;
+
+            ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
+            ft.commit();
+
         }
 
     }
 
+    public void FullSizedVideo(View view) {
 
+        video_story_fragment.ShowFullSizedVideo(isFullSizedVideo, videoURI);
+        isFullSizedVideo = !isFullSizedVideo;
 
-    */
+    }
+
+    public void DiscardVideo(View view) {
+
+        video_story_fragment.DiscardVideo();
+    }
+
+    public void CompleteVideoRecording(View view) {
+
+        videoFileName = mCurrentVideoPath;
+        UpdateFragment();
+    }
 
     @Override
     public void onBackPressed() {

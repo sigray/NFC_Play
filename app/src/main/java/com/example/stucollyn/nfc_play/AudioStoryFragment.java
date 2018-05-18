@@ -91,6 +91,7 @@ public class AudioStoryFragment extends Fragment {
         if(recordingStatus) {
             record_button.setImageResource(R.drawable.button_on_min);
             record_instruction.setText("Start speaking. Press the button again when you are finished.");
+            skip_button.setVisibility(View.INVISIBLE);
         }
 
         else {
