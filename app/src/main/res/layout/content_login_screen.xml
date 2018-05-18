@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.stucollyn.nfc_play.LoginScreen"
+    tools:showIn="@layout/activity_login_screen">
+
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:textSize="32dp"
+        android:text="Welcome." />
+
+    <TextView
+        android:id="@+id/instruction_text"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/login_button"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginBottom="17dp"
+        android:text="Please enter your passcode."
+        android:textSize="32dp"
+        android:visibility="invisible" />
+
+        <ImageView
+        android:id="@+id/miine"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        app:srcCompat="@drawable/miine_logo"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <ImageView
+        android:id="@+id/miine_mini"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="205dp"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/miine_logo"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <ImageView
+        android:id="@+id/keypad_background"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/trove_logo_blank"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignLeft="@+id/instruction_text"
+        android:layout_alignStart="@+id/instruction_text"
+        android:layout_below="@+id/miine_open"
+        android:layout_marginLeft="21dp"
+        android:layout_marginStart="21dp"
+        android:onClick="Login"
+        android:text="\nLogin\n" />
+
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignEnd="@+id/instruction_text"
+        android:layout_alignRight="@+id/instruction_text"
+        android:layout_below="@+id/miine_open"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:text="\nSignUp\n" />
+
+    <ImageView
+        android:id="@+id/balloon1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon1"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <ImageView
+        android:id="@+id/balloon2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon2"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <ImageView
+        android:id="@+id/balloon3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon3"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <ImageView
+        android:id="@+id/miine_open"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/miine_logo_open"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" />
+
+    <TableLayout
+       android:id="@+id/keypad"
+        android:layout_width="220dp"
+        android:layout_height="210dp"
+        android:layout_marginTop="195dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        android:stretchColumns="*"
+        tools:layout_editor_absoluteX="132dp"
+        tools:layout_editor_absoluteY="273dp" >
+
+         <TableRow
+            android:id="@+id/keypadRow1"
+            android:layout_width="0dp">
+            <Button
+                android:id="@+id/keypad1"
+                android:layout_width="0dp"
+                android:text="1"
+                android:minHeight="70dp"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad2"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="2"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad3"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="3"
+                android:onClick="Keypad">
+            </Button>
+        </TableRow>
+        <TableRow
+            android:id="@+id/keypadRow2"
+            android:layout_width="0dp"
+            >
+            <Button
+                android:id="@+id/keypad4"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="4"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad5"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="5"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad6"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="6"
+                android:onClick="Keypad">
+            </Button>
+        </TableRow>
+        <TableRow
+            android:id="@+id/keypadRow3"
+            android:layout_width="0dp"
+            >
+            <Button
+                android:id="@+id/keypad7"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="7"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad8"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="8"
+                android:onClick="Keypad">
+            </Button>
+            <Button
+                android:id="@+id/keypad9"
+                android:layout_width="0dp"
+                android:minHeight="70dp"
+                android:text="9"
+                android:onClick="Keypad">
+            </Button>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/passcode_box"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:visibility="visible"
+        android:stretchColumns="*"
+        >
+        <TableRow
+            android:id="@+id/passcode_box_row"
+            android:layout_width="40dp">
+            <TextView
+                android:id="@+id/passcode_box_1"
+                android:layout_width="0dp"
+                android:minHeight="40dp"
+                android:text=""
+                android:gravity="center"
+                android:textSize="40dp"
+                >
+            </TextView>
+            <TextView
+                android:id="@+id/passcode_box_2"
+                android:layout_width="0dp"
+                android:minHeight="40dp"
+                android:text=""
+                android:gravity="center"
+                android:textSize="40dp"
+                >
+                </TextView>
+            <TextView
+                android:id="@+id/passcode_box_3"
+                android:layout_width="0dp"
+                android:minHeight="40dp"
+                android:text=""
+                android:gravity="center"
+                android:textSize="40dp"
+                >
+            </TextView>
+            <TextView
+                android:id="@+id/passcode_box_4"
+                android:layout_width="0dp"
+                android:minHeight="40dp"
+                android:text=""
+                android:gravity="center"
+                android:textSize="40dp"
+                >
+            </TextView>
+        </TableRow>
+    </TableLayout>
+
+</RelativeLayout>
