@@ -5,30 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-   <FrameLayout
-       android:id="@+id/top_half_holder"
-       android:layout_width="0dp"
-       android:layout_height="0dp"
-       android:layout_marginBottom="8dp"
-       app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toTopOf="parent">
+    <FrameLayout
+        android:id="@+id/top_half_holder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#756bc7"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-       <VideoView
-           android:id="@+id/main_menu_video"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:layout_marginBottom="8dp"
-           android:visibility="visible"
-           app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
-           app:layout_constraintEnd_toEndOf="parent"
-           app:layout_constraintStart_toStartOf="parent"
-           app:layout_constraintTop_toTopOf="parent"
-           />
+        <VideoView
+            android:id="@+id/main_menu_video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/welcome"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-   </FrameLayout>
-
+    </FrameLayout>
 
 
     <ImageView
@@ -57,7 +55,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guidelineLeft" />
 
-    <Button
+    <ImageButton
         android:id="@+id/play_story"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -67,6 +65,7 @@
         android:text="Play Story"
         android:translationZ="0dp"
         android:visibility="visible"
+        android:src="@drawable/listen_story"
         app:layout_constraintBottom_toTopOf="@+id/miine_library"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintRight_toLeftOf="@+id/record_story"
@@ -74,7 +73,9 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineLeft"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+
+
+    <ImageButton
         android:id="@+id/record_story"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -84,20 +85,21 @@
         android:text="Record Story"
         android:translationZ="0dp"
         android:visibility="visible"
+        android:src="@drawable/add_story"
         app:layout_constraintBottom_toBottomOf="@+id/miine_library"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/play_story"
         app:layout_constraintTop_toTopOf="@+id/guidelineLeft"
         app:layout_constraintVertical_bias="1.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/miine_library"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:onClick="PlayStory"
         android:text="Story Library"
+        android:src="@drawable/library"
         android:translationZ="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -114,6 +116,20 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-
+    <TextView
+        android:id="@+id/welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:gravity="bottom"
+        android:text="Welcome to trove."
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:textColor="#fff"
+        app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

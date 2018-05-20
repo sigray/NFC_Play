@@ -234,28 +234,9 @@ public class LoginScreen extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
 
                 miine_open.setVisibility(View.INVISIBLE);
-                miine.startAnimation(miine_shrink);
-            }
-        });
-
-
-        miine_shrink.setAnimationListener(new AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-                miine_mini.setVisibility(View.VISIBLE);
-                miine.setVisibility(View.INVISIBLE);
                 Intent intent = new Intent(LoginScreen.this, MainMenu.class);
                 LoginScreen.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         });
 

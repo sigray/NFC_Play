@@ -512,6 +512,7 @@ public class NFCRecord extends AppCompatActivity {
         else {
             Intent intent = new Intent(NFCRecord.this, MainMenu.class);
             NFCRecord.this.startActivity(intent);
+            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         }
     }
 

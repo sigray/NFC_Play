@@ -38,7 +38,7 @@
         android:layout_marginTop="50dp"
         android:layout_gravity="center"
         android:visibility="visible"
-        app:srcCompat="@drawable/miine_logo"
+        app:srcCompat="@drawable/trove_logo"
         tools:layout_editor_absoluteX="132dp"
         tools:layout_editor_absoluteY="273dp" />
 
@@ -50,7 +50,7 @@
         android:layout_marginTop="205dp"
         android:layout_gravity="center"
         android:visibility="invisible"
-        app:srcCompat="@drawable/miine_logo"
+        app:srcCompat="@drawable/trove_logo"
         tools:layout_editor_absoluteX="132dp"
         tools:layout_editor_absoluteY="273dp" />
 
@@ -130,7 +130,7 @@
         android:layout_marginTop="50dp"
         android:layout_gravity="center"
         android:visibility="invisible"
-        app:srcCompat="@drawable/miine_logo_open"
+        app:srcCompat="@drawable/trove_logo_open"
         tools:layout_editor_absoluteX="132dp"
         tools:layout_editor_absoluteY="273dp" />
 
