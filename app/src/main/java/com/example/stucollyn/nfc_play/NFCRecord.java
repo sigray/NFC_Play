@@ -1,25 +1,19 @@
 package com.example.stucollyn.nfc_play;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -27,19 +21,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,11 +37,11 @@ public class NFCRecord extends AppCompatActivity {
     boolean video_record_button_on;
     MediaRecorder recordStory;
     Layout pictureLayout;
-    String mCurrentPhotoPath, mCurrentVideoPath;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     AudioStoryFragment audio_story_fragment;
     PictureStoryFragment picture_story_fragment;
     VideoStoryFragment video_story_fragment;
+    WrittenStoryFragment written_story_fragment;
     FragmentTransaction ft;
 
     private static final int CAMERA_REQUEST = 1888;
@@ -77,6 +64,7 @@ public class NFCRecord extends AppCompatActivity {
     String testData="Lies";
     boolean isFullSizedVideo = false;
 
+    String audioPath, photoPath, videoPath, writtenPath;
 
 /*
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -107,6 +95,7 @@ public class NFCRecord extends AppCompatActivity {
         audio_story_fragment = new AudioStoryFragment();
         picture_story_fragment = new PictureStoryFragment();
         video_story_fragment = new VideoStoryFragment();
+        written_story_fragment = new WrittenStoryFragment();
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, audio_story_fragment);
         ft.commit();
@@ -115,6 +104,12 @@ public class NFCRecord extends AppCompatActivity {
         fragmentNameArray.add(audio_story_fragment);
         fragmentNameArray.add(picture_story_fragment);
         fragmentNameArray.add(video_story_fragment);
+        fragmentNameArray.add(written_story_fragment);
+
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.miine_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("miine Project");
 
         /*
         findViewById(R.id.captured_video).setOnTouchListener(new View.OnTouchListener()
@@ -250,8 +245,8 @@ public class NFCRecord extends AppCompatActivity {
 
     public void CompleteAudioRecording(View view) {
 
+        audioPath = audioFileName;
         UpdateFragment();
-
     }
 
 
@@ -269,7 +264,7 @@ public class NFCRecord extends AppCompatActivity {
                 // Do something after 5s = 5000ms
                 dispatchTakePictureIntent();
             }
-        }, 1000);
+        }, 500);
 
     }
 
@@ -306,8 +301,8 @@ public class NFCRecord extends AppCompatActivity {
         image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        Log.i("File Name", "1" + mCurrentPhotoPath);
+        photoPath = image.getAbsolutePath();
+        Log.i("File Name", "1" + photoPath);
         return image;
     }
 
@@ -354,7 +349,7 @@ public class NFCRecord extends AppCompatActivity {
 
         ExifInterface exif = null;
         try {
-            exif = new ExifInterface(mCurrentPhotoPath);
+            exif = new ExifInterface(photoPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -365,7 +360,7 @@ public class NFCRecord extends AppCompatActivity {
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        BitmapFactory.decodeFile(photoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
         int smallSizeScaleFactor = Math.min(photoW / 200, photoH / 200);
@@ -375,7 +370,7 @@ public class NFCRecord extends AppCompatActivity {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = smallSizeScaleFactor;
         bmOptions.inPurgeable = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, bmOptions);
         Matrix matrix = new Matrix();
         if (rotation != 0f) {
             matrix.preRotate(rotationInDegrees);
@@ -398,7 +393,7 @@ public class NFCRecord extends AppCompatActivity {
     public void FullSizedPicture(View view) {
 
        /* if(!fullSizedPicture) {
-            Bitmap fullSizedBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            Bitmap fullSizedBitmap = BitmapFactory.decodeFile(photoPath);
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             adjustedFullSizedBitmap = Bitmap.createBitmap(fullSizedBitmap, 0, 0, fullSizedBitmap.getWidth(), fullSizedBitmap.getHeight(), matrix, true);
@@ -408,12 +403,12 @@ public class NFCRecord extends AppCompatActivity {
         picture_story_fragment.ShowFullSizedPicture(fullSizedPicture, adjustedFullSizedBitmap);
         */
 
-        File file = new File(mCurrentPhotoPath);
+        File file = new File(photoPath);
         Intent openFullSize = new Intent(Intent.ACTION_VIEW);
         openFullSize.setDataAndType(Uri.fromFile(file), "image/");
         openFullSize.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        //Intent openFullSize = new Intent(Intent.ACTION_VIEW, Uri.parse(mCurrentPhotoPath));
+        //Intent openFullSize = new Intent(Intent.ACTION_VIEW, Uri.parse(photoPath));
         try {
             startActivity(openFullSize);
         } catch (ActivityNotFoundException e) {
@@ -429,7 +424,7 @@ public class NFCRecord extends AppCompatActivity {
 
     public void CompletePictureRecording(View view) {
 
-        pictureFileName = mCurrentPhotoPath;
+        pictureFileName = photoPath;
         UpdateFragment();
     }
 
@@ -484,7 +479,7 @@ public class NFCRecord extends AppCompatActivity {
         video = File.createTempFile(videoFileName, ".mp4", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentVideoPath = video.getAbsolutePath();
+        videoPath = video.getAbsolutePath();
         return video;
     }
 
@@ -492,7 +487,7 @@ public class NFCRecord extends AppCompatActivity {
 
         MediaMetadataRetriever m = new MediaMetadataRetriever();
 
-        m.setDataSource(mCurrentVideoPath);
+        m.setDataSource(videoPath);
         Bitmap thumbnail = m.getFrameAtTime();
 //
         if (Build.VERSION.SDK_INT >= 17) {
@@ -502,7 +497,6 @@ public class NFCRecord extends AppCompatActivity {
         }
 
         video_story_fragment.ShowVideo(videoURI);
-
     }
 
     public void UpdateFragment() {
@@ -513,16 +507,18 @@ public class NFCRecord extends AppCompatActivity {
             ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
             ft.commit();
-
         }
 
+        else {
+            Intent intent = new Intent(NFCRecord.this, MainMenu.class);
+            NFCRecord.this.startActivity(intent);
+        }
     }
 
     public void FullSizedVideo(View view) {
 
         video_story_fragment.ShowFullSizedVideo(isFullSizedVideo, videoURI);
         isFullSizedVideo = !isFullSizedVideo;
-
     }
 
     public void DiscardVideo(View view) {
@@ -532,9 +528,53 @@ public class NFCRecord extends AppCompatActivity {
 
     public void CompleteVideoRecording(View view) {
 
-        videoFileName = mCurrentVideoPath;
+        videoFileName = videoPath;
         UpdateFragment();
     }
+
+
+    //Written
+    //Video Recording
+
+    public void WriteStory(View view) {
+
+        written_story_fragment.StartWritingNotification(view);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                written_story_fragment.StartWriting();
+            }
+        }, 500);
+
+    }
+
+    public void DiscardWrittenStory(View view) {
+
+        written_story_fragment.DiscardWriting();
+    }
+
+    public void CompleteWrittenStory(View view) {
+
+        Intent intent = new Intent(NFCRecord.this, MainMenu.class);
+        NFCRecord.this.startActivity(intent);
+    }
+
+    private File createWrittenFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String textFileName = "TEXT_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File text = File.createTempFile(textFileName, ".txt", storageDir);
+
+        // Save a file: path for use with ACTION_VIEW intents
+        writtenPath = text.getAbsolutePath();
+        return text;
+    }
+
+
 
     @Override
     public void onBackPressed() {

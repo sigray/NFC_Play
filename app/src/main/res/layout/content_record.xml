@@ -14,5 +14,9 @@
         android:layout_height="match_parent">
     </FrameLayout>
 
+    <SurfaceView
+        android:layout_width="0px"
+        android:layout_height="0px"
+        android:visibility="gone" />
 
 </RelativeLayout>

@@ -1,78 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.stucollyn.nfc_play.MainMenu"
-    tools:showIn="@layout/activity_main_menu">
+    android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/horizontalStrut"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerVertical="true"
-        android:translationZ="0dp"/>
+   <FrameLayout
+       android:id="@+id/top_half_holder"
+       android:layout_width="0dp"
+       android:layout_height="0dp"
+       android:layout_marginBottom="8dp"
+       app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent">
 
-    <View
-        android:id="@+id/verticalStrut"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:translationZ="0dp"
-        />
+       <VideoView
+           android:id="@+id/main_menu_video"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginBottom="8dp"
+           android:visibility="visible"
+           app:layout_constraintBottom_toTopOf="@+id/guidelineLeft"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           />
 
-    <Button
-        android:id="@+id/cloud_archive"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/horizontalStrut"
-        android:layout_toLeftOf="@id/verticalStrut"
-        android:text="Cloud Archive"
-        android:translationZ="0dp"
-        android:visibility="invisible"
-        >
-    </Button>
+   </FrameLayout>
 
-    <Button
-        android:id="@+id/miine_library"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/horizontalStrut"
-        android:layout_toRightOf="@id/verticalStrut"
-        android:text="miine Library"
-        android:translationZ="0dp"
-        android:onClick="Test"
-        android:visibility="invisible"
-        >
-    </Button>
 
-    <Button
-        android:id="@+id/play_story"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/horizontalStrut"
-        android:layout_toLeftOf="@id/verticalStrut"
-        android:text="Play Story"
-        android:translationZ="0dp"
-        android:visibility="invisible"
-        android:onClick="PlayStory"
-        >
-    </Button>
-
-    <Button
-        android:id="@+id/record_story"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/horizontalStrut"
-        android:layout_toRightOf="@id/verticalStrut"
-        android:text="Record Story"
-        android:translationZ="0dp"
-        android:visibility="invisible"
-        android:onClick="RecordStory"
-        >
-    </Button>
 
     <ImageView
         android:id="@+id/miine_mini"
@@ -80,11 +37,83 @@
         android:layout_height="200dp"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:visibility="visible"
-        app:srcCompat="@drawable/miine_logo"
-        android:layout_marginTop="205dp"
-        android:translationZ="10dp"
-        tools:layout_editor_absoluteX="132dp"
-        tools:layout_editor_absoluteY="273dp" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_half_holder"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/top_half_holder"
+        app:layout_constraintTop_toTopOf="@+id/top_half_holder"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/miine_logo" />
 
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/bottom_half_holder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLeft" />
+
+    <Button
+        android:id="@+id/play_story"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:onClick="PlayStory"
+        android:text="Play Story"
+        android:translationZ="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/miine_library"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintRight_toLeftOf="@+id/record_story"
+        app:layout_constraintStart_toStartOf="@+id/bottom_half_holder"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLeft"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/record_story"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:onClick="RecordStory"
+        android:text="Record Story"
+        android:translationZ="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/miine_library"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/play_story"
+        app:layout_constraintTop_toTopOf="@+id/guidelineLeft"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/miine_library"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:onClick="PlayStory"
+        android:text="Story Library"
+        android:translationZ="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintRight_toLeftOf="@+id/record_story"
+        app:layout_constraintStart_toStartOf="@+id/bottom_half_holder"
+        app:layout_constraintTop_toBottomOf="@+id/play_story"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineLeft"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+
+
+</android.support.constraint.ConstraintLayout>
