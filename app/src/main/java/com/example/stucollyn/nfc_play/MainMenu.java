@@ -183,7 +183,7 @@ public class MainMenu extends AppCompatActivity {
     public void RecordStory(View view){
 
         record_story.setEnabled(false);
-        Intent intent = new Intent(MainMenu.this, NFCRecord.class);
+        Intent intent = new Intent(MainMenu.this, StoryMediaChooser.class);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
       //  cloud_archive.startAnimation(cloud_archive_fade_out);

@@ -41,8 +41,7 @@
             android:name=".NFCRecord"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            >
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
             </intent-filter>
@@ -70,8 +69,7 @@
             android:configChanges="orientation"
             android:label="@string/title_activity_main_menu"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-           />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -85,7 +83,9 @@
 
         <activity android:name=".PictureStoryFragment" />
         <activity android:name=".VideoStoryFragment" />
-        <activity android:name=".WrittenStoryFragment"></activity>
+        <activity android:name=".WrittenStoryFragment" />
+        <activity android:name=".StoryMediaChooser" />
+        <activity android:name=".NewStoryReview"></activity>
     </application>
 
 </manifest>

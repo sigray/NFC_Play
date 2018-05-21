@@ -27,11 +27,13 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
-public class NFCRecord extends AppCompatActivity {
+public class NFCRecord extends AppCompatActivity implements Serializable {
 
     boolean record_button_on;
     boolean video_record_button_on;
@@ -43,6 +45,7 @@ public class NFCRecord extends AppCompatActivity {
     VideoStoryFragment video_story_fragment;
     WrittenStoryFragment written_story_fragment;
     FragmentTransaction ft;
+    ArrayList<String> selectedMedia;
 
     private static final int CAMERA_REQUEST = 1888;
     private static final String LOG_TAG = "AudioRecordTest";
@@ -55,6 +58,7 @@ public class NFCRecord extends AppCompatActivity {
     boolean fullSizedPicture = false;
     MediaPlayer.OnCompletionListener audio_stop_listener;
     ArrayList<Fragment> fragmentNameArray;
+    HashMap<String,String> recordedMediaHashMap = new HashMap<String,String>();
     int fragmentArrayPosition = 0;
     File image, video;
     Bitmap adjustedFullSizedBitmap;
@@ -92,37 +96,37 @@ public class NFCRecord extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Create New Story");
         audio_story_fragment = new AudioStoryFragment();
         picture_story_fragment = new PictureStoryFragment();
         video_story_fragment = new VideoStoryFragment();
         written_story_fragment = new WrittenStoryFragment();
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_frame, audio_story_fragment);
-        ft.commit();
 
         fragmentNameArray = new ArrayList<Fragment>();
-        fragmentNameArray.add(audio_story_fragment);
-        fragmentNameArray.add(picture_story_fragment);
-        fragmentNameArray.add(video_story_fragment);
-        fragmentNameArray.add(written_story_fragment);
+//        fragmentNameArray = (ArrayList<Fragment>)getIntent().getSerializableExtra("Fragments");
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.miine_logo_action_bar);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setTitle("miine Project");
+        selectedMedia = (ArrayList<String>)getIntent().getSerializableExtra("Fragments");
 
-        /*
-        findViewById(R.id.captured_video).setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
+        HashMap<String,Fragment> mediaFragmentLookup = new HashMap<String,Fragment>();
+        mediaFragmentLookup.put("Audio", audio_story_fragment);
+        mediaFragmentLookup.put("Picture", picture_story_fragment);
+        mediaFragmentLookup.put("Video", video_story_fragment);
+        mediaFragmentLookup.put("Written", written_story_fragment);
 
-                return true;
-            }
-        });
-    }
-    */
+        for(int i=0; i<selectedMedia.size(); i++) {
 
+            fragmentNameArray.add(mediaFragmentLookup.get(selectedMedia.get(i)));
+        }
+
+
+        Log.i("fragfull:", fragmentNameArray.toString());
+
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
+        ft.commit();
     }
 
 
@@ -246,6 +250,7 @@ public class NFCRecord extends AppCompatActivity {
     public void CompleteAudioRecording(View view) {
 
         audioPath = audioFileName;
+        recordedMediaHashMap.put("Audio", audioPath);
         UpdateFragment();
     }
 
@@ -425,6 +430,7 @@ public class NFCRecord extends AppCompatActivity {
     public void CompletePictureRecording(View view) {
 
         pictureFileName = photoPath;
+        recordedMediaHashMap.put("Picture", pictureFileName);
         UpdateFragment();
     }
 
@@ -499,23 +505,6 @@ public class NFCRecord extends AppCompatActivity {
         video_story_fragment.ShowVideo(videoURI);
     }
 
-    public void UpdateFragment() {
-
-        if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
-            fragmentArrayPosition++;
-
-            ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
-            ft.commit();
-        }
-
-        else {
-            Intent intent = new Intent(NFCRecord.this, MainMenu.class);
-            NFCRecord.this.startActivity(intent);
-            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-        }
-    }
-
     public void FullSizedVideo(View view) {
 
         video_story_fragment.ShowFullSizedVideo(isFullSizedVideo, videoURI);
@@ -530,6 +519,7 @@ public class NFCRecord extends AppCompatActivity {
     public void CompleteVideoRecording(View view) {
 
         videoFileName = videoPath;
+        recordedMediaHashMap.put("Video", videoFileName);
         UpdateFragment();
     }
 
@@ -559,11 +549,26 @@ public class NFCRecord extends AppCompatActivity {
 
     public void CompleteWrittenStory(View view) {
 
+        /*
         Intent intent = new Intent(NFCRecord.this, MainMenu.class);
         NFCRecord.this.startActivity(intent);
+        */
+
+        recordedMediaHashMap.put("Written", writtenPath);
+        UpdateFragment();
     }
 
     private File createWrittenFile() throws IOException {
+
+//        audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+//        audioFileName += "/audiorecordtest.mp4";
+
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mRecorder.setOutputFile(audioFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String textFileName = "TEXT_" + timeStamp + "_";
@@ -575,13 +580,37 @@ public class NFCRecord extends AppCompatActivity {
         return text;
     }
 
+    public void UpdateFragment() {
 
+        if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
+            fragmentArrayPosition++;
+            Log.i("New Frag", fragmentNameArray.get(fragmentArrayPosition).toString());
+            ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
+            ft.commit();
+        }
+
+        else {
+            /*
+            Intent intent = new Intent(NFCRecord.this, MainMenu.class);
+            NFCRecord.this.startActivity(intent);
+            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            */
+
+            Log.i("HashMap in NFCRecord", recordedMediaHashMap.toString());
+            Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);
+            intent.putExtra("RecordedMedia", recordedMediaHashMap);
+            NFCRecord.this.startActivity(intent);
+            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        }
+    }
 
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(NFCRecord.this, MainMenu.class);
+        Intent intent = new Intent(NFCRecord.this, StoryMediaChooser.class);
         NFCRecord.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 }
 

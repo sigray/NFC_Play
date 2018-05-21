@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.net.URI;
 
 /**
@@ -74,7 +75,7 @@ public class VideoStoryFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        /*
+
         record_instruction = (TextView) view.findViewById(R.id.video_record_instruction);
         record_button = (ImageView) view.findViewById(R.id.video_record_button);
         save_video_button = (ImageButton) view.findViewById(R.id.save_video_button);
@@ -88,7 +89,7 @@ public class VideoStoryFragment extends Fragment {
         full_screen_video_background = (ImageView) view.findViewById(R.id.full_screen_video_background);
         mediaController = new MediaController(getActivity());
         fullScreenMediaController = new MediaController(getActivity());
-        */
+
 
     }
 

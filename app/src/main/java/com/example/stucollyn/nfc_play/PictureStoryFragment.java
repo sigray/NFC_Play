@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 /**
  * Created by StuCollyn on 14/05/2018.
  */
