@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import android.media.MediaPlayer;
 
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -25,7 +26,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 
-public class NFCRead extends Activity {
+public class NFCRead extends AppCompatActivity {
 
     NfcAdapter adapter;
     PendingIntent pendingIntent;
@@ -51,6 +52,11 @@ public class NFCRead extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.read_nfc);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Play Tagged Story");
+
         pauseNplay = (Button)findViewById(R.id.button);
         NFCSetup();
         Log.d("d", "Check");

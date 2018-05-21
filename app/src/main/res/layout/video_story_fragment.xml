@@ -152,7 +152,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/video_record_instruction" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <VideoView
         android:id="@+id/full_sized_video"
@@ -170,32 +170,31 @@
 
     <ImageButton
         android:id="@+id/expand_video_button"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:visibility="invisible"
+        android:src="@drawable/fullscreeen_icon"
+        android:background="@drawable/circle_button_ok"
         android:onClick="FullSizedVideo"
-        android:background="@drawable/fullscreeen_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.25" />
+        app:layout_constraintTop_toTopOf="@+id/captured_video" />
 
     <ImageButton
         android:id="@+id/shrink_video_button"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:visibility="invisible"
-        android:background="@drawable/shrink_icon"
+        android:src="@drawable/shrink_icon"
+        android:background="@drawable/circle_button_ok"
         android:onClick="FullSizedVideo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/full_sized_video"

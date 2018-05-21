@@ -12,13 +12,12 @@
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:onClick="AudioReview"
-            android:src="@drawable/play_arrow_black"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/audio_media_review_cover"
-            app:layout_constraintRight_toLeftOf="@+id/audio_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/audio_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@id/audio_media_review_cover"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
+            app:layout_constraintRight_toLeftOf="@+id/picture_media_review_cover"
+            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
+            app:layout_constraintTop_toBottomOf="@id/instruction_review"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
@@ -43,13 +42,12 @@
             android:layout_marginTop="8dp"
             android:clickable="true"
             android:onClick="PictureReview"
-            android:src="@drawable/camera_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/picture_media_review_cover"
-            app:layout_constraintEnd_toEndOf="@+id/picture_media_review_cover"
-            app:layout_constraintLeft_toRightOf="@+id/picture_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@id/picture_media_review_cover"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
+            app:layout_constraintLeft_toRightOf="@+id/audio_media_review_cover"
+            app:layout_constraintTop_toBottomOf="@id/instruction_review"
             app:layout_constraintVertical_bias="1.0" />
 
         <ImageButton
@@ -90,17 +88,17 @@
 
         <VideoView
             android:id="@+id/video_media_review"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:clickable="true"
             android:onClick="VideoReview"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/video_media_review_cover"
-            app:layout_constraintRight_toLeftOf="@+id/video_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/video_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@+id/video_media_review_cover"
+            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
+            app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
+            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton
@@ -125,13 +123,15 @@
             android:layout_marginBottom="8dp"
             android:clickable="true"
             android:onClick="WrittenReview"
-            android:src="@drawable/written_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/written_media_review_cover"
-            app:layout_constraintEnd_toEndOf="@+id/written_media_review_cover"
-            app:layout_constraintLeft_toRightOf="@+id/written_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@+id/written_media_review_cover"
+            android:textSize="20dp"
+            android:textColor="#000"
+            android:background="#fff6d6"
+            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
+            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
+            app:layout_constraintLeft_toRightOf="@+id/video_media_review_cover"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageButton

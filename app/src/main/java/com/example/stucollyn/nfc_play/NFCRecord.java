@@ -1,7 +1,9 @@
 package com.example.stucollyn.nfc_play;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,6 +16,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
@@ -25,8 +29,12 @@ import android.view.View;
 import android.widget.Toast;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -70,28 +78,21 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     String audioPath, photoPath, videoPath, writtenPath;
 
-/*
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_audio:
-                    AudioSetup();
-                    return true;
-                case R.id.navigation_picture:
-                    PictureSetup();
-                    return true;
-                case R.id.navigation_video:
-                    VideoSetup();
-                    return true;
-            }
-            return false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
         }
-    };
-*/
+        if (!permissionToRecordAccepted ) finish();
 
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +105,9 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         picture_story_fragment = new PictureStoryFragment();
         video_story_fragment = new VideoStoryFragment();
         written_story_fragment = new WrittenStoryFragment();
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
 
         fragmentNameArray = new ArrayList<Fragment>();
 //        fragmentNameArray = (ArrayList<Fragment>)getIntent().getSerializableExtra("Fragments");
@@ -143,7 +147,13 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     public void onRecord(boolean start, View view) {
         if (start) {
-            startRecording();
+
+            try {
+                startRecording();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+
         } else {
             stopRecording();
             audio_story_fragment.PlayBackAndSaveSetup(view);
@@ -204,15 +214,39 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
     }
 
-    public void startRecording() {
+    public void startRecording() throws IOException {
 
         /*String m_path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM).getAbsolutePath();
         mFileName = "Recording";*/
 
-        audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        audioFileName += "/audiorecordtest.mp4";
+      //  audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+      //  audioFileName += "/audiorecordtest.mp4";
 
+        // Check for permissions
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+// If we don't have permissions, ask user for permissions
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
+        File storageDir;
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        }else{
+            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+        }
+
+        File audioFile = File.createTempFile(imageFileName, ".mp4", storageDir);
+        audioFileName = audioFile.getAbsolutePath();
+
+        // Save a file: path for use with ACTION_VIEW intents
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -225,7 +259,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             Log.e(LOG_TAG, "prepare() failed");
         }
 
-        mRecorder.start();
+       mRecorder.start();
     }
 
     public void stopRecording() {
@@ -302,7 +336,14 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir;
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        }else{
+            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+        }
+
         image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -409,9 +450,20 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         */
 
         File file = new File(photoPath);
+//        Intent openFullSize = new Intent(Intent.ACTION_VIEW);
+//        openFullSize.setDataAndType(Uri.fromFile(file), "image/");
+//        openFullSize.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
         Intent openFullSize = new Intent(Intent.ACTION_VIEW);
-        openFullSize.setDataAndType(Uri.fromFile(file), "image/");
-        openFullSize.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        openFullSize.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+       // Uri apkURI = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
+        Uri photoURI = FileProvider.getUriForFile(this,
+                "com.example.android.fileprovider",
+                file);
+        openFullSize.setDataAndType(photoURI, "image/");
+        openFullSize.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        // End New Approach
+        this.startActivity(openFullSize);
 
         //Intent openFullSize = new Intent(Intent.ACTION_VIEW, Uri.parse(photoPath));
         try {
@@ -481,7 +533,15 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String videoFileName = "MPEG4_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir;
+
+        File currentDir = null;
+        if (Build.VERSION.SDK_INT >= 19) {
+            storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        }else{
+            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+        }
+
         video = File.createTempFile(videoFileName, ".mp4", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -554,6 +614,14 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         NFCRecord.this.startActivity(intent);
         */
 
+        try {
+            createWrittenFile();
+        }
+
+        catch (IOException e) {
+
+        }
+
         recordedMediaHashMap.put("Written", writtenPath);
         UpdateFragment();
     }
@@ -563,26 +631,66 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 //        audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 //        audioFileName += "/audiorecordtest.mp4";
 
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(audioFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//        mRecorder = new MediaRecorder();
+//        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+//        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+//        mRecorder.setOutputFile(audioFileName);
+//        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String textFileName = "TEXT_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File text = File.createTempFile(textFileName, ".txt", storageDir);
+        File storageDir;
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        }else{
+            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+        }
+
+        File textFile = File.createTempFile(textFileName, ".txt", storageDir);
+
+        //if file doesnt exists, then create it
+     if(!textFile.exists()){
+            textFile.createNewFile();
+            Log.i("creatingFile", textFile.getName());
+     }
+
+    try {
+
+//        Log.i("textFileName", textFile.getName());
+//        FileWriter fileWritter = new FileWriter(textFile.getName(),true);
+//        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+//        bufferWritter.write(written_story_fragment.getTextContent());
+//        bufferWritter.close();
+
+        FileOutputStream fOut = new FileOutputStream(textFile.getAbsoluteFile(),true);
+        OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+
+        //Write the header : in your case it is : Student class Marsk (only one time)
+        myOutWriter.write(written_story_fragment.getTextContent());
+        myOutWriter.flush();
+
+
+    }
+
+    catch (IOException e) {
+
+        e.printStackTrace();
+
+        }
 
         // Save a file: path for use with ACTION_VIEW intents
-        writtenPath = text.getAbsolutePath();
-        return text;
+        writtenPath = textFile.getAbsolutePath();
+        Log.i("text location", writtenPath);
+
+        return textFile;
     }
 
     public void UpdateFragment() {
 
         if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
+
             fragmentArrayPosition++;
             Log.i("New Frag", fragmentNameArray.get(fragmentArrayPosition).toString());
             ft = getSupportFragmentManager().beginTransaction();
@@ -591,11 +699,6 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
 
         else {
-            /*
-            Intent intent = new Intent(NFCRecord.this, MainMenu.class);
-            NFCRecord.this.startActivity(intent);
-            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-            */
 
             Log.i("HashMap in NFCRecord", recordedMediaHashMap.toString());
             Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);

@@ -105,6 +105,11 @@ public class WrittenStoryFragment extends Fragment {
         skip_button.setVisibility(View.INVISIBLE);
     }
 
+    public String getTextContent() {
+
+        return written_text_story.getText().toString();
+    }
+
     public void StartWriting() {
 
         record_instruction.setText("Press the green tick to save or the red cross to delete and write your message again.");
