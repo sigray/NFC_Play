@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -33,22 +34,6 @@ public class MainMenu extends AppCompatActivity {
     ImageButton play_story;
     ImageButton record_story;
     FrameLayout top_holder;
-    Animation miine_mini_fade_in;
-    Animation miine_mini_fade_out;
-    Animation cloud_archive_fade_in;
-    Animation cloud_archive_fade_out;
-    Animation miine_library_fade_in;
-    Animation miine_library_fade_out;
-    Animation play_story_fade_in;
-    Animation play_story_fade_out;
-    Animation record_story_fade_in;
-    Animation record_story_fade_out;
-    Animation welcome_fade_in;
-    Animation welcome_fade_out;
-    Animation top_half__video_fade_in;
-    Animation top_half__video_fade_out;
-    Animation top_holder_fade_in;
-    Animation top_holder_fade_out;
 
 
     @Override
@@ -56,6 +41,7 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Home");
@@ -69,44 +55,13 @@ public class MainMenu extends AppCompatActivity {
         top_holder = (FrameLayout) findViewById(R.id.top_half_holder);
         welcome = (TextView) findViewById(R.id.welcome);
 
-        miine_library_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        miine_library_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        cloud_archive_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        cloud_archive_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        play_story_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        play_story_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        record_story_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        record_story_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        miine_mini_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        welcome_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        welcome_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        top_half__video_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        top_half__video_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-        top_holder_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
-        top_holder_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
-
-        record_story_fade_in.setAnimationListener(new AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-
-               // cloud_archive.setVisibility(View.VISIBLE);
-                miine_library.setVisibility(View.VISIBLE);
-                play_story.setVisibility(View.VISIBLE);
-                record_story.setVisibility(View.VISIBLE);
-                welcome.setVisibility(View.VISIBLE);
-                top_half__video.setVisibility(View.VISIBLE);
-                top_holder.setVisibility(View.VISIBLE);
-            }
-        });
+        // cloud_archive.setVisibility(View.VISIBLE);
+        miine_library.setVisibility(View.VISIBLE);
+        play_story.setVisibility(View.VISIBLE);
+        record_story.setVisibility(View.VISIBLE);
+        welcome.setVisibility(View.VISIBLE);
+        top_half__video.setVisibility(View.VISIBLE);
+        top_holder.setVisibility(View.VISIBLE);
 
         try {
             MediaController mediaController = new MediaController(this);
@@ -148,36 +103,6 @@ public class MainMenu extends AppCompatActivity {
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
-       // cloud_archive.startAnimation(cloud_archive_fade_out);
-//        miine_library.startAnimation(miine_library_fade_out);
-//        play_story.startAnimation(play_story_fade_out);
-//        //miine_mini.startAnimation(miine_mini_fade_out);
-//        play_story_fade_out.setAnimationListener(new AnimationListener() {
-//
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-//               // cloud_archive.setVisibility(View.INVISIBLE);
-//                miine_library.setVisibility(View.INVISIBLE);
-//                play_story.setVisibility(View.INVISIBLE);
-//                record_story.setVisibility(View.INVISIBLE);
-//                miine_mini.setVisibility(View.INVISIBLE);
-//                welcome.setVisibility(View.INVISIBLE);
-//                top_half__video.setVisibility(View.INVISIBLE);
-//                top_holder.setVisibility(View.INVISIBLE);
-//                Intent intent = new Intent(MainMenu.this, NFCRead.class);
-//                MainMenu.this.startActivity(intent);
-
-        // }
-       // });
-
     }
 
     public void RecordStory(View view){
@@ -186,44 +111,23 @@ public class MainMenu extends AppCompatActivity {
         Intent intent = new Intent(MainMenu.this, StoryMediaChooser.class);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-      //  cloud_archive.startAnimation(cloud_archive_fade_out);
-//        miine_library.startAnimation(miine_library_fade_out);
-//        play_story.startAnimation(play_story_fade_out);
-//        welcome.startAnimation(play_story_fade_out);
-//        top_half__video.startAnimation(play_story_fade_out);
-//        top_holder.startAnimation(play_story_fade_out);
-//
-//        //miine_mini.startAnimation(miine_mini_fade_out);
-//        play_story_fade_out.setAnimationListener(new AnimationListener() {
-//
-//            @Override
-//            public void onAnimationStart(Animation animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animation animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animation animation) {
-//               // cloud_archive.setVisibility(View.INVISIBLE);
-//                miine_library.setVisibility(View.INVISIBLE);
-//                play_story.setVisibility(View.INVISIBLE);
-//                record_story.setVisibility(View.INVISIBLE);
-//                miine_mini.setVisibility(View.INVISIBLE);
-//                welcome.setVisibility(View.INVISIBLE);
-//                top_half__video.setVisibility(View.INVISIBLE);
-//                top_holder.setVisibility(View.INVISIBLE);
-//                Intent intent = new Intent(MainMenu.this, NFCRecord.class);
-//                MainMenu.this.startActivity(intent);
-//            }
-//        });
+
     }
 
     public void Test(View view) {
 
         //Intent intent = new Intent(MainMenu.this, NFCRecord.class);
        // MainMenu.this.startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     }

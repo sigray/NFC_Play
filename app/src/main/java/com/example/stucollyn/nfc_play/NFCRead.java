@@ -19,6 +19,7 @@ import android.media.MediaPlayer;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -53,6 +54,7 @@ public class NFCRead extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.read_nfc);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Play Tagged Story");
@@ -226,6 +228,16 @@ public class NFCRead extends AppCompatActivity {
 
         Intent intent = new Intent(NFCRead.this, MainMenu.class);
         NFCRead.this.startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

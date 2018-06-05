@@ -14,6 +14,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -40,8 +41,9 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     WrittenStoryFragment writtenStoryFragment;
     ImageButton recorded_audio_cover, recorded_picture_cover, recorded_video_cover, recorded_writing_cover;
     ImageButton confirmation_button, discard_button;
-    ImageButton recorded_audio;
+    ImageView recorded_audio;
     ImageView recorded_picture;
+    ImageView recorded_video_background;
     VideoView recorded_video;
     TextView recorded_writing;
 
@@ -64,6 +66,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Create New Story");
@@ -86,6 +89,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         recorded_picture = findViewById(R.id.picture_media_review);
         recorded_video = findViewById(R.id.video_media_review);
         recorded_writing = findViewById(R.id.written_media_review);
+
+        recorded_video_background = findViewById(R.id.video_media_review_background);
 
         mediaController = new MediaController(this);
 
@@ -278,6 +283,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
             recorded_video_cover.setVisibility(View.INVISIBLE);
             recorded_video.setVisibility(View.VISIBLE);
+            recorded_video_background.setVisibility(View.VISIBLE);
             VideoProcessing();
         }
 
@@ -328,6 +334,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
             recorded_writing_cover.setVisibility(View.INVISIBLE);
             recorded_writing.setVisibility(View.VISIBLE);
             ShowWriting();
+            writtenPlaying = true;
         }
 
         else {
@@ -390,5 +397,23 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         Intent intent = new Intent(NewStoryReview.this, MainMenu.class);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(NewStoryReview.this, StoryMediaChooser.class);
+        NewStoryReview.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

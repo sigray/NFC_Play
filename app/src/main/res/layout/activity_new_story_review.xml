@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.stucollyn.nfc_play.NewStoryReview">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/audio_media_review"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:clickable="true"
             android:onClick="AudioReview"
             android:translationZ="0dp"
             android:visibility="gone"
@@ -44,6 +45,7 @@
             android:onClick="PictureReview"
             android:translationZ="0dp"
             android:visibility="gone"
+            android:background="#c9c9c9"
             app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
             app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
             app:layout_constraintLeft_toRightOf="@+id/audio_media_review_cover"
@@ -86,10 +88,25 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.95" />
 
+        <ImageView
+            android:id="@+id/video_media_review_background"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:translationZ="0dp"
+            android:background="#fff6d6"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
+            app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
+            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
+            app:layout_constraintVertical_bias="0.0" />
+
         <VideoView
             android:id="@+id/video_media_review"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
+            android:maxWidth="0dp"
             android:layout_marginBottom="8dp"
             android:clickable="true"
             android:onClick="VideoReview"
