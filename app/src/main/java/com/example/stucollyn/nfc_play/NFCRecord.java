@@ -42,13 +42,31 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/* The NewStoryRecord Activity is the main class for dealing with recording of different media.
+* It takes in the types of media defined in StoryMediaChooser and lets the user record stories
+* using the types selected. The Activity launches different fragments to deal with the different
+* media, and communicates events with the fragments which they then display to the user.*/
 public class NFCRecord extends AppCompatActivity implements Serializable {
 
-    boolean record_button_on;
-    boolean video_record_button_on;
+    //General Variables
+    boolean record_button_on, video_record_button_on, recordingStatus = false,
+            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
+            permissionToRecordAccepted = false, isFullSizedVideo = false;
+    int fragmentArrayPosition = 0, rotationInDegrees;
+    String testData="Lies", audioPath, photoPath, videoPath, writtenPath;
+    HashMap<String,String> recordedMediaHashMap = new HashMap<String,String>();
+    Bitmap adjustedFullSizedBitmap, adjustedBitmap;
+
+
+    //Media Recorder Variables
     MediaRecorder recordStory;
+    MediaPlayer.OnCompletionListener audio_stop_listener;
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer mPlayer = null;
+
+    //Fragment Variables
+    ArrayList<Fragment> fragmentNameArray;
     Layout pictureLayout;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     AudioStoryFragment audio_story_fragment;
     PictureStoryFragment picture_story_fragment;
     VideoStoryFragment video_story_fragment;
@@ -56,33 +74,18 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     FragmentTransaction ft;
     ArrayList<String> selectedMedia;
 
+    //Request Code Variables
+    static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int CAMERA_REQUEST = 1888;
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static String audioFileName = null, pictureFileName = null, videoFileName = null;
-    private MediaRecorder mRecorder = null;
-    private MediaPlayer mPlayer = null;
-    boolean recordingStatus = false;
-    boolean playbackStatus = false;
-    boolean mPlayerSetup = false;
-    boolean fullSizedPicture = false;
-    MediaPlayer.OnCompletionListener audio_stop_listener;
-    ArrayList<Fragment> fragmentNameArray;
-    HashMap<String,String> recordedMediaHashMap = new HashMap<String,String>();
-    int fragmentArrayPosition = 0;
-    File image, video;
-    Bitmap adjustedFullSizedBitmap;
-    Bitmap adjustedBitmap;
-    int rotationInDegrees;
-    Uri videoURI;
-    String testData="Lies";
-    boolean isFullSizedVideo = false;
-
-    String audioPath, photoPath, videoPath, writtenPath;
-
-    private boolean permissionToRecordAccepted = false;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
 
+    //File Save Variables
+    private static String audioFileName = null, pictureFileName = null, videoFileName = null;
+    File image, video;
+    Uri videoURI;
+
+    //Grant permission to record audio (required for some newer Android devices)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -94,50 +97,71 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         if (!permissionToRecordAccepted ) finish();
 
     }
+
+    //onCreate called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+        ActionBarSetup();
+
+        //Request permission to record audio (required for some newer Android devices)
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
+        /*Receive array list of selected media types from StoryMediaChooser Activity and copy this
+        list to a selectedMedia array list in this Activity*/
+        selectedMedia = (ArrayList<String>)getIntent().getSerializableExtra("Fragments");
+        InitFragments();
+        }
+
+    //Setup action bar
+    private void ActionBarSetup() {
+
+        //Display both title and image, and a back button in action bar
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Set and show trove logo in action bar
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setTitle("Create New Story");
+
+        //Set page title shown in action bar
+        getSupportActionBar().setTitle("Home");
+    }
+
+    //Initialize fragments for use
+    private void InitFragments() {
+
+        //Initialize new fragment instances
         audio_story_fragment = new AudioStoryFragment();
         picture_story_fragment = new PictureStoryFragment();
         video_story_fragment = new VideoStoryFragment();
         written_story_fragment = new WrittenStoryFragment();
-
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-
-
         fragmentNameArray = new ArrayList<Fragment>();
-//        fragmentNameArray = (ArrayList<Fragment>)getIntent().getSerializableExtra("Fragments");
 
-        selectedMedia = (ArrayList<String>)getIntent().getSerializableExtra("Fragments");
-
+        /*Create and populate hash map, linking strings of possible media types with a corresponding
+        fragment*/
         HashMap<String,Fragment> mediaFragmentLookup = new HashMap<String,Fragment>();
         mediaFragmentLookup.put("Audio", audio_story_fragment);
         mediaFragmentLookup.put("Picture", picture_story_fragment);
         mediaFragmentLookup.put("Video", video_story_fragment);
         mediaFragmentLookup.put("Written", written_story_fragment);
 
+        /*Iterate through the array list of the user's selected media (e.g. String [Audio, Picture,
+        Video, Written]). For every selected media entry, look up the corresponding fragment in the
+        hash map. Add this fragment to an array list of fragments to be used in this current story.*/
         for(int i=0; i<selectedMedia.size(); i++) {
 
             fragmentNameArray.add(mediaFragmentLookup.get(selectedMedia.get(i)));
         }
 
-
-        Log.i("fragfull:", fragmentNameArray.toString());
-
+        //Open first fragment in the fragment array list
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
         ft.commit();
     }
 
-
-    //Audio Recording
-
+    //When red audio record button is pressed, activate audio recording sequence
     public void AudioRecordButton(View view) {
 
         // ((TextView) audio_story_fragment.getView().findViewById(R.id.record_instruction)).setText("Start speaking. Press the button again to finish.");
@@ -147,6 +171,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         onRecord(recordingStatus, view);
     }
 
+    /*When audio recording is started, try to startRecording(). When audio recording is stopped,
+    stopRecording()*/
     public void onRecord(boolean start, View view) {
         if (start) {
 
@@ -185,7 +211,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             mPlayer.prepare();
             mPlayerSetup = true;
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e("Error", "prepare() failed");
         }
     }
 
@@ -258,7 +284,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         try {
             mRecorder.prepare();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            Log.e("Error", "prepare() failed");
         }
 
        mRecorder.start();

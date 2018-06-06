@@ -14,6 +14,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout;
 
+
+/*LoginScreen Activity follows after the SplashScreen introduction and allows existing users to
+login to the trove app or new users sign up*/
 public class LoginScreen extends AppCompatActivity {
 
     //Declare global variables
@@ -346,6 +349,7 @@ public class LoginScreen extends AppCompatActivity {
 
     }
 
+    //On back button pressed, restart Activity
     @Override
     public void onBackPressed() {
 

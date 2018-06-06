@@ -16,43 +16,33 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
 
+/*StoryMediaChooser Activity allows user to select the type of media they wish to include in their
+new story*/
 public class StoryMediaChooser extends AppCompatActivity {
 
-    boolean audio_selected = false, picture_selected = false, video_selected = false, written_selected = false;
+    boolean audio_selected = false, picture_selected = false, video_selected = false,
+            written_selected = false, audio = false, picture = false, video = false, written = false;
     ImageButton audio_select_button, picture_select_button, video_select_button, written_select_button,
             audio_confirm_button, picture_confirm_button, video_confirm_button, written_confirm_button,
             confirmation_button;
+    String audioMedia = "Audio", pictureMedia = "Picture", videoMedia = "Video",
+            writtenMedia = "Written";
     ArrayList<String> selectedMedia;
-    ArrayList<Fragment> selectedFragments;
-    AudioStoryFragment audioStoryFragment;
-    PictureStoryFragment pictureStoryFragment;
-    VideoStoryFragment videoStoryFragment;
-    WrittenStoryFragment writtenStoryFragment;
-    String audioMedia = "Audio";
-    String pictureMedia = "Picture";
-    String videoMedia = "Video";
-    String writtenMedia = "Written";
-    boolean audio = false;
-    boolean picture = false;
-    boolean video = false;
-    boolean written = false;
 
+    //onCreate called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setTitle("Create New Story");
-
         setContentView(R.layout.activity_story_media_chooser);
+        ActionBarSetup();
+        InitView();
+
+        //Initialize media type array list
         selectedMedia = new ArrayList<String>();
-        selectedFragments = new ArrayList<Fragment>();
-        audioStoryFragment = new AudioStoryFragment();
-        pictureStoryFragment = new PictureStoryFragment();
-        videoStoryFragment = new VideoStoryFragment();
-        writtenStoryFragment = new WrittenStoryFragment();
+    }
+
+    //Initialize views in Activity
+    private void InitView() {
 
         audio_select_button = findViewById(R.id.audio_media_thumb);
         picture_select_button = findViewById(R.id.picture_media_thumb);
@@ -65,159 +55,133 @@ public class StoryMediaChooser extends AppCompatActivity {
         confirmation_button = findViewById(R.id.confirm_media);
     }
 
+    //Setup action bar
+    private void ActionBarSetup() {
+
+        //Display both title and image, and a back button in action bar
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Set and show trove logo in action bar
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        //Set page title shown in action bar
+        getSupportActionBar().setTitle("Create New Story");
+    }
+
+    //On audio checked/unchecked add/remove from media type array list
     public void AudioSelected(View view) {
 
+        //if audio is previously unchecked, add to array list and add green tick image view
         if(!audio_selected)
         {
             audio_confirm_button.setVisibility(View.VISIBLE);
-            //addFragment(audioStoryFragment);
             addMedia(audioMedia);
         }
 
+        //if audio is previously checked, remove from array list and remove green tick image view
         else
         {
             audio_confirm_button.setVisibility(View.INVISIBLE);
-            //removeFragment(audioStoryFragment);
             removeMedia(audioMedia);
 
         }
 
+        //if audio selected was previously true/false, make false/true
         audio_selected = !audio_selected;
     }
 
+    //On picture checked/unchecked add/remove from media type array list
     public void PictureSelected(View view) {
 
+        //if picture is previously unchecked, add to array list and add green tick image view
         if(!picture_selected)
         {
             picture_confirm_button.setVisibility(View.VISIBLE);
-           // addFragment(pictureStoryFragment);
             addMedia(pictureMedia);
 
         }
 
+        //if picture is previously checked, remove from array list and remove green tick image view
         else
         {
             picture_confirm_button.setVisibility(View.INVISIBLE);
-           // removeFragment(pictureStoryFragment);
             removeMedia(pictureMedia);
 
         }
 
+        //if picture selected was previously true/false, make false/true
         picture_selected = !picture_selected;
 
     }
 
+    //On video checked/unchecked add/remove from media type array list
     public void VideoSelected(View view) {
 
+        //if video is previously unchecked, add to array list and add green tick image view
         if(!video_selected)
         {
             video_confirm_button.setVisibility(View.VISIBLE);
-            //addFragment(videoStoryFragment);
             addMedia(videoMedia);
 
         }
 
+        //if video is previously checked, remove from array list and remove green tick image view
         else
         {
             video_confirm_button.setVisibility(View.INVISIBLE);
-            //removeFragment(videoStoryFragment);
             removeMedia(videoMedia);
 
         }
 
+        //if video selected was previously true/false, make false/true
         video_selected = !video_selected;
 
     }
 
+    //On written checked/unchecked add/remove from media type array list
     public void WrittenSelected(View view) {
 
+        //if written is previously unchecked, add to array list and add green tick image view
         if(!written_selected)
         {
             written_confirm_button.setVisibility(View.VISIBLE);
-            //addFragment(writtenStoryFragment);
             addMedia(writtenMedia);
 
         }
 
+        //if written is previously checked, remove from array list and remove green tick image view
         else
         {
             written_confirm_button.setVisibility(View.INVISIBLE);
-            //removeFragment(writtenStoryFragment);
             removeMedia(writtenMedia);
 
         }
 
+        //if written selected was previously true/false, make false/true
         written_selected = !written_selected;
     }
 
-    /*
+    //For a given type of media (audio/picture/video/written), add to selected media array list
+    private void addMedia(String string) {
 
-    public void addFragment(Fragment fragment) {
-
+        //Assume given media is not already in array list
         boolean match = false;
 
-        if(selectedFragments.size()>0) {
-
-            for (int i = 0; i < selectedFragments.size(); i++) {
-
-                if (fragment != selectedFragments.get(i)) {
-
-                    match = true;
-                }
-            }
-
-            if(match) {
-
-                selectedFragments.add(fragment);
-            }
-        }
-
-        else {
-
-            selectedFragments.add(fragment);
-        }
-
-        checkConfirm(selectedFragments.size());
-    }
-
-    public void removeFragment(Fragment fragment) {
-
-        boolean match = false;
-
-        for(int i=0; i<selectedFragments.size(); i++) {
-
-            if(fragment==selectedFragments.get(i)) {
-
-                match = true;
-            }
-        }
-
-        if(match) {
-
-            selectedFragments.remove(fragment);
-        }
-
-        checkConfirm(selectedFragments.size());
-
-    }
-
-*/
-
-    public void addMedia(String string) {
-
-        boolean match = false;
-
+        /*If selected media array list is not empty, iterate over list to find out whether or not
+        there is an existing entry. If no entry exists, add given media type to array list*/
         if(selectedMedia.size()>0) {
 
             for (int i = 0; i < selectedMedia.size(); i++) {
 
-                if (string != selectedMedia.get(i)) {
+                if (string == selectedMedia.get(i)) {
 
                     match = true;
                 }
             }
 
-            if(match) {
+            if(!match) {
 
                 selectedMedia.add(string);
 
@@ -225,6 +189,7 @@ public class StoryMediaChooser extends AppCompatActivity {
             }
         }
 
+        //If selected media array list is empty, add given media type to array list
         else {
 
             selectedMedia.add(string);
@@ -233,14 +198,20 @@ public class StoryMediaChooser extends AppCompatActivity {
 
         }
 
+        //If at least one media type is selected show confirmation button
         checkConfirm(selectedMedia.size());
 
     }
 
-    public void removeMedia(String string) {
+    //For a given type of media (audio/picture/video/written), remove from selected media array list
+    private void removeMedia(String string) {
 
+        //Assume given media is not already in array list
         boolean match = false;
 
+        /*Iterate over selected media array list to find out whether or not there is an existing
+        entry for the given media type. If an entry exists, remove given media type from array
+        list*/
         for(int i=0; i<selectedMedia.size(); i++) {
 
             if(string==selectedMedia.get(i)) {
@@ -256,13 +227,17 @@ public class StoryMediaChooser extends AppCompatActivity {
 
         }
 
+        //If at least one media type is selected show confirmation button
         checkConfirm(selectedMedia.size());
 
     }
 
-    public void checkConfirm(int numberFragmentsSelected) {
+    /*If at least one media type is selected show confirmation button, otherwise hide confirmation
+     button*/
+    private void checkConfirm(int numberMediaSelected) {
 
-        if (numberFragmentsSelected > 0) {
+
+        if (numberMediaSelected > 0) {
 
             confirmation_button.setVisibility(View.VISIBLE);
         }
@@ -273,16 +248,16 @@ public class StoryMediaChooser extends AppCompatActivity {
         }
     }
 
+    //When confirmation button pressed, start RecordStory Activity
     public void Confirm (View view) {
 
-
-        Log.i("Choos selectedMedia:", selectedMedia.toString());
         Intent intent = new Intent(StoryMediaChooser.this, NFCRecord.class);
         intent.putStringArrayListExtra("Fragments", selectedMedia);
         StoryMediaChooser.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //On back button pressed, return to main menu
     @Override
     public void onBackPressed() {
 
@@ -291,6 +266,7 @@ public class StoryMediaChooser extends AppCompatActivity {
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //When action bar back button is pressed, call onBackPressed()
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

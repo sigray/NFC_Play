@@ -10,27 +10,30 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 
+//SplashScreen showing the trove app creators and project partners; first Activity in app
 public class SplashScreen extends AppCompatActivity {
 
-    //Duration of wait before opening Main Menu page
-    private final int SPLASH_DISPLAY_LENGTH = 1000;
-    Animation meineck_fade_in;
-    Animation meineck_fade_out;
-    Animation uob_fade_in;
-    Animation uob_fade_out;
-    Animation miine_fade_in;
-    Animation miine_fade_out;
-    ImageView meineckLogo;
-    ImageView uobLogo;
-    ImageView miineLogo;
+    Animation meineck_fade_in, meineck_fade_out, uob_fade_in, uob_fade_out, miine_fade_in,
+            miine_fade_out;
+    ImageView meineckLogo, uobLogo, miineLogo;
     private static final String TAG = "miine App: ";
 
-
+//OnCreate method called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        //Initialize animations and views
+        InitAnimation();
+        InitView();
+
+        //Begin animation sequence with Studio Meineck logo
+        animateStudioMeineckLogo();
+    }
+
+    //Initialize animations used in Activity
+    private void InitAnimation() {
 
         meineck_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
         meineck_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
@@ -38,34 +41,23 @@ public class SplashScreen extends AppCompatActivity {
         uob_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
         miine_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
         miine_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
+    }
+
+    //Initialize views used in Activity
+    private void InitView() {
+
         meineckLogo = (ImageView) findViewById(R.id.meineck);
         uobLogo = (ImageView) findViewById(R.id.uob);
         miineLogo = (ImageView) findViewById(R.id.miine);
-        animateStudioMeineckLogo();
-/*
-*/
-
-      /* new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
-               /* Intent mainIntent = new Intent(SplashScreen.this, NFCRead.class);
-                SplashScreen.this.startActivity(mainIntent);
-                SplashScreen.this.finish();
-            }
-
-        }, SPLASH_DISPLAY_LENGTH); */
-
-
     }
 
+    //Animation sequence for Studio Meineck logo
+    private void animateStudioMeineckLogo() {
 
-    public void animateStudioMeineckLogo() {
-
-        meineckLogo = (ImageView) findViewById(R.id.meineck);
+        //Fade in Studio Meineck logo
         meineckLogo.startAnimation(meineck_fade_in);
 
+        //Listen for Studio Meineck logo to finish fading in, then begin fade out
         meineck_fade_in.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -82,8 +74,8 @@ public class SplashScreen extends AppCompatActivity {
             }
         });
 
-
-
+        /*Listen for Studio Meineck logo to finish fading out, then begin University of Bristol
+        logo sequence */
         meineck_fade_out.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -103,11 +95,13 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
-    public void animateUoBLogo() {
+    //Animation sequence for University of Bristol logo
+    private void animateUoBLogo() {
 
-        uobLogo = (ImageView) findViewById(R.id.uob);
+        //Fade in University of Bristol logo
         uobLogo.startAnimation(uob_fade_in);
 
+        //Listen for University of Bristol logo to finish fading in, then begin fade out
         uob_fade_in.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -124,9 +118,8 @@ public class SplashScreen extends AppCompatActivity {
             }
         });
 
-        Log.i(TAG, "Help");
-
-
+         /*Listen for University of Bristol logo to finish fading out, then begin trove logo
+         sequence */
         uob_fade_out.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -146,12 +139,16 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
-    public void animateMiineLogo() {
+    //Animation sequence for trove logo
+    private void animateMiineLogo() {
 
-        miineLogo = (ImageView) findViewById(R.id.miine);
+        //Fade in trove logo
         miineLogo.startAnimation(miine_fade_in);
+
+        //Make trove logo visible beyond the animation, to the end of SplashScreen Activity
         miineLogo.setVisibility(View.VISIBLE);
 
+        //When trove has finished fading in, open LoginScreen Activity
         miine_fade_in.setAnimationListener(new AnimationListener() {
 
             @Override
@@ -164,23 +161,8 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-          //      miineLogo.startAnimation(miine_fade_out);
-            }
-        });
 
-
-        miine_fade_in.setAnimationListener(new AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
+                //Note, no transition required as trove logo is to remain constantly visible
                 Intent intent = new Intent(SplashScreen.this, LoginScreen.class);
                 SplashScreen.this.startActivity(intent);
 
@@ -190,11 +172,29 @@ public class SplashScreen extends AppCompatActivity {
 
     }
 
+    //When the screen is tapped, skip animations and immediately open LoginScreen Activity
     public void Skip(View view) {
 
         Intent intent = new Intent(SplashScreen.this, LoginScreen.class);
         SplashScreen.this.startActivity(intent);
+        //Activity fade transition
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
     }
 
 }
+
+
+
+//Example thread handler
+      /* new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                /* Create an Intent that will start the Menu-Activity. */
+               /* Intent mainIntent = new Intent(SplashScreen.this, NFCRead.class);
+                SplashScreen.this.startActivity(mainIntent);
+                SplashScreen.this.finish();
+            }
+
+        }, SPLASH_DISPLAY_LENGTH); */

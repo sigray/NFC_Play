@@ -23,28 +23,48 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import java.io.IOException;
+import java.net.URI;
 
+//The MainMenu Activity is the app home page, where all functionality can be found and selected
 public class MainMenu extends AppCompatActivity {
 
     TextView welcome;
     ImageView miine_mini;
     VideoView top_half__video;
     Button cloud_archive;
-    ImageButton miine_library;
-    ImageButton play_story;
-    ImageButton record_story;
+    ImageButton miine_library, play_story, record_story;
     FrameLayout top_holder;
 
 
+    //onCreate is called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        ActionBarSetup();
+        initView();
+        initMediaController();
+
+
+    }
+
+    //Setup action bar
+    private void ActionBarSetup() {
+
+        //Display both title and image, and a back button in action bar
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //Set and show trove logo in action bar
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+
+        //Set page title shown in action bar
         getSupportActionBar().setTitle("Home");
+    }
+
+    //Initialize the Activity view and setup initial visibility settings
+    private void initView() {
 
         miine_mini = (ImageView) findViewById(R.id.miine_mini);
         //cloud_archive = (Button) findViewById(R.id.cloud_archive);
@@ -62,7 +82,14 @@ public class MainMenu extends AppCompatActivity {
         welcome.setVisibility(View.VISIBLE);
         top_half__video.setVisibility(View.VISIBLE);
         top_holder.setVisibility(View.VISIBLE);
+    }
 
+    //Initialize media controller and begin default video
+    private void initMediaController() {
+
+        /*Try to create media controller, load and play the listed URI. If this doesn't exist catch
+        the null pointer exception
+         */
         try {
             MediaController mediaController = new MediaController(this);
             mediaController.setAnchorView(top_half__video);
@@ -79,23 +106,28 @@ public class MainMenu extends AppCompatActivity {
         }
     }
 
+    //Logout and return to the Login Screen
     @Override
     public void onBackPressed() {
 
         Intent intent = new Intent(MainMenu.this, LoginScreen.class);
         MainMenu.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //Open cloud archive Activity - to be completed
     public void CloudArchive(View view) {
 
         cloud_archive.setEnabled(false);
     }
 
+    //Open miine library Activity - to be completed
     public void MiineLibrary(View view) {
 
         miine_library.setEnabled(false);
     }
 
+    //Open play story Activity
     public void PlayStory(View view) {
 
         play_story.setEnabled(false);
@@ -105,6 +137,7 @@ public class MainMenu extends AppCompatActivity {
 
     }
 
+    //Open new story creation Activity
     public void RecordStory(View view){
 
         record_story.setEnabled(false);
@@ -114,12 +147,7 @@ public class MainMenu extends AppCompatActivity {
 
     }
 
-    public void Test(View view) {
-
-        //Intent intent = new Intent(MainMenu.this, NFCRecord.class);
-       // MainMenu.this.startActivity(intent);
-    }
-
+    //When action bar back button pressed, implement onBackPressed method
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -130,4 +158,4 @@ public class MainMenu extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    }
+}

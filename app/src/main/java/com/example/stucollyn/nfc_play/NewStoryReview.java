@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//NewStoryReview Activity lets the user review the contents of a newly created story
 public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     HashMap<String,String> selectedMedia;
@@ -39,26 +40,17 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     PictureStoryFragment pictureStoryFragment;
     VideoStoryFragment videoStoryFragment;
     WrittenStoryFragment writtenStoryFragment;
-    ImageButton recorded_audio_cover, recorded_picture_cover, recorded_video_cover, recorded_writing_cover;
-    ImageButton confirmation_button, discard_button;
-    ImageView recorded_audio;
-    ImageView recorded_picture;
-    ImageView recorded_video_background;
+    ImageButton recorded_audio_cover, recorded_picture_cover, recorded_video_cover,
+            recorded_writing_cover, confirmation_button, discard_button;
+    ImageView recorded_audio, recorded_picture, recorded_video_background;
     VideoView recorded_video;
     TextView recorded_writing;
-
-    boolean audioPlaying = false;
-    boolean picturePlaying = false;
-    boolean videoPlaying = false;
-    boolean writtenPlaying = false;
-
-    boolean playbackStatus = false;
-    boolean mPlayerSetup = false;
+    boolean audioPlaying = false, picturePlaying = false, videoPlaying = false,
+            writtenPlaying = false, playbackStatus = false, mPlayerSetup = false;
     private MediaPlayer mPlayer = null;
-
+    MediaController mediaController;
     int rotationInDegrees;
     Bitmap adjustedBitmap;
-    MediaController mediaController;
     private StringBuilder text = new StringBuilder();
 
 
