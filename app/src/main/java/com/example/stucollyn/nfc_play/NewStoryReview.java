@@ -53,6 +53,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     Bitmap adjustedBitmap;
     private StringBuilder text = new StringBuilder();
 
+    File fileDirectory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         recorded_video_background = findViewById(R.id.video_media_review_background);
 
         mediaController = new MediaController(this);
+
+        fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
 
         selectedMedia = new HashMap<String,String>();
         selectedMedia = (HashMap<String,String>)getIntent().getSerializableExtra("RecordedMedia");
@@ -178,14 +182,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
             playbackStatus = false;
         }
     }
-
-
-
-
-
-
-
-
 
     public void PictureReview(View view) {
 
@@ -298,7 +294,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 //
         if (Build.VERSION.SDK_INT >= 17) {
             String s = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-
         }
 
         File file = new File(selectedMedia.get("Video"));
@@ -379,12 +374,25 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void Confirm (View view) {
 
-        Intent intent = new Intent(NewStoryReview.this, MainMenu.class);
+        Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     public void Discard (View view) {
+
+        Log.i("File Directory", fileDirectory.toString());
+
+        if (fileDirectory.isDirectory())
+        {
+            String[] children = fileDirectory.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(fileDirectory, children[i]).delete();
+            }
+        }
+
+        boolean deletedFile = fileDirectory.delete();
 
         Intent intent = new Intent(NewStoryReview.this, MainMenu.class);
         NewStoryReview.this.startActivity(intent);

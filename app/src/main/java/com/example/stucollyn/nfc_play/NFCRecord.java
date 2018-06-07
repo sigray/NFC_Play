@@ -153,7 +153,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         //Set page title shown in action bar
-        getSupportActionBar().setTitle("New Story");
+        getSupportActionBar().setTitle("Create New Story");
     }
 
     //Initialize fragments for use
@@ -299,7 +299,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         try {
 
             picture_story_fragment.TakePicture(view);
-            pictureRecorder = new PictureRecorder(this, this, story_directory, story_directory_path);
+            pictureRecorder = new PictureRecorder(this, this, story_directory);
 
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -480,6 +480,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             Log.i("HashMap in NFCRecord", recordedMediaHashMap.toString());
             Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);
             intent.putExtra("RecordedMedia", recordedMediaHashMap);
+            intent.putExtra("StoryDirectory", story_directory);
             NFCRecord.this.startActivity(intent);
             overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         }

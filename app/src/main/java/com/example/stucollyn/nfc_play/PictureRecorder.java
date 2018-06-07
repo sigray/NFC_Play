@@ -31,18 +31,14 @@ class PictureRecorder extends Application {
     private Context context;
     String videoPath, photoPath;
     Activity activity;
-    String story_directory_path;
     int rotationInDegrees;
     Bitmap adjustedBitmap;
     Uri photoURI;
 
-    public PictureRecorder(Activity activity, Context context, File story_directory, String story_directory_path) {
+    public PictureRecorder(Activity activity, Context context, File story_directory) {
         this.context = context;
         this.story_directory = story_directory;
         this.activity = activity;
-        this.story_directory_path = story_directory_path;
-
-
     }
 
     void dispatchTakePictureIntent() {
