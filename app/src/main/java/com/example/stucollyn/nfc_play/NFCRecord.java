@@ -2,6 +2,7 @@ package com.example.stucollyn.nfc_play;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -57,7 +58,6 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     HashMap<String,String> recordedMediaHashMap = new HashMap<String,String>();
     Bitmap adjustedFullSizedBitmap, adjustedBitmap;
 
-
     //Media Recorder Variables
     MediaRecorder recordStory;
     MediaPlayer.OnCompletionListener audio_stop_listener;
@@ -83,7 +83,18 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     //File Save Variables
     private static String audioFileName = null, pictureFileName = null, videoFileName = null;
     File image, video;
-    Uri videoURI;
+    Uri videoURI, photoUri;
+    File story_directory;
+    String story_directory_path;
+    Uri story_directory_uri;
+
+    //Classes
+    AudioRecorder audioRecorder;
+    VideoRecorder videoRecorder;
+    PictureRecorder pictureRecorder;
+    WrittenRecorder writtenRecorder;
+
+    View v;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -103,6 +114,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
+        v = getLayoutInflater().inflate(R.layout.activity_record, null);
         ActionBarSetup();
 
         //Request permission to record audio (required for some newer Android devices)
@@ -112,7 +124,22 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         list to a selectedMedia array list in this Activity*/
         selectedMedia = (ArrayList<String>)getIntent().getSerializableExtra("Fragments");
         InitFragments();
+        SetupStoryLocation();
         }
+
+
+    //Setup new storage folder
+    private void SetupStoryLocation() {
+
+        String packageLocation = ("/Stories");
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String newDirectory = packageLocation+"/"+timeStamp;
+        story_directory = getExternalFilesDir(newDirectory);
+       // story_directory_uri = FileProvider.getUriForFile(this,
+         //       "com.example.android.fileprovider",
+           //     story_directory);
+        story_directory_path = story_directory.getAbsolutePath();
+    }
 
     //Setup action bar
     private void ActionBarSetup() {
@@ -126,7 +153,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         //Set page title shown in action bar
-        getSupportActionBar().setTitle("Home");
+        getSupportActionBar().setTitle("New Story");
     }
 
     //Initialize fragments for use
@@ -169,25 +196,30 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         recordingStatus = !recordingStatus;
         audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, view);
         onRecord(recordingStatus, view);
+        audioFileName = audioRecorder.getAudioFileName();
     }
 
     /*When audio recording is started, try to startRecording(). When audio recording is stopped,
-    stopRecording()*/
+    stopRecording() and change fragment views accordingly*/
     public void onRecord(boolean start, View view) {
         if (start) {
 
             try {
-                startRecording();
+               audioRecorder = new AudioRecorder(this, story_directory);
+               audioRecorder.startRecording();
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
 
         } else {
-            stopRecording();
+            audioRecorder.stopRecording();
             audio_story_fragment.PlayBackAndSaveSetup(view);
         }
     }
 
+    /*When audio playback buttons are selected for first time, setup new audio media player. When
+   user interacts with playback buttons after audio media player has already been setup, toggle
+   between media player pause and play*/
     public void onPlay(View view) {
         if (!mPlayerSetup) {
             setupAudioMediaPlayer();
@@ -204,7 +236,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         audio_story_fragment.PlaybackButtonSwitch(playbackStatus, view);
     }
 
-    public void setupAudioMediaPlayer() {
+    //Setup new audio media player drawing from audio file location
+    protected void setupAudioMediaPlayer() {
         mPlayer = new MediaPlayer();
         try {
             mPlayer.setDataSource(audioFileName);
@@ -215,6 +248,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
     }
 
+    //Start audio media player and start listening for stop button to be pressed
     public void startPlaying(View view) {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -227,10 +261,13 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         });
     }
 
+    //Pause audio media player
     public void pausePlaying(View view) {
+
         mPlayer.pause();
     }
 
+    //Stop audio media player, delete current media player (requires new setup for future playback)
     public void stopPlaying(View view) {
 
         if (mPlayer != null) {
@@ -242,154 +279,42 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
     }
 
-    public void startRecording() throws IOException {
-
-        /*String m_path = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM).getAbsolutePath();
-        mFileName = "Recording";*/
-
-      //  audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-      //  audioFileName += "/audiorecordtest.mp4";
-
-        // Check for permissions
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-// If we don't have permissions, ask user for permissions
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-
-        }
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
-        File storageDir;
-
-        if (Build.VERSION.SDK_INT >= 19) {
-            storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        }else{
-            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
-        }
-
-        File audioFile = File.createTempFile(imageFileName, ".mp4", storageDir);
-        audioFileName = audioFile.getAbsolutePath();
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mRecorder.setOutputFile(audioFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e("Error", "prepare() failed");
-        }
-
-       mRecorder.start();
-    }
-
-    public void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-    }
-
     public void DiscardAudio(View view) {
 
-        File file = new File(audioFileName);
-        file.delete();
+        audioRecorder.DiscardAudio();
         audio_story_fragment.ResetView(view);
-    }
-
-    public void Skip(View view) {
-
-        UpdateFragment();
-
     }
 
     public void CompleteAudioRecording(View view) {
 
-        audioPath = audioFileName;
-        recordedMediaHashMap.put("Audio", audioPath);
+        recordedMediaHashMap.put("Audio", audioFileName);
         UpdateFragment();
     }
-
 
 
     //Picture Recording
 
     public void PictureRecordButton(View view) {
 
-        picture_story_fragment.TakePicture(view);
+        try {
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-                dispatchTakePictureIntent();
-            }
-        }, 500);
+            picture_story_fragment.TakePicture(view);
+            pictureRecorder = new PictureRecorder(this, this, story_directory, story_directory_path);
 
-    }
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-
-                // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do something after 5s = 5000ms
+                    pictureRecorder.dispatchTakePictureIntent();
                 }
-
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    Uri photoURI = FileProvider.getUriForFile(this,
-                            "com.example.android.fileprovider",
-                            photoFile);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    //new ProcessPicture().execute();
-                    startActivityForResult(takePictureIntent, 100);
-                }
-            }
-    }
-
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir;
-
-        if (Build.VERSION.SDK_INT >= 19) {
-            storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        }else{
-            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+            }, 500);
         }
 
-        image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        catch (NullPointerException e) {
 
-        // Save a file: path for use with ACTION_VIEW intents
-        photoPath = image.getAbsolutePath();
-        Log.i("File Name", "1" + photoPath);
-        return image;
-    }
-
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (
-                exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
         }
-        return 0;
+
     }
 
     @Override
@@ -405,94 +330,37 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         if(requestCode==100) {
            if (resultCode == RESULT_OK) {
 
-                PictureProcessing();
+               pictureRecorder.PictureProcessing();
+               photoPath = pictureRecorder.getPhotoPath();
+               photoUri = pictureRecorder.getPhotoURI();
+               picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
+               picture_story_fragment.ShowPicture(pictureRecorder.getAdjustedBitmap());
             }
         }
 
         if(requestCode==200) {
             if (resultCode == RESULT_OK) {
 
-                VideoProcessing();
+                videoRecorder.VideoProcessing();
+                videoPath = videoRecorder.getVideoPath();
+                videoURI = videoRecorder.getVideoURI();
+                video_story_fragment.ShowVideo(videoURI);
+
             }
         }
-
-
-    }
-
-    public void PictureProcessing() {
-
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(photoPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-        int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        rotationInDegrees = exifToDegrees(rotation);
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(photoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 200, photoH / 200);
-
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = smallSizeScaleFactor;
-        bmOptions.inPurgeable = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, bmOptions);
-        Matrix matrix = new Matrix();
-        if (rotation != 0f) {
-            matrix.preRotate(rotationInDegrees);
-        }
-
-        if (rotationInDegrees == 90 || rotationInDegrees == 270) {
-            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } else if (rotationInDegrees == 180) {
-            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } else {
-            // adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            adjustedBitmap = bitmap;
-        }
-
-        picture_story_fragment.setPictureBoxDimensions(rotationInDegrees);
-        picture_story_fragment.ShowPicture(adjustedBitmap);
-
     }
 
     public void FullSizedPicture(View view) {
 
-       /* if(!fullSizedPicture) {
-            Bitmap fullSizedBitmap = BitmapFactory.decodeFile(photoPath);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            adjustedFullSizedBitmap = Bitmap.createBitmap(fullSizedBitmap, 0, 0, fullSizedBitmap.getWidth(), fullSizedBitmap.getHeight(), matrix, true);
-        }
-
-        fullSizedPicture = !fullSizedPicture;
-        picture_story_fragment.ShowFullSizedPicture(fullSizedPicture, adjustedFullSizedBitmap);
-        */
-
-        File file = new File(photoPath);
-//        Intent openFullSize = new Intent(Intent.ACTION_VIEW);
-//        openFullSize.setDataAndType(Uri.fromFile(file), "image/");
-//        openFullSize.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
         Intent openFullSize = new Intent(Intent.ACTION_VIEW);
         openFullSize.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-       // Uri apkURI = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
-        Uri photoURI = FileProvider.getUriForFile(this,
-                "com.example.android.fileprovider",
-                file);
-        openFullSize.setDataAndType(photoURI, "image/");
+        //Uri photoURI = FileProvider.getUriForFile(this,
+            //  "com.example.android.fileprovider",
+             //   file);
+        openFullSize.setDataAndType(photoUri, "image/");
         openFullSize.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        // End New Approach
         this.startActivity(openFullSize);
-
         //Intent openFullSize = new Intent(Intent.ACTION_VIEW, Uri.parse(photoPath));
         try {
             startActivity(openFullSize);
@@ -514,83 +382,28 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         UpdateFragment();
     }
 
-
-
-
     //Video Recording
 
     public void VideoRecordButton(View view) {
 
-        video_story_fragment.TakeVideo(view);
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-                dispatchTakeVideoIntent();
-            }
-        }, 1000);
-
-    }
-
-    private void dispatchTakeVideoIntent() {
-        Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
-
-            // Create the File where the photo should go
-            File videoFile = null;
-            try {
-                videoFile = createVideoFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-
-            // Continue only if the File was successfully created
-            if (videoFile != null) {
-                videoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        videoFile);
-                takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
-                startActivityForResult(takeVideoIntent, 200);
-            }
-        }
-    }
-
-    private File createVideoFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String videoFileName = "MPEG4_" + timeStamp + "_";
-        File storageDir;
-
-        File currentDir = null;
-        if (Build.VERSION.SDK_INT >= 19) {
-            storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        }else{
-            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+        try {
+            video_story_fragment.TakeVideo(view);
+            videoRecorder = new VideoRecorder(this, this, story_directory, story_directory_path);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do something after 5s = 5000ms
+                    //dispatchTakeVideoIntent();
+                    videoRecorder.dispatchTakeVideoIntent();
+                }
+            }, 1000);
         }
 
-        video = File.createTempFile(videoFileName, ".mp4", storageDir);
+        catch (NullPointerException e) {
 
-        // Save a file: path for use with ACTION_VIEW intents
-        videoPath = video.getAbsolutePath();
-        return video;
-    }
-
-    public void VideoProcessing() {
-
-        MediaMetadataRetriever m = new MediaMetadataRetriever();
-
-        m.setDataSource(videoPath);
-        Bitmap thumbnail = m.getFrameAtTime();
-//
-        if (Build.VERSION.SDK_INT >= 17) {
-            String s = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-
-            Log.e("Rotation", s);
         }
 
-        video_story_fragment.ShowVideo(videoURI);
     }
 
     public void FullSizedVideo(View view) {
@@ -606,8 +419,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     public void CompleteVideoRecording(View view) {
 
-        videoFileName = videoPath;
-        recordedMediaHashMap.put("Video", videoFileName);
+        recordedMediaHashMap.put("Video", videoPath);
         UpdateFragment();
     }
 
@@ -637,13 +449,11 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     public void CompleteWrittenStory(View view) {
 
-        /*
-        Intent intent = new Intent(NFCRecord.this, MainMenu.class);
-        NFCRecord.this.startActivity(intent);
-        */
-
         try {
-            createWrittenFile();
+            Log.i("Written text 1: ", written_story_fragment.getTextContent().toString());
+            writtenRecorder = new WrittenRecorder(written_story_fragment, this, this, story_directory);
+            writtenRecorder.createWrittenFile();
+            writtenPath = writtenRecorder.getWrittenFilePath();
         }
 
         catch (IOException e) {
@@ -652,67 +462,6 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         recordedMediaHashMap.put("Written", writtenPath);
         UpdateFragment();
-    }
-
-    private File createWrittenFile() throws IOException {
-
-//        audioFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-//        audioFileName += "/audiorecordtest.mp4";
-
-//        mRecorder = new MediaRecorder();
-//        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-//        mRecorder.setOutputFile(audioFileName);
-//        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String textFileName = "TEXT_" + timeStamp + "_";
-        File storageDir;
-
-        if (Build.VERSION.SDK_INT >= 19) {
-            storageDir = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        }else{
-            storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
-        }
-
-        File textFile = File.createTempFile(textFileName, ".txt", storageDir);
-
-        //if file doesnt exists, then create it
-     if(!textFile.exists()){
-            textFile.createNewFile();
-            Log.i("creatingFile", textFile.getName());
-     }
-
-    try {
-
-//        Log.i("textFileName", textFile.getName());
-//        FileWriter fileWritter = new FileWriter(textFile.getName(),true);
-//        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-//        bufferWritter.write(written_story_fragment.getTextContent());
-//        bufferWritter.close();
-
-        FileOutputStream fOut = new FileOutputStream(textFile.getAbsoluteFile(),true);
-        OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-
-        //Write the header : in your case it is : Student class Marsk (only one time)
-        myOutWriter.write(written_story_fragment.getTextContent());
-        myOutWriter.flush();
-
-
-    }
-
-    catch (IOException e) {
-
-        e.printStackTrace();
-
-        }
-
-        // Save a file: path for use with ACTION_VIEW intents
-        writtenPath = textFile.getAbsolutePath();
-        Log.i("text location", writtenPath);
-
-        return textFile;
     }
 
     public void UpdateFragment() {
@@ -734,6 +483,11 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             NFCRecord.this.startActivity(intent);
             overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         }
+    }
+
+    public void Skip(View view) {
+
+        UpdateFragment();
     }
 
     @Override

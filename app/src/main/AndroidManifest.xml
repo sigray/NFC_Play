@@ -22,7 +22,9 @@
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCOUNT_MANAGER" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -35,8 +37,7 @@
             android:name=".NFCRead"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            >
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
             </intent-filter>
@@ -58,6 +59,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -87,13 +89,16 @@
         <activity android:name=".PictureStoryFragment" />
         <activity android:name=".VideoStoryFragment" />
         <activity android:name=".WrittenStoryFragment" />
-        <activity android:name=".StoryMediaChooser"
+        <activity
+            android:name=".StoryMediaChooser"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".NewStoryReview"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".NewStoryReview"
-                  android:screenOrientation="portrait"
-                  android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-            ></activity>
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            >
+        </activity>
+        <activity android:name=".SaveStoryToNFC"></activity>
     </application>
 
 </manifest>
