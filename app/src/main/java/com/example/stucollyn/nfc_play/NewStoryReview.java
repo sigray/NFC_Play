@@ -375,6 +375,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     public void Confirm (View view) {
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
+        intent.putExtra("StoryDirectory", fileDirectory);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
