@@ -87,6 +87,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     File story_directory;
     String story_directory_path;
     Uri story_directory_uri;
+    String tag_data;
 
     //Classes
     AudioRecorder audioRecorder;
@@ -134,6 +135,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         String packageLocation = ("/Stories");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String newDirectory = packageLocation+"/"+timeStamp;
+        tag_data = timeStamp;
         story_directory = getExternalFilesDir(newDirectory);
        // story_directory_uri = FileProvider.getUriForFile(this,
          //       "com.example.android.fileprovider",
@@ -481,6 +483,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);
             intent.putExtra("RecordedMedia", recordedMediaHashMap);
             intent.putExtra("StoryDirectory", story_directory);
+            intent.putExtra("TagData", tag_data);
             NFCRecord.this.startActivity(intent);
             overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         }

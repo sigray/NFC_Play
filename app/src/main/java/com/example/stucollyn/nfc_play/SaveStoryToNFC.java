@@ -37,7 +37,8 @@ public class SaveStoryToNFC extends AppCompatActivity {
     NfcAdapter adapter;
     PendingIntent pendingIntent;
     IntentFilter writeTagFilters[];
-    File fileDirectory;
+   // File fileDirectory;
+    String tag_data = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +49,10 @@ public class SaveStoryToNFC extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Save New Story To NFC");
-        fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
+       // fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
+        tag_data = (String)getIntent().getExtras().get("TagData");
 
-        Log.i("FD: ", fileDirectory.toString());
+       // Log.i("FD: ", fileDirectory.toString());
 
         adapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -63,7 +65,8 @@ public class SaveStoryToNFC extends AppCompatActivity {
 
     private void write(Tag tag) throws IOException, FormatException {
 
-        String fileToWrite = fileDirectory.getAbsolutePath();
+//        String fileToWrite = fileDirectory.getAbsolutePath();
+        String fileToWrite = tag_data;
         NdefRecord[] records = {
                 createRecord(fileToWrite)
         };

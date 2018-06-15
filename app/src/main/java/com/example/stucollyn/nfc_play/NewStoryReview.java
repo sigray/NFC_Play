@@ -52,7 +52,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     int rotationInDegrees;
     Bitmap adjustedBitmap;
     private StringBuilder text = new StringBuilder();
-
+    String tag_data = "";
     File fileDirectory;
 
 
@@ -89,6 +89,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         mediaController = new MediaController(this);
 
         fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
+        tag_data = (String)getIntent().getExtras().get("TagData");
 
         selectedMedia = new HashMap<String,String>();
         selectedMedia = (HashMap<String,String>)getIntent().getSerializableExtra("RecordedMedia");
@@ -375,7 +376,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     public void Confirm (View view) {
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
-        intent.putExtra("StoryDirectory", fileDirectory);
+        intent.putExtra("TagData", tag_data);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

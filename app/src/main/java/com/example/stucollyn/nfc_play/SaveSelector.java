@@ -10,6 +10,7 @@ import java.io.File;
 public class SaveSelector extends AppCompatActivity {
 
     File fileDirectory;
+    String tag_data = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,7 @@ public class SaveSelector extends AppCompatActivity {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Save New Story");
         fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
+        tag_data = (String)getIntent().getExtras().get("TagData");
     }
 
     public void StartConfirmation(View view){
@@ -33,7 +35,7 @@ public class SaveSelector extends AppCompatActivity {
     public void StartSaveStoryToNFC(View view) {
 
         Intent intent = new Intent(SaveSelector.this, SaveStoryToNFC.class);
-        intent.putExtra("StoryDirectory", fileDirectory);
+        intent.putExtra("TagData", tag_data);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

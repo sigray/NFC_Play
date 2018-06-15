@@ -1,5 +1,7 @@
 package com.example.stucollyn.nfc_play;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -13,10 +15,12 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import android.media.MediaPlayer;
 
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -95,16 +99,47 @@ public class NFCRead extends AppCompatActivity {
 
         byte[] mesg = null;
         String[] recTypes = new String[len];     // will contain the NDEF record types
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++)
+        {
             recTypes[i] = new String(ndefRecords[i].getType());
             mesg = ndefRecords[i].getPayload();
             s = new String(mesg);
-            }
 
-        s = s.substring(1);
-        Log.d("d", "s: " + s);
+        }
+
+        s = s.substring(3);
+
+        PackageManager m = getPackageManager();
+        String packageName = getPackageName();
+        try {
+            PackageInfo p = m.getPackageInfo(packageName, 0);
+            packageName = p.applicationInfo.dataDir;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w("yourtag", "Error Package name not found ", e);
+        }
+
+        Log.d("d", "Tag Path: " + s);
+        Log.d("d", "Default Path: " + Environment.getExternalStorageDirectory().toString());
+        Log.d("d", "Package Path: " + packageName.toString());
+
+
         ndef.close();
 
+//        String path = packageName.toString()+"/files";
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
+//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/20180615_190621";
+        Log.d("Files", "Path: " + path);
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+        Log.d("Files", "Size: "+ files.length);
+        for (int i = 0; i < files.length; i++)
+        {
+            Log.d("Files", "FileName:" + files[i].getName());
+        }
+
+
+
+        /*
         pauseNplay.setText("II");
         nfc_transmit.setVisibility(View.INVISIBLE);
         nfc_transmit.animate().cancel();
