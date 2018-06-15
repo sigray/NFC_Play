@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import android.media.MediaPlayer;
 
 import android.os.Environment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -42,15 +43,10 @@ public class NFCRead extends AppCompatActivity {
     ArrayList<String> messageArray;
     String takeAction="", playerType="", owner="", theMessage ="", colour="", id="", type="", retheMessage = "", reowner = "", reid = "",
             recolour = "", retype = "", retakeAction = "", speakInstruction;
-    ImageView nfc_transmit;
     boolean commit = false, errorOccurred = false, posession = false, readMode = false, caught = false;
-    MediaPlayer mp = new MediaPlayer();
-    boolean mpPlaying = false;
-    Button pauseNplay;
-    boolean pauseNplayVisibility = false;
-    boolean pauseOrplay = false;
-    Animation nfc_transmit_animation;
-
+    FragmentTransaction ft;
+    ReadTagFragment readTagFragment;
+    ShowTagContentFragment showTagContentFragment;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -63,14 +59,19 @@ public class NFCRead extends AppCompatActivity {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Play Tagged Story");
 
-        pauseNplay = (Button)findViewById(R.id.button);
+        InitFragments();
         NFCSetup();
-        Log.d("d", "Check");
-        nfc_transmit = (ImageView) findViewById(R.id.nfc_transmit);
-        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
-        int visi = nfc_transmit.getVisibility();
-        Log.i("i", Integer.toString(visi));
-        nfc_transmit.startAnimation(nfc_transmit_animation);
+    }
+
+    void InitFragments() {
+
+        readTagFragment = new ReadTagFragment();
+        showTagContentFragment = new ShowTagContentFragment();
+
+        //Open first fragment in the fragment array list
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_frame, readTagFragment);
+        ft.commit();
     }
 
     public void NFCSetup(){
@@ -83,7 +84,6 @@ public class NFCRead extends AppCompatActivity {
 
     private void read(Tag tag) throws IOException, FormatException, IndexOutOfBoundsException, NullPointerException {
 
-        Log.d("d", "On");
         String s = null;
         // Get an instance of Ndef for the tag.
         Ndef ndef = Ndef.get(tag);
@@ -136,70 +136,27 @@ public class NFCRead extends AppCompatActivity {
         {
             Log.d("Files", "FileName:" + files[i].getName());
         }
-
-
-
-        /*
-        pauseNplay.setText("II");
-        nfc_transmit.setVisibility(View.INVISIBLE);
-        nfc_transmit.animate().cancel();
-        nfc_transmit.clearAnimation();
-
-        if(pauseNplayVisibility==false) {
-            pauseNplay.setVisibility(View.VISIBLE);
-            pauseNplayVisibility = true;
-        }
-
-        mp.setDataSource(s);
-        mp.prepare();
-        mp.start();
-        mpPlaying = true;
-
-
-
-
-        /*
-        Uri selectedUri = Uri.parse(s);
-        Log.d("HATERZ", "URI: " + selectedUri);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(selectedUri, "resource/folder");
-
-          startActivity(intent);
-
-
-        if (intent.resolveActivityInfo(getPackageManager(), 0) != null)
-        {
-            startActivity(intent);
-        }
-        else
-        {
-            Log.d("HATERZ", "Feck");
-
-        }
-        */
-
-
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            //Toast.makeText(this, "Tag Detected", Toast.LENGTH_LONG).show();
-            Log.d("d", "Found it");
 
-                mp.reset();
+            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             }
 
 
         try {
             if (mytag == null) {
-               // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
-                takeAction = "Do Nothing";
 
-            } else {
+                takeAction = "Do Nothing";
+            }
+
+            else {
                 read(mytag);
+                ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragment_frame, showTagContentFragment);
+                ft.commit();
 
             }
 
@@ -225,25 +182,6 @@ public class NFCRead extends AppCompatActivity {
             System.out.println("Fail 4");
         }
 
-    }
-
-    public void pauseNplay(View view){
-
-        Log.d("d", "pauseOrplay: " + pauseOrplay);
-
-        if(pauseOrplay==false) {
-
-            pauseOrplay = true;
-            pauseNplay.setText("\u25B6");
-            mp.pause();
-        }
-
-        else if(pauseOrplay==true) {
-
-            pauseOrplay = false;
-            pauseNplay.setText("II");
-            mp.start();
-        }
     }
 
     @Override
