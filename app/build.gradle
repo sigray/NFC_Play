@@ -27,4 +27,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('C:/Users/StuCollyn/AndroidStudioProjects/NFC_Play/lib/acssmc-1.1.4.jar')
+    compile 'org.apache.commons:commons-collections4:4.1'
+    compile 'commons-io:commons-io:2.4'
 }

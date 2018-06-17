@@ -17,6 +17,7 @@ import android.nfc.tech.Ndef;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import android.media.MediaPlayer;
 
@@ -30,9 +31,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import org.apache.commons.io.FilenameUtils;
 
 
-public class NFCRead extends AppCompatActivity {
+public class NFCRead extends AppCompatActivity implements Serializable {
 
     NfcAdapter adapter;
     PendingIntent pendingIntent;
@@ -47,6 +53,8 @@ public class NFCRead extends AppCompatActivity {
     FragmentTransaction ft;
     ReadTagFragment readTagFragment;
     ShowTagContentFragment showTagContentFragment;
+    ListView storyList;
+    File[] filesOnTag;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -61,6 +69,8 @@ public class NFCRead extends AppCompatActivity {
 
         InitFragments();
         NFCSetup();
+
+//        storyList = (ListView) findViewById(R.id.list_view);
     }
 
     void InitFragments() {
@@ -104,7 +114,6 @@ public class NFCRead extends AppCompatActivity {
             recTypes[i] = new String(ndefRecords[i].getType());
             mesg = ndefRecords[i].getPayload();
             s = new String(mesg);
-
         }
 
         s = s.substring(3);
@@ -117,11 +126,6 @@ public class NFCRead extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             Log.w("yourtag", "Error Package name not found ", e);
         }
-
-        Log.d("d", "Tag Path: " + s);
-        Log.d("d", "Default Path: " + Environment.getExternalStorageDirectory().toString());
-        Log.d("d", "Package Path: " + packageName.toString());
-
 
         ndef.close();
 
@@ -136,6 +140,8 @@ public class NFCRead extends AppCompatActivity {
         {
             Log.d("Files", "FileName:" + files[i].getName());
         }
+
+        filesOnTag = files;
     }
 
     @Override
@@ -154,10 +160,16 @@ public class NFCRead extends AppCompatActivity {
 
             else {
                 read(mytag);
+
+                Log.i("fileOnTag: ", filesOnTag.toString());
+
+                Bundle bundle = new Bundle();
+                String myMessage = "Stackoverflow is cool!";
+                bundle.putSerializable("message", filesOnTag);
+                showTagContentFragment.setArguments(bundle);
                 ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_frame, showTagContentFragment);
                 ft.commit();
-
             }
 
         } catch (IOException e) {
@@ -181,6 +193,9 @@ public class NFCRead extends AppCompatActivity {
             errorOccurred = true;
             System.out.println("Fail 4");
         }
+
+//        listCreator(filesOnTag);
+
 
     }
 

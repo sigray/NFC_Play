@@ -4,15 +4,13 @@ import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -21,41 +19,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
  * Created by StuCollyn on 14/05/2018.
  */
 
-public class ShowTagContentFragment extends Fragment {
+public class ShowTagContentFragmentList extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     FragmentActivity listener;
     ImageView nfc_transmit;
-    ListView listView;
     Button pauseNplay;
     Animation nfc_transmit_animation;
     MediaPlayer mp = new MediaPlayer();
     boolean mpPlaying = false;
     boolean pauseNplayVisibility = false;
     boolean pauseOrplay = false;
-    LinearLayout linearLayout;
-    View view;
-    File[] filesOnTag;
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -87,13 +73,13 @@ public class ShowTagContentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
     }
 
     // The onCreateView method is called when Fragment should create its View object hierarchy,
     // either dynamically or via XML layout inflation.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.show_content_fragment, parent, false);
         return inflater.inflate(R.layout.show_content_fragment, parent, false);
 
     }
@@ -104,61 +90,68 @@ public class ShowTagContentFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.view = view;
 
-        Bundle bundle = this.getArguments();
-        filesOnTag = (File[]) bundle.getSerializable("message");
+        Log.d("d", "Check");
+        nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
+        //nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
+        int visi = nfc_transmit.getVisibility();
+        nfc_transmit.startAnimation(nfc_transmit_animation);
+        pauseNplay = (Button) view.findViewById(R.id.button);
 
-        Log.i("Serializable: ", filesOnTag.toString());
+        // Create a progress bar to display while the list loads
+        ProgressBar progressBar = new ProgressBar(this.listener);
+//        progressBar.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        progressBar.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        progressBar.setIndeterminate(true);
+        getListView().setEmptyView(progressBar);
 
-        linearLayout = (LinearLayout) view.findViewById(R.id.show_content_fragment);
+        // Must add the progress bar to the root of the layout
+        ViewGroup root = (ViewGroup) view.findViewById(android.R.id.content);
+        root.addView(progressBar);
 
-        listCreator(filesOnTag);
+        // For the cursor adapter, specify which columns go into which views
+        String[] fromColumns = {ContactsContract.Data.DISPLAY_NAME};
+        int[] toViews = {android.R.id.text1}; // The TextView in simple_list_item_1
 
+        // Create an empty adapter we will use to display the loaded data.
+        // We pass null for the cursor, then update it in onLoadFinished()
+        mAdapter = new SimpleCursorAdapter(this.listener,
+                android.R.layout.simple_list_item_1, null,
+                fromColumns, toViews, 0);
+        setListAdapter(mAdapter);
 
-//        TextView valueTV = new TextView(this.listener);
-
-
-
-//          listView = (ListView) view.findViewById(R.id.list_view);
-//          linearLayout = (LinearLayout)view.findViewById(R.id.show_content_fragment);
-//        nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
-//        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
-//        int visi = nfc_transmit.getVisibility();
-//        nfc_transmit.startAnimation(nfc_transmit_animation);
-//        pauseNplay = (Button) view.findViewById(R.id.button);
-
+        // Prepare the loader. Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(0, null, (android.app.LoaderManager.LoaderCallbacks<Cursor>) this);
+        
     }
 
-    void listCreator(File[] files) {
+    // Called when a new Loader needs to be created
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader(this.listener, ContactsContract.Data.CONTENT_URI,
+                PROJECTION, SELECTION, null, null);
+    }
 
+    // Called when a previously created loader has finished loading
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in. (The framework will take care of closing the
+        // old cursor once we return.)
+        mAdapter.swapCursor(data);
+    }
 
-        for(int i = 0; i<files.length; i++) {
+    // Called when a previously created loader is reset, making the data unavailable
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed. We need to make sure we are no
+        // longer using it.
+        mAdapter.swapCursor(null);
+    }
 
-            String extension = FilenameUtils.getExtension(files[i].toString());
-
-            if(extension.equalsIgnoreCase("mp3")) {
-
-                addAudio(files[i]);
-            }
-
-            else if(extension.equalsIgnoreCase("mp4")) {
-
-                addVideo(files[i]);
-            }
-
-            else if (extension.equalsIgnoreCase("txt")) {
-
-                addText(files[i]);
-            }
-
-            else if(extension.equalsIgnoreCase("jpg")) {
-
-                addPicture(files[i]);
-            }
-
-        }
-
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        // Do something when a list item is clicked
     }
 
     // This method is called when the fragment is no longer connected to the Activity
@@ -193,63 +186,7 @@ public class ShowTagContentFragment extends Fragment {
             mp.start();
         }
     }
-
-    void addPicture(File file) {
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-
-    }
-
-
-    public void addVideo(File file) {
-
-        Log.i("Reached ", file.toString());
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-        //linearLayout.addView(valueTV);
-
-
-    }
-
-
-    void addText(File file) {
-
-        Log.i("Reached: ", "addText");
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-    }
-
-
-    void addAudio(File file) {
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-
-    }
-
 }
-
 
 /*
  @Override
