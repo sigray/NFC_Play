@@ -23,6 +23,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -56,6 +57,11 @@ public class ShowTagContentFragment extends Fragment {
     LinearLayout linearLayout;
     View view;
     File[] filesOnTag;
+    File[] filesArray;
+    File currentFile;
+    int currentInt = 0;
+    ArrayList<ImageButton> buttonList = new ArrayList<ImageButton>();
+    HashMap<ImageButton, File> buttonToFileMap = new HashMap<ImageButton, File>();
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -136,28 +142,65 @@ public class ShowTagContentFragment extends Fragment {
         for(int i = 0; i<files.length; i++) {
 
             String extension = FilenameUtils.getExtension(files[i].toString());
+            String fileName = files[i].toString();
+            filesArray = files;
+            ImageButton valueButton = new ImageButton(this.listener);
+//            valueButton.setId(Integer.parseInt("@+id/"+ Integer.toString(i)));
+            valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+            ((LinearLayout) linearLayout).addView(valueButton);
 
             if(extension.equalsIgnoreCase("mp3")) {
 
-                addAudio(files[i]);
+                valueButton.setImageResource(R.drawable.audio_media);
+//                addAudio(files[i]);
+//                addAudio(fileName);
             }
 
             else if(extension.equalsIgnoreCase("mp4")) {
 
-                addVideo(files[i]);
+                valueButton.setImageResource(R.drawable.video_media);
+//                addVideo(files[i]);
+//                addVideo(fileName, files[i]);
             }
 
             else if (extension.equalsIgnoreCase("txt")) {
 
-                addText(files[i]);
+                valueButton.setImageResource(R.drawable.written_media);
+//                addText(files[i]);
+//                addText(fileName);
             }
 
             else if(extension.equalsIgnoreCase("jpg")) {
 
-                addPicture(files[i]);
+                valueButton.setImageResource(R.drawable.camera_media);
+//                addPicture(files[i]);
+//                addPicture(fileName);
             }
 
+            buttonList.add(valueButton);
+            buttonToFileMap.put(valueButton, files[i]);
         }
+
+        for(int i=0; i<buttonList.size(); i++) {
+
+            Log.i("Button Array: ", buttonList.get(i).toString());
+
+            buttonList.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    Log.i("Button Pressed: ", v.toString());
+                    showContent(buttonToFileMap.get(v));
+                }
+            });
+
+        }
+
+    }
+
+    void showContent(File file) {
+
+        Log.i("showContent(): ", file.toString());
 
     }
 
@@ -194,7 +237,53 @@ public class ShowTagContentFragment extends Fragment {
         }
     }
 
-    void addPicture(File file) {
+    void addPicture(String file) {
+
+        ImageButton valueButton = new ImageButton(this.listener);
+        valueButton.setImageResource(R.drawable.camera_media);
+        valueButton.setId(Integer.parseInt("@+id/"+file));
+        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        ((LinearLayout) linearLayout).addView(valueButton);
+    }
+
+    void addVideo(String fileName, File file) {
+
+        ImageButton videoButton = new ImageButton(this.listener);
+        videoButton.setImageResource(R.drawable.video_media);
+        videoButton.setId(Integer.parseInt("@+id/"+fileName));
+        videoButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        ((LinearLayout) linearLayout).addView(videoButton);
+
+//        videoButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                for(int i=0; i=)
+//
+//                showVideo(currentFile);
+//            }
+//        });
+    }
+
+    void addText(String file) {
+
+        ImageButton valueButton = new ImageButton(this.listener);
+        valueButton.setImageResource(R.drawable.written_media);
+        valueButton.setId(Integer.parseInt("@+id/"+file));
+        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        ((LinearLayout) linearLayout).addView(valueButton);
+    }
+
+    void addAudio(String file) {
+
+        ImageButton valueButton = new ImageButton(this.listener);
+        valueButton.setImageResource(R.drawable.audio_media);
+        valueButton.setId(Integer.parseInt("@+id/"+file));
+        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
+        ((LinearLayout) linearLayout).addView(valueButton);
+    }
+
+    void showPicture(File file) {
 
         TextView valueTV = new TextView(this.listener);
         valueTV.setText(file.toString());
@@ -207,7 +296,7 @@ public class ShowTagContentFragment extends Fragment {
     }
 
 
-    public void addVideo(File file) {
+    public void showVideo(File file) {
 
         Log.i("Reached ", file.toString());
 
@@ -222,7 +311,7 @@ public class ShowTagContentFragment extends Fragment {
     }
 
 
-    void addText(File file) {
+    void showText(File file) {
 
         Log.i("Reached: ", "addText");
 
@@ -236,7 +325,7 @@ public class ShowTagContentFragment extends Fragment {
     }
 
 
-    void addAudio(File file) {
+    void showAudio(File file) {
 
         TextView valueTV = new TextView(this.listener);
         valueTV.setText(file.toString());
