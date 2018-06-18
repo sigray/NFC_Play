@@ -118,9 +118,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     }
 
-
-
-
     public void AudioReview(View view) {
 
         if (!mPlayerSetup) {

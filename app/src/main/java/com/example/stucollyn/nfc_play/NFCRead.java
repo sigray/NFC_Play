@@ -132,10 +132,8 @@ public class NFCRead extends AppCompatActivity implements Serializable {
 //        String path = packageName.toString()+"/files";
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
 //        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/20180615_190621";
-        Log.d("Files", "Path: " + path);
         File directory = new File(path);
         File[] files = directory.listFiles();
-        Log.d("Files", "Size: "+ files.length);
         for (int i = 0; i < files.length; i++)
         {
             Log.d("Files", "FileName:" + files[i].getName());
@@ -164,8 +162,7 @@ public class NFCRead extends AppCompatActivity implements Serializable {
                 Log.i("fileOnTag: ", filesOnTag.toString());
 
                 Bundle bundle = new Bundle();
-                String myMessage = "Stackoverflow is cool!";
-                bundle.putSerializable("message", filesOnTag);
+                bundle.putSerializable("filesOnTag", filesOnTag);
                 showTagContentFragment.setArguments(bundle);
                 ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.fragment_frame, showTagContentFragment);
@@ -193,9 +190,6 @@ public class NFCRead extends AppCompatActivity implements Serializable {
             errorOccurred = true;
             System.out.println("Fail 4");
         }
-
-//        listCreator(filesOnTag);
-
 
     }
 

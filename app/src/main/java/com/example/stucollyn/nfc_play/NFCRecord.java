@@ -385,7 +385,6 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     }
 
     //Video Recording
-
     public void VideoRecordButton(View view) {
 
         try {
@@ -426,9 +425,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     }
 
 
-    //Written
-    //Video Recording
-
+    //Written Recording
     public void WriteStory(View view) {
 
         written_story_fragment.StartWritingNotification(view);

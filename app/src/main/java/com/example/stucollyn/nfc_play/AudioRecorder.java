@@ -87,7 +87,7 @@ public class AudioRecorder extends Application {
 
         try {
 
-            File audioFile = File.createTempFile(imageFileName, ".mp4", storageDir);
+            File audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
             audioFileName = audioFile.getAbsolutePath();
 
         }

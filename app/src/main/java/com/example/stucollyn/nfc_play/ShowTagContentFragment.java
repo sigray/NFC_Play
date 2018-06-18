@@ -3,6 +3,7 @@ package com.example.stucollyn.nfc_play;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -62,6 +63,8 @@ public class ShowTagContentFragment extends Fragment {
     int currentInt = 0;
     ArrayList<ImageButton> buttonList = new ArrayList<ImageButton>();
     HashMap<ImageButton, File> buttonToFileMap = new HashMap<ImageButton, File>();
+    HashMap<ImageButton, String> buttonStringHashMap = new HashMap<ImageButton, String>();
+    String callActivityName;
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -113,31 +116,12 @@ public class ShowTagContentFragment extends Fragment {
         this.view = view;
 
         Bundle bundle = this.getArguments();
-        filesOnTag = (File[]) bundle.getSerializable("message");
-
-        Log.i("Serializable: ", filesOnTag.toString());
-
+        filesOnTag = (File[]) bundle.getSerializable("filesOnTag");
         linearLayout = (LinearLayout) view.findViewById(R.id.show_content_fragment);
-
         listCreator(filesOnTag);
-
-
-//        TextView valueTV = new TextView(this.listener);
-
-
-
-//          listView = (ListView) view.findViewById(R.id.list_view);
-//          linearLayout = (LinearLayout)view.findViewById(R.id.show_content_fragment);
-//        nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
-//        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
-//        int visi = nfc_transmit.getVisibility();
-//        nfc_transmit.startAnimation(nfc_transmit_animation);
-//        pauseNplay = (Button) view.findViewById(R.id.button);
-
     }
 
     void listCreator(File[] files) {
-
 
         for(int i = 0; i<files.length; i++) {
 
@@ -152,45 +136,66 @@ public class ShowTagContentFragment extends Fragment {
             if(extension.equalsIgnoreCase("mp3")) {
 
                 valueButton.setImageResource(R.drawable.audio_media);
-//                addAudio(files[i]);
-//                addAudio(fileName);
+                callActivityName = "ReviewAudioStory";
             }
 
             else if(extension.equalsIgnoreCase("mp4")) {
 
                 valueButton.setImageResource(R.drawable.video_media);
-//                addVideo(files[i]);
-//                addVideo(fileName, files[i]);
+                callActivityName = "ReviewVideoStory";
             }
 
             else if (extension.equalsIgnoreCase("txt")) {
 
                 valueButton.setImageResource(R.drawable.written_media);
-//                addText(files[i]);
-//                addText(fileName);
+                callActivityName = "ReviewWrittenStory";
             }
 
             else if(extension.equalsIgnoreCase("jpg")) {
 
                 valueButton.setImageResource(R.drawable.camera_media);
-//                addPicture(files[i]);
-//                addPicture(fileName);
+                callActivityName = "ReviewPictureStory";
             }
 
             buttonList.add(valueButton);
             buttonToFileMap.put(valueButton, files[i]);
+            buttonStringHashMap.put(valueButton, callActivityName);
         }
 
         for(int i=0; i<buttonList.size(); i++) {
-
-            Log.i("Button Array: ", buttonList.get(i).toString());
 
             buttonList.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    Log.i("Button Pressed: ", v.toString());
-                    showContent(buttonToFileMap.get(v));
+                    Log.i("Button Pressed: ", buttonStringHashMap.get(v).toString());
+//                    showContent(buttonToFileMap.get(v));
+                    Intent intent;
+
+                    if(buttonStringHashMap.get(v).equals("ReviewAudioStory")) {
+                        intent = new Intent(getActivity(), ReviewAudioStory.class);
+                        intent.putExtra("AudioFile", buttonToFileMap.get(v));
+                        getActivity().startActivity(intent);
+                    }
+
+                    else if(buttonStringHashMap.get(v).equals("ReviewVideoStory")) {
+                        intent = new Intent(getActivity(), ReviewVideoStory.class);
+                        intent.putExtra("VideoFile", buttonToFileMap.get(v));
+                        getActivity().startActivity(intent);
+                    }
+
+                    else if(buttonStringHashMap.get(v).equals("ReviewPictureStory")) {
+                        intent = new Intent(getActivity(), ReviewPictureStory.class);
+                        intent.putExtra("PictureFile", buttonToFileMap.get(v));
+                        getActivity().startActivity(intent);
+                    }
+
+                    else if(buttonStringHashMap.get(v).equals("ReviewWrittenStory")) {
+                        intent = new Intent(getActivity(), ReviewWrittenStory.class);
+                        intent.putExtra("WrittenFile", buttonToFileMap.get(v));
+                        getActivity().startActivity(intent);
+                    }
+
                 }
             });
 
@@ -235,106 +240,6 @@ public class ShowTagContentFragment extends Fragment {
             pauseNplay.setText("II");
             mp.start();
         }
-    }
-
-    void addPicture(String file) {
-
-        ImageButton valueButton = new ImageButton(this.listener);
-        valueButton.setImageResource(R.drawable.camera_media);
-        valueButton.setId(Integer.parseInt("@+id/"+file));
-        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueButton);
-    }
-
-    void addVideo(String fileName, File file) {
-
-        ImageButton videoButton = new ImageButton(this.listener);
-        videoButton.setImageResource(R.drawable.video_media);
-        videoButton.setId(Integer.parseInt("@+id/"+fileName));
-        videoButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(videoButton);
-
-//        videoButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                for(int i=0; i=)
-//
-//                showVideo(currentFile);
-//            }
-//        });
-    }
-
-    void addText(String file) {
-
-        ImageButton valueButton = new ImageButton(this.listener);
-        valueButton.setImageResource(R.drawable.written_media);
-        valueButton.setId(Integer.parseInt("@+id/"+file));
-        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueButton);
-    }
-
-    void addAudio(String file) {
-
-        ImageButton valueButton = new ImageButton(this.listener);
-        valueButton.setImageResource(R.drawable.audio_media);
-        valueButton.setId(Integer.parseInt("@+id/"+file));
-        valueButton.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueButton);
-    }
-
-    void showPicture(File file) {
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-
-    }
-
-
-    public void showVideo(File file) {
-
-        Log.i("Reached ", file.toString());
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-        //linearLayout.addView(valueTV);
-
-
-    }
-
-
-    void showText(File file) {
-
-        Log.i("Reached: ", "addText");
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-    }
-
-
-    void showAudio(File file) {
-
-        TextView valueTV = new TextView(this.listener);
-        valueTV.setText(file.toString());
-//        valueTV.setId(Integer.parseInt("@+id/list"));
-        valueTV.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) linearLayout).addView(valueTV);
-//        linearLayout.addView(valueTV);
-
-
     }
 
 }
