@@ -35,63 +35,30 @@ public class ReviewVideoStory extends AppCompatActivity {
         videoFile = (File)getIntent().getExtras().get("VideoFile");
         setContentView(R.layout.activity_review_video_story);
 
-        captured_video = (VideoView) findViewById(R.id.captured_video);
-        full_sized_video = (VideoView) findViewById(R.id.full_sized_video);
-        expand_video_button = (ImageButton) findViewById(R.id.expand_video_button);
-        shrink_video_button = (ImageButton) findViewById(R.id.shrink_video_button);
-        captured_video_background = (ImageView) findViewById(R.id.captured_video_background);
-        full_screen_video_background = (ImageView) findViewById(R.id.full_screen_video_background);
+        captured_video = (VideoView) findViewById(R.id.review_video_story_captured_video);
+        full_sized_video = (VideoView) findViewById(R.id.review_video_story_full_sized_video);
+        expand_video_button = (ImageButton) findViewById(R.id.review_video_story_expand_video_button);
+        shrink_video_button = (ImageButton) findViewById(R.id.review_video_story_shrink_video_button);
+        captured_video_background = (ImageView) findViewById(R.id.review_video_story_captured_video_background);
+        full_screen_video_background = (ImageView) findViewById(R.id.review_video_story_full_screen_video_background);
         mediaController = new MediaController(this);
         fullScreenMediaController = new MediaController(this);
 
         story_directory_uri = FileProvider.getUriForFile(this,
                 "com.example.android.fileprovider",
                 videoFile);
-    }
 
-    public void ShowFullSizedVideo() {
-
-        if(!is_fullscreen_video_on) {
-
-            captured_video.suspend();
-            captured_video.setVisibility(View.INVISIBLE);
-            expand_video_button.setVisibility(View.INVISIBLE);
-            shrink_video_button.setVisibility(View.VISIBLE);
-            full_screen_video_background.setVisibility(View.VISIBLE);
-            full_sized_video.setVisibility(View.VISIBLE);
-            full_sized_video.setVideoURI(story_directory_uri);
-            fullScreenMediaController.setAnchorView(full_sized_video);
-            full_sized_video.setMediaController(fullScreenMediaController);
-            full_sized_video.start();
-        }
-
-        else {
-            full_sized_video.setVisibility(View.INVISIBLE);
-            full_screen_video_background.setVisibility(View.INVISIBLE);
-            shrink_video_button.setVisibility(View.INVISIBLE);
-            expand_video_button.setVisibility(View.VISIBLE);
-            captured_video.setVisibility(View.VISIBLE);
-            captured_video.resume();
-            captured_video.start();
-        }
-
+        ShowVideo();
     }
 
     public void ShowVideo() {
 
         captured_video.setVisibility(View.VISIBLE);
         captured_video_background.setVisibility(View.VISIBLE);
-        expand_video_button.setVisibility(View.VISIBLE);
-
         captured_video.setVideoURI(story_directory_uri);
         mediaController.setAnchorView(captured_video);
         captured_video.setMediaController(mediaController);
         captured_video.start();
 
-    }
-
-    public void FullSizedVideo(View view) {
-
-        ShowFullSizedVideo();
     }
 }

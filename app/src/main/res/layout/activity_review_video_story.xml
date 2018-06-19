@@ -6,25 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.stucollyn.nfc_play.ReviewVideoStory">
 
-    <TextView
-        android:id="@+id/review_video_story_instruction"
-        android:layout_width="0dp"
-        android:layout_height="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="Use the buttons to playback your story."
-        android:textSize="24dp"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review_video_story_captured_video_background"
-        app:layout_constraintVertical_bias="0.0" />
-
     <ImageView
         android:id="@+id/review_video_story_captured_video_background"
         android:layout_width="0dp"
@@ -41,7 +22,7 @@
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review_video_story_instruction"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <VideoView
@@ -59,7 +40,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/review_video_story_instruction"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
@@ -72,7 +53,7 @@
         android:src="@drawable/fullscreeen_icon"
         android:background="@drawable/circle_button_ok"
         android:onClick="FullSizedVideo"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,7 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/review_video_story_instruction" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <ImageButton

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -41,7 +42,6 @@ public class ReviewPictureStory extends AppCompatActivity {
         pictureFile = (File)getIntent().getExtras().get("PictureFile");
         setContentView(R.layout.activity_review_picture_story);
 
-        record_instruction = findViewById(R.id.activity_review_picture_record_instruction);
         captured_image = findViewById(R.id.activity_review_picture_captured_image);
         story_directory_uri = FileProvider.getUriForFile(this,
                 "com.example.android.fileprovider",
@@ -50,7 +50,7 @@ public class ReviewPictureStory extends AppCompatActivity {
         ShowPicture();
     }
 
-    public void ShowPicture() {
+    void ShowPicture() {
 
         ExifInterface exif = null;
         try {
@@ -68,12 +68,12 @@ public class ReviewPictureStory extends AppCompatActivity {
         BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 200, photoH / 200);
+        int smallSizeScaleFactor = Math.min(photoW / 500, photoH / 500);
 
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = smallSizeScaleFactor;
+        //bmOptions.inSampleSize = smallSizeScaleFactor;
         bmOptions.inPurgeable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
         Matrix matrix = new Matrix();
