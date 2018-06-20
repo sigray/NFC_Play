@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -50,11 +51,12 @@ public class NFCRead extends AppCompatActivity implements Serializable {
     String takeAction="", playerType="", owner="", theMessage ="", colour="", id="", type="", retheMessage = "", reowner = "", reid = "",
             recolour = "", retype = "", retakeAction = "", speakInstruction;
     boolean commit = false, errorOccurred = false, posession = false, readMode = false, caught = false;
-    FragmentTransaction ft;
     ReadTagFragment readTagFragment;
     ShowTagContentFragment showTagContentFragment;
     ListView storyList;
     File[] filesOnTag;
+    FragmentTransaction ft;
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -77,7 +79,6 @@ public class NFCRead extends AppCompatActivity implements Serializable {
 
         readTagFragment = new ReadTagFragment();
         showTagContentFragment = new ShowTagContentFragment();
-
         //Open first fragment in the fragment array list
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, readTagFragment);
@@ -147,24 +148,31 @@ public class NFCRead extends AppCompatActivity implements Serializable {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            }
+            Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
+        }
 
 
         try {
             if (mytag == null) {
 
                 takeAction = "Do Nothing";
+                Toast.makeText(this, "Tag Null", Toast.LENGTH_LONG ).show();
             }
 
             else {
+//                if(filesOnTag.length>0) {
+//
+//                    filesOnTag = null;
+//                }
                 read(mytag);
-
-                Log.i("fileOnTag: ", filesOnTag.toString());
+                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
 
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("filesOnTag", filesOnTag);
                 showTagContentFragment.setArguments(bundle);
                 ft = getSupportFragmentManager().beginTransaction();
+                ft.detach(showTagContentFragment);
+                ft.attach(showTagContentFragment);
                 ft.replace(R.id.fragment_frame, showTagContentFragment);
                 ft.commit();
             }

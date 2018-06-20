@@ -1,7 +1,9 @@
 package com.example.stucollyn.nfc_play;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +62,21 @@ public class ReviewWrittenStory extends AppCompatActivity {
             written_text_story.setText((CharSequence) text);
 
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

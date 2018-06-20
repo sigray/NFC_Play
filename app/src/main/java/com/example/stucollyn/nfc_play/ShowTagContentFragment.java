@@ -5,6 +5,7 @@ import android.app.ListFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.Image;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -47,7 +48,7 @@ public class ShowTagContentFragment extends Fragment {
 
 
     FragmentActivity listener;
-    ImageView nfc_transmit;
+    ImageView nfc_transmit, nfc_tag_icon;
     ListView listView;
     Button pauseNplay;
     Animation nfc_transmit_animation;
@@ -117,8 +118,14 @@ public class ShowTagContentFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         filesOnTag = (File[]) bundle.getSerializable("filesOnTag");
-        linearLayout = (LinearLayout) view.findViewById(R.id.show_content_fragment);
+        linearLayout = (LinearLayout) view.findViewById(R.id.show_content_fragment_list);
+        nfc_tag_icon = (ImageView) view.findViewById(R.id.nfc_tag_icon);
+        nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
         listCreator(filesOnTag);
+//        nfc_tag_icon.setVisibility(View.VISIBLE);
+//        nfc_transmit.setVisibility(View.VISIBLE);
+        nfc_transmit_animation = AnimationUtils.loadAnimation(this.listener, R.anim.flash);
+        nfc_transmit.startAnimation(nfc_transmit_animation);
     }
 
     void listCreator(File[] files) {

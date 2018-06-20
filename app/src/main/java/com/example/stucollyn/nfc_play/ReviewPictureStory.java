@@ -1,5 +1,6 @@
 package com.example.stucollyn.nfc_play;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -73,7 +75,7 @@ public class ReviewPictureStory extends AppCompatActivity {
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
-        //bmOptions.inSampleSize = smallSizeScaleFactor;
+        bmOptions.inSampleSize = smallSizeScaleFactor;
         bmOptions.inPurgeable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
         Matrix matrix = new Matrix();
@@ -103,5 +105,21 @@ public class ReviewPictureStory extends AppCompatActivity {
             return 270;
         }
         return 0;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

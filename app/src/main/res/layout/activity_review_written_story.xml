@@ -18,7 +18,7 @@
         android:background="#fff6d6"
         android:gravity="start"
         android:textAlignment="viewStart"
-        android:textSize="28dp"
+        android:textSize="28sp"
         android:hardwareAccelerated="false"
         android:inputType="textMultiLine"
         android:largeHeap="true"

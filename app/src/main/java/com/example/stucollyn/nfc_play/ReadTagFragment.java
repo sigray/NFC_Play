@@ -68,7 +68,6 @@ public class ReadTagFragment extends Fragment {
         Log.d("d", "Check");
         nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
         nfc_transmit_animation = AnimationUtils.loadAnimation(this.listener, R.anim.flash);
-        int visi = nfc_transmit.getVisibility();
         nfc_transmit.startAnimation(nfc_transmit_animation);
 
     }

@@ -105,7 +105,8 @@
         <activity android:name=".ReviewAudioStory" />
         <activity android:name=".ReviewVideoStory" />
         <activity android:name=".ReviewWrittenStory" />
-        <activity android:name=".ReviewPictureStory"></activity>
+        <activity android:name=".ReviewPictureStory" />
+        <activity android:name=".StoryGallery"></activity>
     </application>
 
 </manifest>
