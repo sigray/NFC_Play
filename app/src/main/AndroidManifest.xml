@@ -101,7 +101,6 @@
         <activity android:name=".SaveStoryToNFC" />
         <activity android:name=".SaveSelector" />
         <activity android:name=".SavedStoryConfirmation" />
-        <activity android:name=".LocalLibrary" />
         <activity android:name=".ReviewAudioStory" />
         <activity android:name=".ReviewVideoStory" />
         <activity android:name=".ReviewWrittenStory" />

@@ -132,7 +132,6 @@ public class NFCRead extends AppCompatActivity implements Serializable {
 
 //        String path = packageName.toString()+"/files";
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
-//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/20180615_190621";
         File directory = new File(path);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++)

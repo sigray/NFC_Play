@@ -99,6 +99,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:text="Story Library"
+        android:onClick="StoryLibrary"
         android:src="@drawable/library"
         android:translationZ="0dp"
         android:visibility="visible"

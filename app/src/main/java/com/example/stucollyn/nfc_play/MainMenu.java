@@ -147,6 +147,12 @@ public class MainMenu extends AppCompatActivity {
 
     }
 
+    public void StoryLibrary(View view) {
+        Intent intent = new Intent(MainMenu.this, StoryGallery.class);
+        MainMenu.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
     //When action bar back button pressed, implement onBackPressed method
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
