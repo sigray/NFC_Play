@@ -1,14 +1,15 @@
 package com.example.stucollyn.nfc_play;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+
+import java.io.File;
 
 /**
  * Created by StuCollyn on 07/06/2018.
@@ -18,12 +19,17 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     ImageButton[] imageButtons;
     int numberOfThumbs = 0;
+    boolean imageButtonSelected = false;
+    Activity storyGallery;
+    File[] filesOnTag;
 
-    public ImageAdapter(Context c, int numberOfThumbs) {
+    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, File[] filesOnTag) {
 
+        this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
         imageButtons = new ImageButton[numberOfThumbs];
+        this.filesOnTag = filesOnTag;
         Log.d("Directory", "Number of Files:" + String.valueOf(numberOfThumbs));
     }
 
@@ -44,7 +50,7 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         Log.d("Directory", "Creating Thumbnail: " + String.valueOf(position));
         convertView = new ImageButton(mContext);
@@ -52,14 +58,24 @@ public class ImageAdapter extends BaseAdapter {
         imageButtons[position] = cv;
         //imageButtons[position].setLayoutParams(new ViewGroup.LayoutParams(85, 85));
         imageButtons[position].setScaleType(ImageButton.ScaleType.FIT_CENTER);
-        imageButtons[position].setPadding(8, 8, 8, 8);
+        imageButtons[position].setPadding(8, 0, 8, 0);
         imageButtons[position].setImageResource(R.drawable.nfc_tag);
-        imageButtons[position].setLayoutParams(new ViewGroup.LayoutParams(180, 180));
+
+//        TextDrawable textDrawable = new TextDrawable("Test Text");
+//        textDrawable.draw();
+
+        imageButtons[position].setLayoutParams(new ViewGroup.LayoutParams(170, 170));
         imageButtons[position].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Button btn = (Button)v;
-//                    btn.setText(position + "");
+
+                    //ThumbnailSelected();
+                    Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("StoryDetails", filesOnTag[position]);
+                    intent.putExtra("filesOnTag", filesOnTag);
+                    storyGallery.getApplicationContext().startActivity(intent);
+                    storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
                 }
             });
 
@@ -68,6 +84,16 @@ public class ImageAdapter extends BaseAdapter {
 
 //        imageButton.setImageResource(mThumbIds[position]);
         return convertView;
+    }
+
+    void ThumbnailSelected() {
+
+        imageButtonSelected = true;
+    }
+
+    boolean checkButtonSelection() {
+
+        return  imageButtonSelected;
     }
 
     // references to our images

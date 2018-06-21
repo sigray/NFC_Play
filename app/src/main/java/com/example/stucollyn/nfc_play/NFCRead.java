@@ -68,7 +68,6 @@ public class NFCRead extends AppCompatActivity implements Serializable {
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setTitle("Play Tagged Story");
-
         InitFragments();
         NFCSetup();
 

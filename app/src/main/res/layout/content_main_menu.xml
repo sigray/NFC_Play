@@ -100,7 +100,7 @@
         android:layout_marginStart="16dp"
         android:text="Story Library"
         android:onClick="StoryLibrary"
-        android:src="@drawable/library"
+        android:src="@drawable/gallery_grid_alt"
         android:translationZ="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
