@@ -3,6 +3,7 @@ package com.example.stucollyn.nfc_play;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
@@ -54,6 +55,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     private StringBuilder text = new StringBuilder();
     String tag_data = "";
     File fileDirectory;
+    Canvas galleryThumb;
 
 
     @Override
@@ -371,6 +373,12 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
 
     public void Confirm (View view) {
+
+        Bitmap  bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+        galleryThumb = new Canvas(bitmap);
+        TextDrawable textDrawable = new TextDrawable("test");
+        textDrawable.draw(galleryThumb);
+        textDrawable.saveBitmap(bitmap);
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
         intent.putExtra("TagData", tag_data);

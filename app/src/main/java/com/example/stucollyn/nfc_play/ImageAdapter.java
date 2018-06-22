@@ -30,7 +30,6 @@ public class ImageAdapter extends BaseAdapter {
         this.numberOfThumbs = numberOfThumbs;
         imageButtons = new ImageButton[numberOfThumbs];
         this.filesOnTag = filesOnTag;
-        Log.d("Directory", "Number of Files:" + String.valueOf(numberOfThumbs));
     }
 
     @Override

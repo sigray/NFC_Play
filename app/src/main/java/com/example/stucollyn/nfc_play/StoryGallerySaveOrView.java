@@ -53,8 +53,12 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
 //        Intent intent = new Intent(StoryGallerySaveOrView.this, SavedStoryConfirmation.class);
 //        StoryGallerySaveOrView.this.startActivity(intent);
 //        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+
+
+//        Log.i("Files on tag UID: ", filesOnTag.toString());
         Bundle bundle = new Bundle();
         bundle.putSerializable("filesOnTag", filesOnTag);
+        showTagContentFragment.setArguments(bundle);
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame, showTagContentFragment);
         ft.commit();
