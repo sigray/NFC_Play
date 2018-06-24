@@ -3,6 +3,7 @@ package com.example.stucollyn.nfc_play;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,13 +33,37 @@ public class StoryGallery extends AppCompatActivity {
         File directory = new File(path);
         File[] files = directory.listFiles();
 
+        int colourCounter = 0;
+        int currentColour = Color.parseColor("#756bc7");;
+        int[] colourCode = new int[files.length];
+
+
         for (int i = 0; i < files.length; i++) {
-            Log.d("Directory", "FileName:" + files[i].getName());
+
+            if(colourCounter==0) {
+
+                currentColour = Color.parseColor("#756bc7");
+            }
+
+            if(colourCounter==1) {
+
+                currentColour = Color.parseColor("#ffb491");
+            }
+
+            if(colourCounter>1) {
+
+                currentColour = Color.parseColor("#54b8a9");
+                colourCounter = 0;
+            }
+
+            colourCode[i] = currentColour;
+            colourCounter++;
+
         }
 
         int numberOfThumbs = files.length;
         GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(this, this, numberOfThumbs, files));
+        gridview.setAdapter(new ImageAdapter(this, this, numberOfThumbs, files, colourCode));
     }
 
 

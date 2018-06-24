@@ -14,6 +14,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Random;
 
 /**
  * Created by StuCollyn on 20/06/2018.
@@ -25,13 +26,19 @@ public class TextDrawable extends Drawable {
     private final Paint paint;
     private final Paint paint2;
     Canvas canvas;
+    int[] colourCode;
+    Random random;
+
 
     public TextDrawable(String text) {
+
+        random = new Random();
+//        int[] colourCode = {Color.parseColor("#756bc7"), Color.parseColor("#ffb491"),  Color.parseColor("#54b8a9")};
 
         this.text = text;
 
         this.paint = new Paint();
-        paint.setColor(Color.WHITE);
+        paint.setColor(random.nextInt(2));
         paint.setTextSize(22f);
         paint.setAntiAlias(true);
         paint.setFakeBoldText(true);
@@ -61,8 +68,8 @@ public class TextDrawable extends Drawable {
         Log.d("HODY", "HODY");
         this.canvas = canvas;
         //canvas.drawText(text, 200, 200, paint);
-        canvas.drawCircle(50, 50, 100, paint);
-        canvas.drawText(text, 50, 50, paint2);
+//        canvas.drawCircle(100, 100, 100, paint);
+        canvas.drawText(text, 100, 100, paint2);
 
 
     }

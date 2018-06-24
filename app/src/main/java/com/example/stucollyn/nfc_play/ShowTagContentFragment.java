@@ -126,6 +126,8 @@ public class ShowTagContentFragment extends Fragment {
 //        nfc_transmit.setVisibility(View.VISIBLE);
         nfc_transmit_animation = AnimationUtils.loadAnimation(this.listener, R.anim.flash);
         nfc_transmit.startAnimation(nfc_transmit_animation);
+
+        Log.i("Files Oan Tag: ", filesOnTag.toString());
     }
 
     void listCreator(File[] files) {

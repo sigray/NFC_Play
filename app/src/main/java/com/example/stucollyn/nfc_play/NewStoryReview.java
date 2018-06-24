@@ -374,11 +374,11 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void Confirm (View view) {
 
-        Bitmap  bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
-        galleryThumb = new Canvas(bitmap);
-        TextDrawable textDrawable = new TextDrawable("test");
-        textDrawable.draw(galleryThumb);
-        textDrawable.saveBitmap(bitmap);
+//        Bitmap  bitmap = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+//        galleryThumb = new Canvas(bitmap);
+//        TextDrawable textDrawable = new TextDrawable("test");
+//        textDrawable.draw(galleryThumb);
+//        textDrawable.saveBitmap(bitmap);
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
         intent.putExtra("TagData", tag_data);
