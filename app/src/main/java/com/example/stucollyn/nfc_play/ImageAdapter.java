@@ -164,9 +164,6 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
-
-
-
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -185,7 +182,6 @@ public class ImageAdapter extends BaseAdapter {
 
             TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
             imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
-//            ImageView imageBackground = (ImageView)grid.findViewById(R.id.grid_item_image);
             imageCaption.setText(filesOnTag[position].getName());
             imageButtons[position].setBackgroundColor(currentColour);
 
@@ -217,32 +213,6 @@ public class ImageAdapter extends BaseAdapter {
 
             }
 
-
-/*
-
-            Log.i("Help: file on Tag 1", filesOnTag[position].getName());
-
-
-            Log.i("Help: file on Tag 2", files.toString());
-
-            File file = GetPicture(files);
-
-
-            if(file!= null) {
-
-                Log.i("Help: file on Tag 1", file.getName());
-                Bitmap coverConv = ShowPicture(file);
-                imageButtons[position].setImageBitmap(coverConv);
-                imageButtons[position].setBackgroundColor(currentColour);
-
-            }
-
-            else {
-                Log.i("Help: no file but", filesOnTag[position].getName());
-                imageButtons[position].setBackgroundColor(currentColour);
-            }
-
-            */
         }
 
         else {
@@ -251,74 +221,8 @@ public class ImageAdapter extends BaseAdapter {
             grid = (View) convertView;
         }
 
-
         return grid;
     }
-
-
-
-/*
-
-
-
-        Log.d("Directory", "Creating Thumbnail: " + String.valueOf(position));
-
-
-        convertView = new TextView(mContext);
-        TextView cv = (TextView) convertView;
-        imageButtons[position] = cv;
-        imageButtons[position].setBackgroundColor(Color.parseColor("#756bc7"));
-        imageButtons[position].setMinimumHeight(400);
-        imageButtons[position].setText(filesOnTag[position].getName());
-        imageButtons[position].setTextSize(30);
-        imageButtons[position].setGravity(Gravity.CENTER);
-        //imageButtons[position].setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        //imageButtons[position].setScaleType(TextView.ScaleType.FIT_CENTER);
-        //imageButtons[position].setImageResource(R.drawable.nfc_tag);
-        //imageButtons[position].setPadding(8, 8, 8, 8);
-        //imageButtons[position].setLayoutParams(new ViewGroup.LayoutParams(85, 85));
-        //TextDrawable textDrawable = new TextDrawable("Test Text");
-        //textDrawable.draw();
-
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+filesOnTag[position].getName();
-        File directory = new File(path);
-        File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++) {
-
-            String extension = FilenameUtils.getExtension(filesOnTag[position].toString());
-            String fileName = files[i].toString();
-            ImageToDrawable imageToDrawable = new ImageToDrawable(files[i]);
-
-            if (extension.equalsIgnoreCase("jpg")) {
-
-            imageButtons[position].setBackground(imageToDrawable.getPicture());
-
-            }
-        }
-
-
-        imageButtons[position].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    //ThumbnailSelected();
-                    Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("StoryDetails", filesOnTag[position]);
-                    intent.putExtra("filesOnTag", filesOnTag);
-                    storyGallery.getApplicationContext().startActivity(intent);
-                    storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-                }
-            });
-
-
-//        imageButton.setImageResource(mThumbIds[position]);
-        return convertView;
-
-
-    }
-*/
-
 
     void ThumbnailSelected() {
 

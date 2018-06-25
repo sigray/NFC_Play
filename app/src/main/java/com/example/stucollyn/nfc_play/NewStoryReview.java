@@ -10,6 +10,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     String tag_data = "";
     File fileDirectory;
     Canvas galleryThumb;
+    ConstraintLayout cl1, cl2;
 
 
     @Override
@@ -73,6 +75,9 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         pictureStoryFragment = new PictureStoryFragment();
         videoStoryFragment = new VideoStoryFragment();
         writtenStoryFragment = new WrittenStoryFragment();
+
+        cl1 = findViewById(R.id.cl1);
+        cl2 = findViewById(R.id.cl2);
 
         recorded_audio_cover = findViewById(R.id.audio_media_review_cover);
         recorded_picture_cover = findViewById(R.id.picture_media_review_cover);
@@ -100,21 +105,25 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
         if(selectedMedia.containsKey("Audio")) {
 
+            cl1.setVisibility(View.VISIBLE);
             recorded_audio_cover.setVisibility(View.VISIBLE);
         }
 
         if(selectedMedia.containsKey("Picture")) {
 
+            cl1.setVisibility(View.VISIBLE);
             recorded_picture_cover.setVisibility(View.VISIBLE);
         }
 
         if(selectedMedia.containsKey("Video")) {
 
+            cl2.setVisibility(View.VISIBLE);
             recorded_video_cover.setVisibility(View.VISIBLE);
         }
 
         if(selectedMedia.containsKey("Written")) {
 
+            cl2.setVisibility(View.VISIBLE);
             recorded_writing_cover.setVisibility(View.VISIBLE);
         }
 

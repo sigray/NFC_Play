@@ -6,6 +6,29 @@
     android:layout_height="match_parent"
     tools:context="com.example.stucollyn.nfc_play.NewStoryReview">
 
+    <TextView
+        android:id="@+id/instruction_review"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:text="Review your story."
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/cl2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instruction_review">
+
         <ImageView
             android:id="@+id/audio_media_review"
             android:layout_width="0dp"
@@ -15,11 +38,12 @@
             android:onClick="AudioReview"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
-            app:layout_constraintRight_toLeftOf="@+id/picture_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
-            app:layout_constraintTop_toBottomOf="@id/instruction_review"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/picture_media_review_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
 
         <ImageButton
             android:id="@+id/audio_media_review_cover"
@@ -30,10 +54,10 @@
             android:src="@drawable/audio_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
-            app:layout_constraintRight_toLeftOf="@+id/picture_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
-            app:layout_constraintTop_toBottomOf="@id/instruction_review"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/picture_media_review_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
@@ -46,11 +70,12 @@
             android:translationZ="0dp"
             android:visibility="gone"
             android:background="#c9c9c9"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
-            app:layout_constraintLeft_toRightOf="@+id/audio_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@id/instruction_review"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/audio_media_review_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1.0" />
+
 
         <ImageButton
             android:id="@+id/picture_media_review_cover"
@@ -61,32 +86,23 @@
             android:src="@drawable/camera_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineHalf"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
-            app:layout_constraintLeft_toRightOf="@+id/audio_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@id/instruction_review"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/audio_media_review_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guidelineHalf"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.42" />
+    </android.support.constraint.ConstraintLayout>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guidelineVertLeft"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.05" />
-
-        <android.support.constraint.Guideline
-            android:id="@+id/guidelineVertRight"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.95" />
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/confirm_review"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl1">
 
         <ImageView
             android:id="@+id/video_media_review_background"
@@ -96,10 +112,10 @@
             android:translationZ="0dp"
             android:background="#fff6d6"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
-            app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/written_media_review_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <VideoView
@@ -112,25 +128,26 @@
             android:onClick="VideoReview"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
-            app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/written_media_review_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
 
         <ImageButton
             android:id="@+id/video_media_review_cover"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:onClick="VideoReview"
             android:src="@drawable/video_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
-            app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
-            app:layout_constraintStart_toStartOf="@+id/guidelineVertLeft"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/written_media_review_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
@@ -145,59 +162,53 @@
             android:textSize="20dp"
             android:textColor="#000"
             android:background="#fff6d6"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
-            app:layout_constraintLeft_toRightOf="@+id/video_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/video_media_review_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
 
         <ImageButton
             android:id="@+id/written_media_review_cover"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
             android:onClick="WrittenReview"
             android:src="@drawable/written_media"
             android:translationZ="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/confirm_review"
-            app:layout_constraintEnd_toEndOf="@+id/guidelineVertRight"
-            app:layout_constraintLeft_toRightOf="@+id/video_media_review_cover"
-            app:layout_constraintTop_toBottomOf="@+id/guidelineHalf"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/instruction_review"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:text="Review your story."
-            android:textSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/confirm_review"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/circle_button_ok"
-            android:onClick="Confirm"
-            android:textColor="#000"
-            android:textSize="20dp"
-            android:src="@drawable/tick"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/discard_review"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.952" />
+            app:layout_constraintStart_toEndOf="@+id/video_media_review_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+
+    <ImageButton
+        android:id="@+id/confirm_review"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/circle_button_ok"
+        android:onClick="Confirm"
+        android:textColor="#000"
+        android:textSize="20dp"
+        android:src="@drawable/tick"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/discard_review"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.952" />
 
     <ImageButton
         android:id="@+id/discard_review"
@@ -220,3 +231,4 @@
         app:layout_constraintVertical_bias="0.952" />
 
 </android.support.constraint.ConstraintLayout>
+
