@@ -19,23 +19,14 @@
         android:contentDescription="@string/app_name"
         />
 
-    <ImageView
-        android:id="@+id/grid_item_image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/app_name"
-        />
-
     <TextView
         android:id="@+id/grid_item_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/grid_item_image"
-        android:layout_alignEnd="@id/grid_item_image"
-        android:layout_alignStart="@id/grid_item_image"
-        android:layout_alignTop="@id/grid_item_image"
+        android:layout_alignBottom="@id/grid_item_background"
+        android:layout_alignLeft="@id/grid_item_background"
+        android:layout_alignRight="@id/grid_item_background"
+        android:layout_alignTop="@id/grid_item_background"
         android:layout_margin="1dp"
         android:background="#55000000"
         android:gravity="center"

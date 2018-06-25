@@ -43,21 +43,22 @@ public class StoryGallery extends AppCompatActivity {
             if(colourCounter==0) {
 
                 currentColour = Color.parseColor("#756bc7");
+                colourCounter++;
             }
 
-            if(colourCounter==1) {
+            else if(colourCounter==1) {
 
                 currentColour = Color.parseColor("#ffb491");
+                colourCounter++;
             }
 
-            if(colourCounter>1) {
+            else if (colourCounter>1) {
 
                 currentColour = Color.parseColor("#54b8a9");
                 colourCounter = 0;
             }
 
             colourCode[i] = currentColour;
-            colourCounter++;
 
         }
 
