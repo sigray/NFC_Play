@@ -1,20 +1,14 @@
 package com.example.stucollyn.nfc_play;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.support.v4.app.Fragment;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /*StoryMediaChooser Activity allows user to select the type of media they wish to include in their
 new story*/

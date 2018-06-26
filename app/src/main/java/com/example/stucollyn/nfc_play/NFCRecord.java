@@ -2,26 +2,18 @@ package com.example.stucollyn.nfc_play;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
+import android.os.AsyncTask;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
@@ -31,12 +23,8 @@ import android.view.View;
 import android.widget.Toast;
 
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,8 +42,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
             permissionToRecordAccepted = false, isFullSizedVideo = false;
     int fragmentArrayPosition = 0, rotationInDegrees;
-    String testData="Lies", audioPath, photoPath, videoPath, writtenPath;
-    HashMap<String,String> recordedMediaHashMap = new HashMap<String,String>();
+    String testData = "Lies", audioPath, photoPath, videoPath, writtenPath;
+    HashMap<String, String> recordedMediaHashMap = new HashMap<String, String>();
     Bitmap adjustedFullSizedBitmap, adjustedBitmap;
 
     //Media Recorder Variables
@@ -78,7 +66,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int CAMERA_REQUEST = 1888;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
 
     //File Save Variables
     private static String audioFileName = null, pictureFileName = null, videoFileName = null;
@@ -96,17 +84,18 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     WrittenRecorder writtenRecorder;
 
     View v;
+    View button;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_RECORD_AUDIO_PERMISSION:
-                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if (!permissionToRecordAccepted ) finish();
+        if (!permissionToRecordAccepted) finish();
 
     }
 
@@ -123,10 +112,10 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         /*Receive array list of selected media types from StoryMediaChooser Activity and copy this
         list to a selectedMedia array list in this Activity*/
-        selectedMedia = (ArrayList<String>)getIntent().getSerializableExtra("Fragments");
+        selectedMedia = (ArrayList<String>) getIntent().getSerializableExtra("Fragments");
         InitFragments();
         SetupStoryLocation();
-        }
+    }
 
 
     //Setup new storage folder
@@ -134,12 +123,12 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         String packageLocation = ("/Stories");
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String newDirectory = packageLocation+"/"+timeStamp;
+        String newDirectory = packageLocation + "/" + timeStamp;
         tag_data = timeStamp;
         story_directory = getExternalFilesDir(newDirectory);
-       // story_directory_uri = FileProvider.getUriForFile(this,
-         //       "com.example.android.fileprovider",
-           //     story_directory);
+        // story_directory_uri = FileProvider.getUriForFile(this,
+        //       "com.example.android.fileprovider",
+        //     story_directory);
         story_directory_path = story_directory.getAbsolutePath();
     }
 
@@ -170,7 +159,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         /*Create and populate hash map, linking strings of possible media types with a corresponding
         fragment*/
-        HashMap<String,Fragment> mediaFragmentLookup = new HashMap<String,Fragment>();
+        HashMap<String, Fragment> mediaFragmentLookup = new HashMap<String, Fragment>();
         mediaFragmentLookup.put("Audio", audio_story_fragment);
         mediaFragmentLookup.put("Picture", picture_story_fragment);
         mediaFragmentLookup.put("Video", video_story_fragment);
@@ -179,7 +168,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         /*Iterate through the array list of the user's selected media (e.g. String [Audio, Picture,
         Video, Written]). For every selected media entry, look up the corresponding fragment in the
         hash map. Add this fragment to an array list of fragments to be used in this current story.*/
-        for(int i=0; i<selectedMedia.size(); i++) {
+        for (int i = 0; i < selectedMedia.size(); i++) {
 
             fragmentNameArray.add(mediaFragmentLookup.get(selectedMedia.get(i)));
         }
@@ -193,12 +182,13 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     //When red audio record button is pressed, activate audio recording sequence
     public void AudioRecordButton(View view) {
 
-        // ((TextView) audio_story_fragment.getView().findViewById(R.id.record_instruction)).setText("Start speaking. Press the button again to finish.");
-        // audio_story_fragment = (AudioStoryFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_frame);
-        recordingStatus = !recordingStatus;
-        audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, view);
-        onRecord(recordingStatus, view);
-        audioFileName = audioRecorder.getAudioFileName();
+//        recordingStatus = !recordingStatus;
+//        audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, view);
+//        onRecord(recordingStatus, view);
+//        audioFileName = audioRecorder.getAudioFileName();
+
+        new ProcessAudio().execute(view);
+
     }
 
     /*When audio recording is started, try to startRecording(). When audio recording is stopped,
@@ -207,8 +197,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         if (start) {
 
             try {
-               audioRecorder = new AudioRecorder(this, story_directory);
-               audioRecorder.startRecording();
+                audioRecorder = new AudioRecorder(this, story_directory);
+                audioRecorder.startRecording();
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
@@ -311,9 +301,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
                     pictureRecorder.dispatchTakePictureIntent();
                 }
             }, 500);
-        }
-
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
 
@@ -324,23 +312,19 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.i("Request Code:", String.valueOf(requestCode));
-        Log.i("Result Code:", String.valueOf(resultCode));
-        Log.i("Data:", String.valueOf(data));
-
         //Picture Processing
-        if(requestCode==100) {
-           if (resultCode == RESULT_OK) {
+        if (requestCode == 100) {
+            if (resultCode == RESULT_OK) {
 
-               pictureRecorder.PictureProcessing();
-               photoPath = pictureRecorder.getPhotoPath();
-               photoUri = pictureRecorder.getPhotoURI();
-               picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
-               picture_story_fragment.ShowPicture(pictureRecorder.getAdjustedBitmap());
+                pictureRecorder.PictureProcessing();
+                photoPath = pictureRecorder.getPhotoPath();
+                photoUri = pictureRecorder.getPhotoURI();
+                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
+                picture_story_fragment.ShowPicture(pictureRecorder.getAdjustedBitmap());
             }
         }
 
-        if(requestCode==200) {
+        if (requestCode == 200) {
             if (resultCode == RESULT_OK) {
 
                 videoRecorder.VideoProcessing();
@@ -358,8 +342,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         Intent openFullSize = new Intent(Intent.ACTION_VIEW);
         openFullSize.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         //Uri photoURI = FileProvider.getUriForFile(this,
-            //  "com.example.android.fileprovider",
-             //   file);
+        //  "com.example.android.fileprovider",
+        //   file);
         openFullSize.setDataAndType(photoUri, "image/");
         openFullSize.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         this.startActivity(openFullSize);
@@ -399,9 +383,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
                     videoRecorder.dispatchTakeVideoIntent();
                 }
             }, 1000);
-        }
-
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
 
         }
 
@@ -449,13 +431,10 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     public void CompleteWrittenStory(View view) {
 
         try {
-            Log.i("Written text 1: ", written_story_fragment.getTextContent().toString());
             writtenRecorder = new WrittenRecorder(written_story_fragment, this, this, story_directory);
             writtenRecorder.createWrittenFile();
             writtenPath = writtenRecorder.getWrittenFilePath();
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
 
         }
 
@@ -468,21 +447,18 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         if (fragmentArrayPosition < fragmentNameArray.size() - 1) {
 
             fragmentArrayPosition++;
-            Log.i("New Frag", fragmentNameArray.get(fragmentArrayPosition).toString());
             ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_frame, fragmentNameArray.get(fragmentArrayPosition));
             ft.commit();
-        }
+        } else {
 
-        else {
-
-            Log.i("HashMap in NFCRecord", recordedMediaHashMap.toString());
             Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);
             intent.putExtra("RecordedMedia", recordedMediaHashMap);
             intent.putExtra("StoryDirectory", story_directory);
             intent.putExtra("TagData", tag_data);
             NFCRecord.this.startActivity(intent);
             overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            finish();
         }
     }
 
@@ -508,26 +484,31 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
         return super.onOptionsItemSelected(item);
     }
-}
 
-/*
-    public class ProcessPicture extends AsyncTask<Void, Void, Void>
-    {
+    class ProcessAudio extends AsyncTask<View, Void, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(View... params) {
 
-
+            button = params[0];
 
             try {
+                recordingStatus = !recordingStatus;
 
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
+                runOnUiThread(new Runnable() {
 
-            catch (NullPointerException e) {
+                    @Override
+                    public void run() {
 
-            }
+                        audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, button);
+                        onRecord(recordingStatus, button);
+                    }
+                });
 
-            catch (IllegalArgumentException e) {
+
+                audioFileName = audioRecorder.getAudioFileName();
+            } catch (NullPointerException e) {
+
+            } catch (IllegalArgumentException e) {
 
             }
 
@@ -539,8 +520,10 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
         }
     }
+
 }
-*/
+
+
 
 // catch (NullPointerException e) {
 //

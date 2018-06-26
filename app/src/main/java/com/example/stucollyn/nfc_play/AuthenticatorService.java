@@ -1,10 +1,5 @@
 package com.example.stucollyn.nfc_play;
 
-import android.content.Intent;
-import android.os.IBinder;
-
-import java.net.Authenticator;
-
 /*
 
 public class AuthenticatorService extends Service {

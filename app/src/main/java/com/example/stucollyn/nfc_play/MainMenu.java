@@ -1,19 +1,12 @@
 package com.example.stucollyn.nfc_play;
 
+import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -22,9 +15,6 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import java.io.IOException;
-import java.net.URI;
-
 //The MainMenu Activity is the app home page, where all functionality can be found and selected
 public class MainMenu extends AppCompatActivity {
 
@@ -32,8 +22,9 @@ public class MainMenu extends AppCompatActivity {
     ImageView miine_mini;
     VideoView top_half__video;
     Button cloud_archive;
-    ImageButton miine_library, play_story, record_story;
+    ImageButton miine_library, play_story, record_story, trove_logo_button;
     FrameLayout top_holder;
+    Context context;
 
 
     //onCreate is called when Activity begins
@@ -43,9 +34,6 @@ public class MainMenu extends AppCompatActivity {
         setContentView(R.layout.activity_main_menu);
         ActionBarSetup();
         initView();
-        initMediaController();
-
-
     }
 
     //Setup action bar
@@ -74,6 +62,7 @@ public class MainMenu extends AppCompatActivity {
         top_half__video = (VideoView) findViewById(R.id.main_menu_video);
         top_holder = (FrameLayout) findViewById(R.id.top_half_holder);
         welcome = (TextView) findViewById(R.id.welcome);
+        trove_logo_button = (ImageButton) findViewById(R.id.main_menu_video_button);
 
         // cloud_archive.setVisibility(View.VISIBLE);
         miine_library.setVisibility(View.VISIBLE);
@@ -84,28 +73,6 @@ public class MainMenu extends AppCompatActivity {
         top_holder.setVisibility(View.VISIBLE);
     }
 
-    //Initialize media controller and begin default video
-    private void initMediaController() {
-
-        /*Try to create media controller, load and play the listed URI. If this doesn't exist catch
-        the null pointer exception
-         */
-        try {
-            MediaController mediaController = new MediaController(this);
-            mediaController.setAnchorView(top_half__video);
-            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.trove_video);
-            Log.i("Resrouce", uri.toString());
-            mediaController.setAnchorView(top_half__video);
-            top_half__video.setMediaController(mediaController);
-            top_half__video.setVideoURI(uri);
-            top_half__video.start();
-        }
-
-        catch (NullPointerException e) {
-
-        }
-    }
-
     //Logout and return to the Login Screen
     @Override
     public void onBackPressed() {
@@ -113,6 +80,12 @@ public class MainMenu extends AppCompatActivity {
         Intent intent = new Intent(MainMenu.this, LoginScreen.class);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    public void StartVideo(View view) {
+
+        initMediaController();
+        trove_logo_button.setVisibility(View.INVISIBLE);
     }
 
     //Open cloud archive Activity - to be completed
@@ -162,6 +135,51 @@ public class MainMenu extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //Initialize media controller and begin default video
+    private void initMediaController() {
+
+        /*Try to create media controller, load and play the listed URI. If this doesn't exist catch
+        the null pointer exception
+         */
+        try {
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(top_half__video);
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.trove_video);
+            mediaController.setAnchorView(top_half__video);
+            top_half__video.setMediaController(mediaController);
+            top_half__video.setVideoURI(uri);
+            top_half__video.start();
+        }
+
+        catch (NullPointerException e) {
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        // Do what you want.
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();  // Always call the superclass method first
+        // Do what you want.
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        // Do what you want.
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();  // Always call the superclass method first
+        // Do what you want.
     }
 
 }

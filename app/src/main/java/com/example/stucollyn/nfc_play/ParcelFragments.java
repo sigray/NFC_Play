@@ -1,8 +1,6 @@
 package com.example.stucollyn.nfc_play;
 
 import android.app.Fragment;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,19 +1,13 @@
 package com.example.stucollyn.nfc_play;
 
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import java.io.File;
 
@@ -39,6 +33,9 @@ public class StoryGallery extends AppCompatActivity {
 
 
         for (int i = 0; i < files.length; i++) {
+
+            Log.i("Files in Folder: ", files[i].getName());
+
 
             if(colourCounter==0) {
 
@@ -74,6 +71,7 @@ public class StoryGallery extends AppCompatActivity {
         Intent intent = new Intent(StoryGallery.this, MainMenu.class);
         StoryGallery.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        finish();
     }
 
     @Override

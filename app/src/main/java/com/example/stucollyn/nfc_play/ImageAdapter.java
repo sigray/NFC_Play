@@ -5,21 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apache.commons.io.FilenameUtils;
@@ -52,10 +45,6 @@ public class ImageAdapter extends BaseAdapter {
         this.colourCode = colourCode;
 
     }
-
-
-
-
 
     @Override
     public int getCount() {
@@ -206,7 +195,6 @@ public class ImageAdapter extends BaseAdapter {
 
             if(file!= null) {
 
-                Log.i("Help: file on Tag 1", file.getName());
                 Bitmap coverConv = ShowPicture(file);
                 imageButtons[position].setImageBitmap(coverConv);
                 imageButtons[position].setBackgroundColor(currentColour);
@@ -217,7 +205,6 @@ public class ImageAdapter extends BaseAdapter {
 
         else {
 
-            Log.i("Help: no file but", filesOnTag[position].getName());
             grid = (View) convertView;
         }
 
