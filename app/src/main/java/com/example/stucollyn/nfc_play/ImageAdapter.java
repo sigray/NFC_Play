@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by StuCollyn on 07/06/2018.
@@ -31,10 +35,12 @@ public class ImageAdapter extends BaseAdapter {
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
     Activity storyGallery;
-    File[] filesOnTag;
+    ArrayList<File> filesOnTag;
     int[] colourCode;
+    HashMap<File, Bitmap> imageMap;
+    HashMap<File, File> folderToImageRef;
 
-    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, File[] filesOnTag, int[] colourCode) {
+    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -43,7 +49,25 @@ public class ImageAdapter extends BaseAdapter {
         imageDesc = new TextView[numberOfThumbs];
         this.filesOnTag = filesOnTag;
         this.colourCode = colourCode;
+        this.imageMap = imageMap;
+        this.folderToImageRef = folderToImageRef;
 
+        for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
+            File key = entry.getKey();
+            File value = entry.getValue();
+
+            Log.i("Folders with images: ", "Key: " + key + ", Value: " + value);
+        }
+
+        for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
+            File key = entry.getKey();
+            Bitmap value = entry.getValue();
+
+            Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + value);
+        }
+
+//        Log.i("Folder to image ref: ", folderToImageRef.toString());
+//        Log.i("Image map: ", imageMap.toString());
     }
 
     @Override
@@ -65,7 +89,7 @@ public class ImageAdapter extends BaseAdapter {
 
     File[] FilesForThumbnail(int position) {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+filesOnTag[position].getName();
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+filesOnTag.get(position).getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
@@ -86,12 +110,6 @@ public class ImageAdapter extends BaseAdapter {
 
             String extension = FilenameUtils.getExtension(files[i].toString());
             String fileName = files[i].toString();
-
-            if (extension.equalsIgnoreCase("jpg")) {
-
-                file = files[i];
-            }
-
         }
 
         return file;
@@ -116,7 +134,7 @@ public class ImageAdapter extends BaseAdapter {
         BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 500, photoH / 500);
+        int smallSizeScaleFactor = Math.min(photoW / 800, photoH / 800);
 
 
         // Decode the image file into a Bitmap sized to fill the View
@@ -171,10 +189,61 @@ public class ImageAdapter extends BaseAdapter {
 
             TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
             imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
-            imageCaption.setText(filesOnTag[position].getName());
+            imageCaption.setText(filesOnTag.get(position).getName());
             imageButtons[position].setBackgroundColor(currentColour);
 
-            imageButtons[position].setOnClickListener(new View.OnClickListener() {
+
+            if(!imageMap.isEmpty()) {
+
+            Log.i("Test", "big poo");
+            File value = folderToImageRef.get(filesOnTag.get(position));
+
+            Log.i("Test bitty", filesOnTag.get(position).toString());
+
+            for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
+                File key = entry.getKey();
+                File values = entry.getValue();
+
+                Log.i("Folders with images: ", "Key: " + key + ", Value: " + values);
+
+            }
+
+                for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
+                    File key = entry.getKey();
+                    Bitmap values = entry.getValue();
+
+                    Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
+
+                }
+//            Log.i("Test bitty list", folderToImageRef.toString());
+
+
+                Bitmap bitmap = imageMap.get(filesOnTag.get(position));
+
+//            Log.i("Test bitty", bitmap.toString());
+
+                imageButtons[position].setImageBitmap(bitmap);
+            }
+/*
+            if(!imageMap.isEmpty()) {
+                if (folderToImageRef.containsKey(filesOnTag[position])) {
+
+                    File value = folderToImageRef.get(filesOnTag[position]);
+
+                    Log.i("value File: ", value.getName());
+
+                    Bitmap bitmap = imageMap.get(value);
+
+                    Log.i("value File: ", bitmap.toString());
+                    //imageButtons[position].setImageBitmap(bitmap);
+
+                }
+            }
+
+           */
+
+
+          /*  imageButtons[position].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -190,16 +259,21 @@ public class ImageAdapter extends BaseAdapter {
                 }
             });
 
-            File[] files = FilesForThumbnail(position);
-            File file = GetPicture(files);
+            */
 
-            if(file!= null) {
 
-                Bitmap coverConv = ShowPicture(file);
-                imageButtons[position].setImageBitmap(coverConv);
-                imageButtons[position].setBackgroundColor(currentColour);
-
-            }
+//            File[] files = FilesForThumbnail(position);
+//            File file = GetPicture(files);
+//
+//
+//
+//            if(file!= null) {
+//
+//                Bitmap coverConv = ShowPicture(file);
+//                imageButtons[position].setImageBitmap(coverConv);
+//                imageButtons[position].setBackgroundColor(currentColour);
+//
+//            }
 
         }
 
