@@ -1,5 +1,6 @@
 package com.example.stucollyn.nfc_play;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +10,9 @@ import android.media.ExifInterface;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +26,8 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -191,6 +196,31 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void PictureReview(View view) {
 
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+
+        File pictureFile = null;
+
+        for(int i = 0; i<files.length; i++) {
+
+            String extension = FilenameUtils.getExtension(files[i].toString());
+            String fileName = files[i].toString();
+
+            if (extension.equalsIgnoreCase("jpg")) {
+
+                pictureFile = files[i];
+            }
+
+        }
+
+
+        Intent intent = new Intent(NewStoryReview.this, ReviewPictureStory.class);
+        intent.putExtra("PictureFile", pictureFile);
+        NewStoryReview.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+
+        /*
         if(!picturePlaying) {
 
             recorded_picture_cover.setVisibility(View.INVISIBLE);
@@ -204,6 +234,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         }
 
         picturePlaying = !picturePlaying;
+        */
 
     }
 
@@ -273,21 +304,23 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void VideoReview(View view) {
 
-        if(!videoPlaying) {
+//        new DisplayFiles.execute(File file, String mediaType);
 
-            recorded_video_cover.setVisibility(View.INVISIBLE);
-            recorded_video.setVisibility(View.VISIBLE);
-            recorded_video_background.setVisibility(View.VISIBLE);
-            VideoProcessing();
-        }
-
-        else {
-
-            //recorded_video_cover.setVisibility(View.VISIBLE);
-            recorded_video.pause();
-        }
-
-        videoPlaying = !videoPlaying;
+//        if(!videoPlaying) {
+//
+//            recorded_video_cover.setVisibility(View.INVISIBLE);
+//            recorded_video.setVisibility(View.VISIBLE);
+//            recorded_video_background.setVisibility(View.VISIBLE);
+//            VideoProcessing();
+//        }
+//
+//        else {
+//
+//            //recorded_video_cover.setVisibility(View.VISIBLE);
+//            recorded_video.pause();
+//        }
+//
+//        videoPlaying = !videoPlaying;
 
     }
 
@@ -428,5 +461,86 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    class DisplayFiles extends AsyncTask<Void, Void, Void> {
+
+        File fileToSend;
+        String fileType;
+        Class activityToOpen;
+
+        DisplayFiles(File file, String mediaType) {
+
+            fileToSend = file;
+            fileType = mediaType;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+//            button = params[0];
+
+            try {
+
+                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+                File directory = new File(path);
+                File[] files = directory.listFiles();
+
+
+                for(int i = 0; i<files.length; i++) {
+
+                    String extension = FilenameUtils.getExtension(files[i].toString());
+                    String fileName = files[i].toString();
+
+                    if (extension.equalsIgnoreCase("jpg")) {
+
+                        fileToSend = files[i];
+                        fileType = "PictureFile";
+                        activityToOpen = ReviewPictureStory.class;
+                    }
+
+                    if (extension.equalsIgnoreCase("mp3")) {
+
+                        fileToSend = files[i];
+                        fileType = "AudioFile";
+                        activityToOpen = ReviewAudioStory.class;
+                    }
+
+                    if (extension.equalsIgnoreCase("mp4")) {
+
+                        fileToSend = files[i];
+                        fileType = "VideoFile";
+                        activityToOpen = ReviewVideoStory.class;
+                    }
+
+                    if (extension.equalsIgnoreCase("txt")) {
+
+                        fileToSend = files[i];
+                        fileType = "WrittenFile";
+                        activityToOpen = ReviewWrittenStory.class;
+                    }
+
+                }
+
+
+
+            } catch (NullPointerException e) {
+
+            } catch (IllegalArgumentException e) {
+
+            }
+
+            return null;
+
+        }
+
+        protected void onPostExecute(Void result) {
+
+            Intent intent = new Intent(NewStoryReview.this, activityToOpen);
+            intent.putExtra(fileType, fileToSend);
+            NewStoryReview.this.startActivity(intent);
+            overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        }
+        }
     }
 }

@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,8 +29,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /* The NewStoryRecord Activity is the main class for dealing with recording of different media.
 * It takes in the types of media defined in StoryMediaChooser and lets the user record stories
@@ -122,8 +125,32 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     private void SetupStoryLocation() {
 
         String packageLocation = ("/Stories");
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String timeStamp = new SimpleDateFormat("EEE, MMM d, ''yy, HH:mm:ss").format(new Date());
+        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH).format(new Date());
+
+
+//        Calendar currentTime = Calendar.getInstance();
+//        int day = currentTime.get(Calendar.DAY_OF_MONTH);
+//        int date = currentTime.get(Calendar.DATE);
+//        int month = currentTime.get(Calendar.MONTH) + 1; // Note: zero based!
+//        int year = currentTime.get(Calendar.YEAR);
+//        int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+//        int minute = currentTime.get(Calendar.MINUTE);
+//
+//        String timeStamp = String.valueOf(day+ "," + date + "," + month+ "," + year + ","
+//                + hour+ ":"+ minute);
+
+        Log.i("time stamp: ", timeStamp);
+
+
         String newDirectory = packageLocation + "/" + timeStamp;
+
+//        String dayOfTheWeek = (String) DateFormat.format("EEEE", timeStamp); // Thursday
+//        String day          = (String) DateFormat.format("dd",   timeStamp); // 20
+//        String monthString  = (String) DateFormat.format("MMM",  timeStamp); // Jun
+//        String monthNumber  = (String) DateFormat.format("MM",   timeStamp); // 06
+//        String year         = (String) DateFormat.format("yyyy", timeStamp); // 2013
+
         tag_data = timeStamp;
         story_directory = getExternalFilesDir(newDirectory);
         // story_directory_uri = FileProvider.getUriForFile(this,
@@ -316,21 +343,14 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
 
-                pictureRecorder.PictureProcessing();
-                photoPath = pictureRecorder.getPhotoPath();
-                photoUri = pictureRecorder.getPhotoURI();
-                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
-                picture_story_fragment.ShowPicture(pictureRecorder.getAdjustedBitmap());
+                new ProcessPicture().execute();
             }
         }
 
         if (requestCode == 200) {
             if (resultCode == RESULT_OK) {
 
-                videoRecorder.VideoProcessing();
-                videoPath = videoRecorder.getVideoPath();
-                videoURI = videoRecorder.getVideoURI();
-                video_story_fragment.ShowVideo(videoURI);
+               new ProcessVideo().execute();
 
             }
         }
@@ -521,6 +541,71 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
     }
 
+    class ProcessPicture extends AsyncTask<View, Void, Void> {
+
+        Bitmap processedBitmap;
+
+        @Override
+        protected Void doInBackground(View... params) {
+
+//            button = params[0];
+
+            try {
+
+                pictureRecorder.PictureProcessing();
+                photoPath = pictureRecorder.getPhotoPath();
+                photoUri = pictureRecorder.getPhotoURI();
+                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
+                processedBitmap = pictureRecorder.getAdjustedBitmap();
+
+            } catch (NullPointerException e) {
+
+            } catch (IllegalArgumentException e) {
+
+            }
+
+            return null;
+
+        }
+
+        protected void onPostExecute(Void result) {
+
+            picture_story_fragment.ShowPicture(processedBitmap);
+
+        }
+    }
+
+    class ProcessVideo extends AsyncTask<View, Void, Void> {
+
+        Bitmap processedBitmap;
+
+        @Override
+        protected Void doInBackground(View... params) {
+
+//            button = params[0];
+
+            try {
+
+                videoRecorder.VideoProcessing();
+                videoPath = videoRecorder.getVideoPath();
+                videoURI = videoRecorder.getVideoURI();
+
+            } catch (NullPointerException e) {
+
+            } catch (IllegalArgumentException e) {
+
+            }
+
+            return null;
+
+        }
+
+        protected void onPostExecute(Void result) {
+
+            video_story_fragment.ShowVideo(videoURI);
+
+        }
+    }
 }
 
 

@@ -243,7 +243,7 @@ public class ImageAdapter extends BaseAdapter {
            */
 
 
-          /*  imageButtons[position].setOnClickListener(new View.OnClickListener() {
+           imageButtons[position].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -252,14 +252,14 @@ public class ImageAdapter extends BaseAdapter {
                     //ThumbnailSelected();
                     Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("StoryDetails", filesOnTag[position]);
+                    intent.putExtra("StoryDetails", filesOnTag.get(position));
                     intent.putExtra("filesOnTag", files);
                     storyGallery.getApplicationContext().startActivity(intent);
                     storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
                 }
             });
 
-            */
+
 
 
 //            File[] files = FilesForThumbnail(position);

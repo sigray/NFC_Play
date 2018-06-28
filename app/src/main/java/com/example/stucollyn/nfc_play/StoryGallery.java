@@ -102,7 +102,7 @@ public class StoryGallery extends AppCompatActivity {
 
         new LoadImages().execute();
         numberOfThumbs = files.length;
-      //  gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
+        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
     }
 
     public void setupLists(File[] files) {
