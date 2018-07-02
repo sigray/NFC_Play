@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -73,6 +74,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         setContentView(R.layout.activity_new_story_review);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 
         selectedMedia = new HashMap<String, String>();
         audioStoryFragment = new AudioStoryFragment();

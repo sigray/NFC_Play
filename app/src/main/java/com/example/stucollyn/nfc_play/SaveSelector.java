@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.io.File;
 
@@ -20,6 +21,7 @@ public class SaveSelector extends AppCompatActivity {
         setContentView(R.layout.activity_save_selector);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);

@@ -221,5 +221,4 @@ public class NFCRead extends AppCompatActivity implements Serializable {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

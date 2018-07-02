@@ -11,6 +11,9 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +38,8 @@ public class SaveStoryToNFC extends AppCompatActivity {
    // File fileDirectory;
     String tag_data = "";
     int mode;
+    Animation nfc_transmit_animation;
+    ImageView nfc_transmit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,9 @@ public class SaveStoryToNFC extends AppCompatActivity {
         tag_data = (String)getIntent().getExtras().get("TagData");
 
        // Log.i("FD: ", fileDirectory.toString());
+        nfc_transmit = findViewById(R.id.nfc_transmit);
+        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
+        nfc_transmit.startAnimation(nfc_transmit_animation);
 
         adapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);

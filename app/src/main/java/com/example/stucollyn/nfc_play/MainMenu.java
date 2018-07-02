@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -41,6 +42,7 @@ public class MainMenu extends AppCompatActivity {
     void ActivityInit() {
 
         setContentView(R.layout.activity_main_menu);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
         ActionBarSetup();

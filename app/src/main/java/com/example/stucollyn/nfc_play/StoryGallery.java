@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.GridView;
 
 import org.apache.commons.io.FilenameUtils;
@@ -55,6 +56,7 @@ public class StoryGallery extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Story Library");
         setContentView(R.layout.activity_story_gallery);

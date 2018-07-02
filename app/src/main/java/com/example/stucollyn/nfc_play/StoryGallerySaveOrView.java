@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
 import java.io.File;
 import java.io.Serializable;
@@ -31,6 +32,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Story Library");
         fileOnTag = (File)getIntent().getExtras().get("StoryDetails");

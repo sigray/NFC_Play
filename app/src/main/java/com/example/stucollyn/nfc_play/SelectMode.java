@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 public class SelectMode extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class SelectMode extends AppCompatActivity {
         mode = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         Intent intent = new Intent(SelectMode.this, SplashScreen.class);
         intent.putExtra("Orientation", mode);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         SelectMode.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

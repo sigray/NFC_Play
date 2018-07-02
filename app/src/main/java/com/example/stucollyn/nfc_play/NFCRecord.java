@@ -23,6 +23,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 
@@ -117,6 +118,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
         v = getLayoutInflater().inflate(R.layout.activity_record, null);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         ActionBarSetup();
 
         //Request permission to record audio (required for some newer Android devices)

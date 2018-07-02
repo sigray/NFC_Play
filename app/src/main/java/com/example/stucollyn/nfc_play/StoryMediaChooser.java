@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class StoryMediaChooser extends AppCompatActivity {
         setContentView(R.layout.activity_story_media_chooser);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         ActionBarSetup();
         InitView();
 

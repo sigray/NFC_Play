@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class ReviewAudioStory extends AppCompatActivity {
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getSupportActionBar().setTitle("Play Audio Story");
         audioFile = (File)getIntent().getExtras().get("AudioFile");
         setContentView(R.layout.activity_review_audio_story);
