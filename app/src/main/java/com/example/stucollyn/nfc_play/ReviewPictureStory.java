@@ -23,6 +23,7 @@ public class ReviewPictureStory extends AppCompatActivity {
     Uri story_directory_uri;
     Bitmap adjustedFullSizedBitmap, adjustedBitmap;
     int rotationInDegrees;
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,8 @@ public class ReviewPictureStory extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Show Picture Story");
         pictureFile = (File)getIntent().getExtras().get("PictureFile");
         setContentView(R.layout.activity_review_picture_story);

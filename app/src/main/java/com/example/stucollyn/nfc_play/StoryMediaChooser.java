@@ -30,6 +30,7 @@ public class StoryMediaChooser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_media_chooser);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         ActionBarSetup();
         InitView();
 

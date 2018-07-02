@@ -115,6 +115,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     void ActivityInit() {
         setContentView(R.layout.activity_record);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         v = getLayoutInflater().inflate(R.layout.activity_record, null);
         ActionBarSetup();
 

@@ -58,6 +58,7 @@ public class NFCRead extends AppCompatActivity implements Serializable {
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Play Tagged Story");
         InitFragments();
         NFCSetup();
@@ -157,6 +158,7 @@ public class NFCRead extends AppCompatActivity implements Serializable {
                 Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
 
                 Bundle bundle = new Bundle();
+                bundle.putInt("Orientation", mode);
                 bundle.putSerializable("filesOnTag", filesOnTag);
                 showTagContentFragment.setArguments(bundle);
                 ft = getSupportFragmentManager().beginTransaction();

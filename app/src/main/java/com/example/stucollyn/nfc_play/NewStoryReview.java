@@ -72,6 +72,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
         setContentView(R.layout.activity_new_story_review);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
 
         selectedMedia = new HashMap<String, String>();
         audioStoryFragment = new AudioStoryFragment();

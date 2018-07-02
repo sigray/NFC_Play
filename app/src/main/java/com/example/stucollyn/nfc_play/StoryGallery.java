@@ -55,6 +55,7 @@ public class StoryGallery extends AppCompatActivity {
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Story Library");
         setContentView(R.layout.activity_story_gallery);
         gridview = (GridView) findViewById(R.id.gridview);
@@ -104,7 +105,7 @@ public class StoryGallery extends AppCompatActivity {
 
         new LoadImages().execute();
         numberOfThumbs = files.length;
-        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
+        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
     }
 
     public void setupLists(File[] files) {
@@ -289,7 +290,7 @@ public class StoryGallery extends AppCompatActivity {
         protected void onPostExecute(Void result) {
 
             gridview.invalidateViews();
-            gridview.setAdapter(imageAdapter = new ImageAdapter(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
+            gridview.setAdapter(imageAdapter = new ImageAdapter(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
 
 //            for (Map.Entry<File,Bitmap> entry : imageFiles.entrySet()) {
 //            File key = entry.getKey();

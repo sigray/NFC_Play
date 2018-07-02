@@ -31,6 +31,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Story Library");
         fileOnTag = (File)getIntent().getExtras().get("StoryDetails");
         filesOnTag = (File[]) getIntent().getExtras().getSerializable("filesOnTag");

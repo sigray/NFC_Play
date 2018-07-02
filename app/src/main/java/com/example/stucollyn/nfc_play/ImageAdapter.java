@@ -39,8 +39,9 @@ public class ImageAdapter extends BaseAdapter {
     int[] colourCode;
     HashMap<File, Bitmap> imageMap;
     HashMap<File, File> folderToImageRef;
+    int mode;
 
-    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap) {
+    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap, int mode) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -51,6 +52,7 @@ public class ImageAdapter extends BaseAdapter {
         this.colourCode = colourCode;
         this.imageMap = imageMap;
         this.folderToImageRef = folderToImageRef;
+        this.mode = mode;
 
         for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
             File key = entry.getKey();
@@ -252,6 +254,7 @@ public class ImageAdapter extends BaseAdapter {
                     //ThumbnailSelected();
                     Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("Orientation", mode);
                     intent.putExtra("StoryDetails", filesOnTag.get(position));
                     intent.putExtra("filesOnTag", files);
                     storyGallery.getApplicationContext().startActivity(intent);

@@ -21,6 +21,7 @@ public class ReviewAudioStory extends AppCompatActivity {
     private MediaPlayer mPlayer = null;
     boolean mPlayerSetup = false, playbackStatus = false;
     File audioFile;
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,8 @@ public class ReviewAudioStory extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Play Audio Story");
         audioFile = (File)getIntent().getExtras().get("AudioFile");
         setContentView(R.layout.activity_review_audio_story);

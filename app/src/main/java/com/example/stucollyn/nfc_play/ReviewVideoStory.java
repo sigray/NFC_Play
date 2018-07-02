@@ -24,6 +24,7 @@ public class ReviewVideoStory extends AppCompatActivity {
     boolean is_fullscreen_video_on = false;
     File videoFile;
     Uri story_directory_uri;
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,8 @@ public class ReviewVideoStory extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Play Video Story");
         videoFile = (File)getIntent().getExtras().get("VideoFile");
         setContentView(R.layout.activity_review_video_story);

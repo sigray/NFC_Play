@@ -16,6 +16,7 @@ public class ReviewWrittenStory extends AppCompatActivity {
     File writtenFile;
     private StringBuilder text = new StringBuilder();
     TextView written_text_story;
+    int mode;
 
 
     @Override
@@ -25,6 +26,8 @@ public class ReviewWrittenStory extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         getSupportActionBar().setTitle("Play Video Story");
         writtenFile = (File)getIntent().getExtras().get("WrittenFile");
         setContentView(R.layout.activity_review_written_story);

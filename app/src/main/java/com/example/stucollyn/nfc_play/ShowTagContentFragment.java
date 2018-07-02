@@ -56,6 +56,7 @@ public class ShowTagContentFragment extends Fragment {
     HashMap<ImageButton, File> buttonToFileMap = new HashMap<ImageButton, File>();
     HashMap<ImageButton, String> buttonStringHashMap = new HashMap<ImageButton, String>();
     String callActivityName;
+    int mode;
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -108,6 +109,7 @@ public class ShowTagContentFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         filesOnTag = (File[]) bundle.getSerializable("filesOnTag");
+        mode = (Integer) bundle.getInt("Orientation");
         linearLayout = (LinearLayout) view.findViewById(R.id.show_content_fragment_list);
         nfc_tag_icon = (ImageView) view.findViewById(R.id.nfc_tag_icon);
         nfc_transmit = (ImageView) view.findViewById(R.id.nfc_transmit);
@@ -173,24 +175,28 @@ public class ShowTagContentFragment extends Fragment {
 
                     if(buttonStringHashMap.get(v).equals("ReviewAudioStory")) {
                         intent = new Intent(getActivity(), ReviewAudioStory.class);
+                        intent.putExtra("Orientation", mode);
                         intent.putExtra("AudioFile", buttonToFileMap.get(v));
                         getActivity().startActivity(intent);
                     }
 
                     else if(buttonStringHashMap.get(v).equals("ReviewVideoStory")) {
                         intent = new Intent(getActivity(), ReviewVideoStory.class);
+                        intent.putExtra("Orientation", mode);
                         intent.putExtra("VideoFile", buttonToFileMap.get(v));
                         getActivity().startActivity(intent);
                     }
 
                     else if(buttonStringHashMap.get(v).equals("ReviewPictureStory")) {
                         intent = new Intent(getActivity(), ReviewPictureStory.class);
+                        intent.putExtra("Orientation", mode);
                         intent.putExtra("PictureFile", buttonToFileMap.get(v));
                         getActivity().startActivity(intent);
                     }
 
                     else if(buttonStringHashMap.get(v).equals("ReviewWrittenStory")) {
                         intent = new Intent(getActivity(), ReviewWrittenStory.class);
+                        intent.putExtra("Orientation", mode);
                         intent.putExtra("WrittenFile", buttonToFileMap.get(v));
                         getActivity().startActivity(intent);
                     }
