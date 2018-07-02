@@ -21,6 +21,12 @@
             android:verticalSpacing="5dp"
             />
 
+        <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

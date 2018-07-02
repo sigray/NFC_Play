@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -47,6 +48,7 @@ public class StoryGallery extends AppCompatActivity {
     Context context;
     Activity activity;
     int mode;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,9 @@ public class StoryGallery extends AppCompatActivity {
         gridview = (GridView) findViewById(R.id.gridview);
         context = this;
         activity = this;
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
         File directory = new File(path);
@@ -133,6 +138,8 @@ public class StoryGallery extends AppCompatActivity {
 
 //            Log.i("Reached 3: File: Sub", key.getName() + ": " + value.toString());
 
+            int loadNum = 0;
+
             for(File element : value){
 
                 String extension = FilenameUtils.getExtension(element.toString());
@@ -141,6 +148,9 @@ public class StoryGallery extends AppCompatActivity {
                 if (extension.equalsIgnoreCase("jpg")) {
 
                    folderImages.put(key, element);
+                    loadNum++;
+                    int progressUpdate = (loadNum*100)/value.size();
+                    progressBar.setProgress(progressUpdate);
 
                    Bitmap test = ShowPicture(element);
 //                   Log.i("Test element", test.toString());
@@ -291,6 +301,7 @@ public class StoryGallery extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
 
+            progressBar.setVisibility(View.INVISIBLE);
             gridview.invalidateViews();
             gridview.setAdapter(imageAdapter = new ImageAdapter(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
 
