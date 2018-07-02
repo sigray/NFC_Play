@@ -119,8 +119,8 @@ public class PictureStoryFragment extends Fragment {
     public void setPictureBoxDimensions(int rotation) {
 
         if(rotation==90||rotation==-90) {
-            captured_image.getLayoutParams().height = 450;
-            captured_image.getLayoutParams().width = 350;
+            captured_image.getLayoutParams().height = 550;
+            captured_image.getLayoutParams().width = 450;
         }
 
         else {

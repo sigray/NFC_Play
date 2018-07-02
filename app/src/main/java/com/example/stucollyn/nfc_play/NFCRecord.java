@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
@@ -88,6 +90,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     View v;
     View button;
+    int mode;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -106,7 +109,12 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       ActivityInit();
+    }
+
+    void ActivityInit() {
         setContentView(R.layout.activity_record);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         v = getLayoutInflater().inflate(R.layout.activity_record, null);
         ActionBarSetup();
 
@@ -209,13 +217,12 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     //When red audio record button is pressed, activate audio recording sequence
     public void AudioRecordButton(View view) {
 
-//        recordingStatus = !recordingStatus;
-//        audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, view);
-//        onRecord(recordingStatus, view);
-//        audioFileName = audioRecorder.getAudioFileName();
+//        new ProcessAudio().execute(view);
 
-        new ProcessAudio().execute(view);
-
+            recordingStatus = !recordingStatus;
+            audio_story_fragment.AudioRecordButtonSwitch(recordingStatus, button);
+            onRecord(recordingStatus, button);
+            audioFileName = audioRecorder.getAudioFileName();
     }
 
     /*When audio recording is started, try to startRecording(). When audio recording is stopped,
@@ -257,9 +264,15 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 
     //Setup new audio media player drawing from audio file location
     protected void setupAudioMediaPlayer() {
+        Log.i("audio file", audioFileName);
+
+        Uri audioFileUri = FileProvider.getUriForFile(this,
+                "com.example.android.fileprovider",
+                audioRecorder.getAudioFile());
+
         mPlayer = new MediaPlayer();
         try {
-            mPlayer.setDataSource(audioFileName);
+            mPlayer.setDataSource(this, audioFileUri);
             mPlayer.prepare();
             mPlayerSetup = true;
         } catch (IOException e) {
@@ -473,6 +486,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         } else {
 
             Intent intent = new Intent(NFCRecord.this, NewStoryReview.class);
+            intent.putExtra("Orientation", mode);
             intent.putExtra("RecordedMedia", recordedMediaHashMap);
             intent.putExtra("StoryDirectory", story_directory);
             intent.putExtra("TagData", tag_data);
@@ -491,6 +505,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     public void onBackPressed() {
 
         Intent intent = new Intent(NFCRecord.this, StoryMediaChooser.class);
+        intent.putExtra("Orientation", mode);
         NFCRecord.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -504,6 +519,12 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
         return super.onOptionsItemSelected(item);
     }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        ActivityInit();
+//    }
 
     class ProcessAudio extends AsyncTask<View, Void, Void> {
         @Override

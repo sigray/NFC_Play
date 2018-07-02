@@ -45,6 +45,7 @@ public class StoryGallery extends AppCompatActivity {
     int numberOfThumbs;
     Context context;
     Activity activity;
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class StoryGallery extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         getSupportActionBar().setTitle("Story Library");
         setContentView(R.layout.activity_story_gallery);
         gridview = (GridView) findViewById(R.id.gridview);
@@ -247,6 +249,7 @@ public class StoryGallery extends AppCompatActivity {
     public void onBackPressed() {
 
         Intent intent = new Intent(StoryGallery.this, MainMenu.class);
+        intent.putExtra("Orientation", mode);
         StoryGallery.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         finish();

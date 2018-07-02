@@ -51,8 +51,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     TextView recorded_writing;
     boolean audioPlaying = false, picturePlaying = false, videoPlaying = false,
             writtenPlaying = false, playbackStatus = false, mPlayerSetup = false;
-    private MediaPlayer mPlayer = null;
-    MediaController mediaController;
     int rotationInDegrees;
     Bitmap adjustedBitmap;
     private StringBuilder text = new StringBuilder();
@@ -60,6 +58,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     File fileDirectory;
     Canvas galleryThumb;
     ConstraintLayout cl1, cl2;
+    int mode;
 
 
     @Override
@@ -72,6 +71,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         getSupportActionBar().setTitle("Create New Story");
 
         setContentView(R.layout.activity_new_story_review);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+
         selectedMedia = new HashMap<String, String>();
         audioStoryFragment = new AudioStoryFragment();
         pictureStoryFragment = new PictureStoryFragment();
@@ -87,15 +88,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         recorded_writing_cover = findViewById(R.id.written_media_review_cover);
         confirmation_button = findViewById(R.id.confirm_media);
         discard_button = findViewById(R.id.discard_review);
-
-        recorded_audio = findViewById(R.id.audio_media_review);
-        recorded_picture = findViewById(R.id.picture_media_review);
-        recorded_video = findViewById(R.id.video_media_review);
-        recorded_writing = findViewById(R.id.written_media_review);
-
-        recorded_video_background = findViewById(R.id.video_media_review_background);
-
-        mediaController = new MediaController(this);
 
         fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
         tag_data = (String)getIntent().getExtras().get("TagData");
@@ -133,7 +125,10 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void AudioReview(View view) {
 
-        if (!mPlayerSetup) {
+        ShowMedia("Audio");
+
+
+      /*  if (!mPlayerSetup) {
             setupAudioMediaPlayer();
         }
 
@@ -153,67 +148,112 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
             audioPlaying = false;
         }
 
+        */
+
     }
 
-    public void setupAudioMediaPlayer() {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(selectedMedia.get("Audio"));
-            mPlayer.prepare();
-            mPlayerSetup = true;
-        } catch (IOException e) {
-            Log.e("Fail", "prepare() failed");
-        }
-    }
+//    public void setupAudioMediaPlayer() {
+//        mPlayer = new MediaPlayer();
+//        try {
+//            mPlayer.setDataSource(selectedMedia.get("Audio"));
+//            mPlayer.prepare();
+//            mPlayerSetup = true;
+//        } catch (IOException e) {
+//            Log.e("Fail", "prepare() failed");
+//        }
+//    }
+//
+//    public void startPlaying() {
+//        mPlayer.start();
+//        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//
+//            @Override
+//            public void onCompletion(MediaPlayer mp) {
+//
+//                stopPlaying();
+//            }
+//
+//        });
+//    }
+//
+//    public void pausePlaying() {
+//
+//        mPlayer.pause();
+//    }
+//
+//    public void stopPlaying() {
+//
+//        if (mPlayer != null) {
+//            mPlayer.release();
+//            mPlayer = null;
+//            mPlayerSetup = false;
+//            playbackStatus = false;
+//        }
+//    }
 
-    public void startPlaying() {
-        mPlayer.start();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-
-                stopPlaying();
-            }
-
-        });
-    }
-
-    public void pausePlaying() {
-
-        mPlayer.pause();
-    }
-
-    public void stopPlaying() {
-
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-            mPlayerSetup = false;
-            playbackStatus = false;
-        }
-    }
-
-    public void PictureReview(View view) {
+    public void ShowMedia(String mediaType) {
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-        File pictureFile = null;
+        File sendFile = null;
 
         for(int i = 0; i<files.length; i++) {
 
             String extension = FilenameUtils.getExtension(files[i].toString());
             String fileName = files[i].toString();
 
-            if (extension.equalsIgnoreCase("jpg")) {
+            if (mediaType.equals("Picture")&&extension.equalsIgnoreCase("jpg")) {
 
-                pictureFile = files[i];
+                sendFile = files[i];
+                Intent intent = new Intent(NewStoryReview.this, ReviewPictureStory.class);
+                intent.putExtra("Orientation", mode);
+                intent.putExtra("PictureFile", sendFile);
+                NewStoryReview.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+
+            else if(mediaType.equals("Audio")&&extension.equalsIgnoreCase("mp3")) {
+
+                sendFile = files[i];
+                Intent intent = new Intent(NewStoryReview.this, ReviewAudioStory.class);
+                intent.putExtra("Orientation", mode);
+                intent.putExtra("AudioFile", sendFile);
+                NewStoryReview.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+
+            else if(mediaType.equals("Video")&&extension.equalsIgnoreCase("mp4")) {
+
+                sendFile = files[i];
+                Intent intent = new Intent(NewStoryReview.this, ReviewVideoStory.class);
+                intent.putExtra("Orientation", mode);
+                intent.putExtra("VideoFile", sendFile);
+                NewStoryReview.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+
+            else if(mediaType.equals("Written")&&extension.equalsIgnoreCase("txt")) {
+
+                sendFile = files[i];
+                Intent intent = new Intent(NewStoryReview.this, ReviewWrittenStory.class);
+                intent.putExtra("Orientation", mode);
+                intent.putExtra("WrittenFile", sendFile);
+                NewStoryReview.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
 
         }
 
+    }
+
+
+    public void PictureReview(View view) {
+
+        ShowMedia("Picture");
+
+        /*
 
         Intent intent = new Intent(NewStoryReview.this, ReviewPictureStory.class);
         intent.putExtra("PictureFile", pictureFile);
@@ -238,7 +278,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     }
 
-
+/*
     public void ShowPicture() {
 
         ExifInterface exif = null;
@@ -295,7 +335,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         return 0;
     }
 
-
+*/
 
 
 
@@ -303,6 +343,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
 
     public void VideoReview(View view) {
+
+        ShowMedia("Video");
 
 //        new DisplayFiles.execute(File file, String mediaType);
 
@@ -324,30 +366,30 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     }
 
-    public void VideoProcessing() {
-
-        MediaMetadataRetriever m = new MediaMetadataRetriever();
-
-        m.setDataSource(selectedMedia.get("Video"));
-        Bitmap thumbnail = m.getFrameAtTime();
+//    public void VideoProcessing() {
 //
-        if (Build.VERSION.SDK_INT >= 17) {
-            String s = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-        }
-
-        File file = new File(selectedMedia.get("Video"));
-        Intent openFullSize = new Intent(Intent.ACTION_VIEW);
-        openFullSize.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri videoURI = FileProvider.getUriForFile(this,
-                "com.example.android.fileprovider",
-                file);
-
-        recorded_video.setVideoURI(videoURI);
-        mediaController.setAnchorView(recorded_video);
-        recorded_video.setMediaController(mediaController);
-        recorded_video.start();
-
-    }
+//        MediaMetadataRetriever m = new MediaMetadataRetriever();
+//
+//        m.setDataSource(selectedMedia.get("Video"));
+//        Bitmap thumbnail = m.getFrameAtTime();
+////
+//        if (Build.VERSION.SDK_INT >= 17) {
+//            String s = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+//        }
+//
+//        File file = new File(selectedMedia.get("Video"));
+//        Intent openFullSize = new Intent(Intent.ACTION_VIEW);
+//        openFullSize.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        Uri videoURI = FileProvider.getUriForFile(this,
+//                "com.example.android.fileprovider",
+//                file);
+//
+//        recorded_video.setVideoURI(videoURI);
+//        mediaController.setAnchorView(recorded_video);
+//        recorded_video.setMediaController(mediaController);
+//        recorded_video.start();
+//
+//    }
 
 
 
@@ -355,6 +397,9 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 
     public void WrittenReview(View view) {
 
+        ShowMedia("Written");
+
+        /*
         if(!writtenPlaying) {
 
             recorded_writing_cover.setVisibility(View.INVISIBLE);
@@ -369,6 +414,8 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         }
 
         //writtenPlaying = !writtenPlaying;
+
+        */
 
     }
 
@@ -420,6 +467,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 //        textDrawable.saveBitmap(bitmap);
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
+        intent.putExtra("Orientation", mode);
         intent.putExtra("TagData", tag_data);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -441,6 +489,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         boolean deletedFile = fileDirectory.delete();
 
         Intent intent = new Intent(NewStoryReview.this, MainMenu.class);
+        intent.putExtra("Orientation", mode);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -449,6 +498,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     public void onBackPressed() {
 
         Intent intent = new Intent(NewStoryReview.this, StoryMediaChooser.class);
+        intent.putExtra("Orientation", mode);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -543,4 +593,3 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         }
         }
     }
-}

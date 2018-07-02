@@ -1,6 +1,7 @@
 package com.example.stucollyn.nfc_play;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
+import android.widget.Toast;
 
 
 /*LoginScreen Activity follows after the SplashScreen introduction and allows existing users to
@@ -32,6 +34,7 @@ public class LoginScreen extends AppCompatActivity {
     StringBuilder passcodeAppend;
     String passcodeAttempt, passcodeTarget;
     int passcodeCounter;
+    int mode;
 
 
     //onCreate method called on Activity start
@@ -39,6 +42,8 @@ public class LoginScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
 
         //Initialize String builder to accept passcode keypad input
         passcodeAppend = new StringBuilder("");
@@ -102,7 +107,6 @@ public class LoginScreen extends AppCompatActivity {
        passCodeBox3 = (TextView) findViewById(R.id.passcode_box_3);
        passCodeBox4 = (TextView) findViewById(R.id.passcode_box_4);
        miine = (ImageView) findViewById(R.id.miine);
-       miine_mini = (ImageView) findViewById(R.id.miine_mini);
        balloon1 = (ImageView) findViewById(R.id.balloon1);
        balloon2 = (ImageView) findViewById(R.id.balloon2);
        balloon3 = (ImageView) findViewById(R.id.balloon3);
@@ -114,8 +118,8 @@ public class LoginScreen extends AppCompatActivity {
     private void FadeInLogin() {
 
         welcome.startAnimation(welcome_fade_in);
-        loginButton.startAnimation(login_fade_in);
-        signupButton.startAnimation(signup_fade_in);
+//        loginButton.startAnimation(login_fade_in);
+//        signupButton.startAnimation(signup_fade_in);
     }
 
     //When login button is pressed execute the following
@@ -123,18 +127,21 @@ public class LoginScreen extends AppCompatActivity {
 
         //Show passcode keypad and instruction; hide login, sign up buttons, and trove logo
         keypad_background.startAnimation(keypad_background_fade_in);
+        welcome.startAnimation(welcome_fade_out);
         keypad.startAnimation(keypad_fade_in);
         miine.startAnimation(miine_fade_out);
-        loginButton.startAnimation(login_fade_out);
-        signupButton.startAnimation(signup_fade_out);
+//        loginButton.startAnimation(login_fade_out);
+//        signupButton.startAnimation(signup_fade_out);
         instruction.startAnimation(instruction_fade_in);
         miine.setVisibility(View.INVISIBLE);
         miine_open.setVisibility(View.INVISIBLE);
-        loginButton.setVisibility(View.INVISIBLE);
-        signupButton.setVisibility(View.INVISIBLE);
+//        loginButton.setVisibility(View.INVISIBLE);
+//        signupButton.setVisibility(View.INVISIBLE);
         keypad.setVisibility(View.VISIBLE);
         keypad_background.setVisibility(View.VISIBLE);
         instruction.setVisibility(View.VISIBLE);
+        welcome.setVisibility(View.INVISIBLE);
+        miine.setClickable(false);
     }
 
     //Balloon animation scheduler
@@ -165,7 +172,7 @@ public class LoginScreen extends AppCompatActivity {
         keypad.startAnimation(keypad_fade_out);
         passCodeBoxTable.startAnimation(passcode_box_fade_out);
         instruction.startAnimation(instruction_fade_out);
-        welcome.startAnimation(welcome_fade_out);
+//        welcome.startAnimation(welcome_fade_out);
         miine.setVisibility(View.VISIBLE);
         instruction.setVisibility(View.INVISIBLE);
         welcome.setVisibility(View.INVISIBLE);
@@ -228,6 +235,7 @@ public class LoginScreen extends AppCompatActivity {
 
                 miine_open.setVisibility(View.INVISIBLE);
                 Intent intent = new Intent(LoginScreen.this, MainMenu.class);
+                intent.putExtra("Orientation", mode);
                 LoginScreen.this.startActivity(intent);
 
                 //Activity fade transition
@@ -351,8 +359,16 @@ public class LoginScreen extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        this.recreate();
-
+        Intent intent = new Intent(LoginScreen.this, SelectMode.class);
+        LoginScreen.this.startActivity(intent);
     }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//            setContentView(R.layout.activity_login_screen);
+//        InitAnimation();
+//        InitView();
+//    }
 
 }

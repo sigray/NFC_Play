@@ -28,6 +28,7 @@ public class AudioRecorder extends Application {
     private static String audioFileName = null;
     File story_directory;
     private Context context;
+    File audioFile;
 
     public AudioRecorder(Context context, File story_directory) {
             this.context=context;
@@ -76,7 +77,7 @@ public class AudioRecorder extends Application {
 
         try {
 
-            File audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
+            audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
             audioFileName = audioFile.getAbsolutePath();
 
         }
@@ -86,6 +87,11 @@ public class AudioRecorder extends Application {
             Log.i("Error", "Audio file creation failed");
         }
 
+    }
+
+    public File getAudioFile() {
+
+        return audioFile;
     }
 
     protected void setupAudioRecorder() {

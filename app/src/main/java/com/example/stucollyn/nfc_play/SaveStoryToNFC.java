@@ -34,11 +34,13 @@ public class SaveStoryToNFC extends AppCompatActivity {
     IntentFilter writeTagFilters[];
    // File fileDirectory;
     String tag_data = "";
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_story_to_nfc);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
@@ -138,6 +140,7 @@ public class SaveStoryToNFC extends AppCompatActivity {
 //            continueButton.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(SaveStoryToNFC.this, SavedStoryConfirmation.class);
+            intent.putExtra("Orientation", mode);
             SaveStoryToNFC.this.startActivity(intent);
             overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         }

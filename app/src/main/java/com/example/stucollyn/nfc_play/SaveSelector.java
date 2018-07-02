@@ -3,6 +3,7 @@ package com.example.stucollyn.nfc_play;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import java.io.File;
@@ -11,11 +12,13 @@ public class SaveSelector extends AppCompatActivity {
 
     File fileDirectory;
     String tag_data = "";
+    int mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_selector);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
@@ -38,5 +41,23 @@ public class SaveSelector extends AppCompatActivity {
         intent.putExtra("TagData", tag_data);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(SaveSelector.this, NewStoryReview.class);
+        SaveSelector.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

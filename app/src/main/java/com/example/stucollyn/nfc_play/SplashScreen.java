@@ -1,6 +1,7 @@
 package com.example.stucollyn.nfc_play;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,12 +17,15 @@ public class SplashScreen extends AppCompatActivity {
             miine_fade_out;
     ImageView meineckLogo, uobLogo, miineLogo;
     private static final String TAG = "miine App: ";
+    int mode;
 
 //OnCreate method called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
 
         //Initialize animations and views
         InitAnimation();
@@ -163,6 +167,7 @@ public class SplashScreen extends AppCompatActivity {
 
                 //Note, no transition required as trove logo is to remain constantly visible
                 Intent intent = new Intent(SplashScreen.this, LoginScreen.class);
+                intent.putExtra("Orientation", mode);
                 SplashScreen.this.startActivity(intent);
 
             }
@@ -175,6 +180,7 @@ public class SplashScreen extends AppCompatActivity {
     public void Skip(View view) {
 
         Intent intent = new Intent(SplashScreen.this, LoginScreen.class);
+        intent.putExtra("Orientation", mode);
         SplashScreen.this.startActivity(intent);
         //Activity fade transition
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

@@ -28,17 +28,16 @@
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@drawable/trove_logo_icon"
         android:label="trove"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:hardwareAccelerated="false"
         android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".NFCRead"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
@@ -47,35 +46,35 @@
         <activity
             android:name=".NFCRecord"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".SplashScreen"
-            android:configChanges="orientation"
+        <activity android:name=".SelectMode"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name=".SplashScreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="trove"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
             android:name=".LoginScreen"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_login_screen"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainMenu"
-            android:configChanges="orientation"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_main_menu"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
 
         <provider
@@ -91,24 +90,39 @@
         <activity android:name=".PictureStoryFragment" />
         <activity android:name=".VideoStoryFragment" />
         <activity android:name=".WrittenStoryFragment" />
-        <activity
-            android:name=".StoryMediaChooser"
-            android:screenOrientation="portrait" />
+        <activity android:name=".StoryMediaChooser" />
         <activity
             android:name=".NewStoryReview"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-            >
         </activity>
-        <activity android:name=".SaveStoryToNFC" />
-        <activity android:name=".SaveSelector" />
-        <activity android:name=".SavedStoryConfirmation" />
-        <activity android:name=".ReviewAudioStory" />
-        <activity android:name=".ReviewVideoStory" />
-        <activity android:name=".ReviewWrittenStory" />
-        <activity android:name=".ReviewPictureStory" />
-        <activity android:name=".StoryGallery" />
-        <activity android:name=".StoryGallerySaveOrView"></activity>
+        <activity android:name=".SaveStoryToNFC"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".SaveSelector"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".SavedStoryConfirmation"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".ReviewAudioStory"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".ReviewVideoStory"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".ReviewWrittenStory"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".ReviewPictureStory"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".StoryGallery"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
+        <activity android:name=".StoryGallerySaveOrView"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            />
     </application>
 
 </manifest>

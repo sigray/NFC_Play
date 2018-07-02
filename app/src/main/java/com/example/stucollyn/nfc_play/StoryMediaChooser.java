@@ -22,12 +22,14 @@ public class StoryMediaChooser extends AppCompatActivity {
     String audioMedia = "Audio", pictureMedia = "Picture", videoMedia = "Video",
             writtenMedia = "Written";
     ArrayList<String> selectedMedia;
+    int mode;
 
     //onCreate called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_story_media_chooser);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         ActionBarSetup();
         InitView();
 
@@ -246,6 +248,7 @@ public class StoryMediaChooser extends AppCompatActivity {
     public void Confirm (View view) {
 
         Intent intent = new Intent(StoryMediaChooser.this, NFCRecord.class);
+        intent.putExtra("Orientation", mode);
         intent.putStringArrayListExtra("Fragments", selectedMedia);
         StoryMediaChooser.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -256,6 +259,7 @@ public class StoryMediaChooser extends AppCompatActivity {
     public void onBackPressed() {
 
         Intent intent = new Intent(StoryMediaChooser.this, MainMenu.class);
+        intent.putExtra("Orientation", mode);
         StoryMediaChooser.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

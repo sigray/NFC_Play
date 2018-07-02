@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.stucollyn.nfc_play.LoginScreen"
+    tools:showIn="@layout/activity_login_screen">
+
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Welcome."
+        android:textSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/instruction_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Please enter your passcode."
+        android:textSize="32dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/miine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+        android:onClick="Login"
+        android:scaleType="centerInside"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/trove_logo" />
+
+    <ImageView
+        android:id="@+id/keypad_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/trove_logo_blank" />
+
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="Login"
+        android:text="\nLogin\n"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/miine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/instruction_text"
+        app:layout_constraintVertical_bias="0.85" />
+
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="invisible"
+        android:text="\nSignUp\n" />
+
+    <ImageView
+        android:id="@+id/balloon1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon1"
+        app:layout_constraintBottom_toBottomOf="@+id/miine"
+        app:layout_constraintEnd_toEndOf="@+id/miine"
+        app:layout_constraintStart_toStartOf="@+id/miine"
+        app:layout_constraintTop_toTopOf="@+id/miine"
+        />
+
+    <ImageView
+        android:id="@+id/balloon2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon2"
+        app:layout_constraintBottom_toBottomOf="@+id/miine"
+        app:layout_constraintEnd_toEndOf="@+id/miine"
+        app:layout_constraintStart_toStartOf="@+id/miine"
+        app:layout_constraintTop_toTopOf="@+id/miine" />
+
+    <ImageView
+        android:id="@+id/balloon3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/baloon3"
+        app:layout_constraintBottom_toBottomOf="@+id/miine"
+        app:layout_constraintEnd_toEndOf="@+id/miine"
+        app:layout_constraintStart_toStartOf="@+id/miine"
+        app:layout_constraintTop_toTopOf="@+id/miine" />
+
+    <ImageView
+        android:id="@+id/miine_open"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/trove_logo_open"/>
+
+    <TableLayout
+        android:id="@+id/keypad"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="24dp"
+        android:stretchColumns="*"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9">
+
+        <TableRow
+            android:id="@+id/keypadRow1"
+            android:layout_width="0dp">
+
+            <Button
+                android:id="@+id/keypad1"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="1"></Button>
+
+            <Button
+                android:id="@+id/keypad2"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="2"></Button>
+
+            <Button
+                android:id="@+id/keypad3"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="3"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/keypadRow2"
+            android:layout_width="0dp">
+
+            <Button
+                android:id="@+id/keypad4"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="4"></Button>
+
+            <Button
+                android:id="@+id/keypad5"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="5"></Button>
+
+            <Button
+                android:id="@+id/keypad6"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="6"></Button>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/keypadRow3"
+            android:layout_width="0dp">
+
+            <Button
+                android:id="@+id/keypad7"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="7"></Button>
+
+            <Button
+                android:id="@+id/keypad8"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="8"></Button>
+
+            <Button
+                android:id="@+id/keypad9"
+                android:layout_width="0dp"
+                android:minHeight="50dp"
+                android:onClick="Keypad"
+                android:text="9"></Button>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/passcode_box"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:stretchColumns="*"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.18">
+
+        <TableRow
+            android:id="@+id/passcode_box_row"
+            android:layout_width="40dp">
+
+            <TextView
+                android:id="@+id/passcode_box_1"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:text=""
+                android:textSize="40dp"></TextView>
+
+            <TextView
+                android:id="@+id/passcode_box_2"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:text=""
+                android:textSize="40dp"></TextView>
+
+            <TextView
+                android:id="@+id/passcode_box_3"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:text=""
+                android:textSize="40dp"></TextView>
+
+            <TextView
+                android:id="@+id/passcode_box_4"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:minHeight="40dp"
+                android:text=""
+                android:textSize="40dp"></TextView>
+        </TableRow>
+    </TableLayout>
+
+
+</android.support.constraint.ConstraintLayout>

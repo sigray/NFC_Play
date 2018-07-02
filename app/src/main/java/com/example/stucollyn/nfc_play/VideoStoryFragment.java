@@ -140,7 +140,7 @@ public class VideoStoryFragment extends Fragment {
 
     public void ShowVideo(Uri takenVideo) {
 
-        record_instruction.setText("Press the green tick to save or the red cross to delete and take your photo again.");
+        record_instruction.setText("Press the green tick to save or the red cross to delete and take your video again.");
         captured_video.setVisibility(View.VISIBLE);
         captured_video_background.setVisibility(View.VISIBLE);
         save_video_button.setVisibility(View.VISIBLE);

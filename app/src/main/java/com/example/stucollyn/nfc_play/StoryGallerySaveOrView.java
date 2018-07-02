@@ -19,6 +19,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
     FragmentTransaction ft;
     SaveOrViewFragment saveOrViewFragment;
     ShowTagContentFragment showTagContentFragment;
+    int mode;
 
 
 
@@ -29,6 +30,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         getSupportActionBar().setTitle("Story Library");
         fileOnTag = (File)getIntent().getExtras().get("StoryDetails");
         filesOnTag = (File[]) getIntent().getExtras().getSerializable("filesOnTag");
@@ -67,6 +69,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
     public void StartSaveStoryToNFC(View view) {
 
         Intent intent = new Intent(StoryGallerySaveOrView.this, SaveStoryToNFC.class);
+        intent.putExtra("Orientation", mode);
         intent.putExtra("TagData", tag_data);
         StoryGallerySaveOrView.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

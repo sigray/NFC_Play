@@ -1,9 +1,12 @@
 package com.example.stucollyn.nfc_play;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,15 +26,22 @@ public class MainMenu extends AppCompatActivity {
     VideoView top_half__video;
     Button cloud_archive;
     ImageButton miine_library, play_story, record_story, trove_logo_button;
-    FrameLayout top_holder;
+    ConstraintLayout top_holder;
     Context context;
+    int mode;
 
 
     //onCreate is called when Activity begins
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityInit();
+    }
+
+    void ActivityInit() {
+
         setContentView(R.layout.activity_main_menu);
+        mode = (Integer) getIntent().getExtras().get("Orientation");
         ActionBarSetup();
         initView();
     }
@@ -60,17 +70,17 @@ public class MainMenu extends AppCompatActivity {
         play_story = (ImageButton) findViewById(R.id.play_story);
         record_story = (ImageButton) findViewById(R.id.record_story);
         top_half__video = (VideoView) findViewById(R.id.main_menu_video);
-        top_holder = (FrameLayout) findViewById(R.id.top_half_holder);
+        top_holder = (ConstraintLayout) findViewById(R.id.top_half_holder);
         welcome = (TextView) findViewById(R.id.welcome);
         trove_logo_button = (ImageButton) findViewById(R.id.main_menu_video_button);
 
         // cloud_archive.setVisibility(View.VISIBLE);
-        miine_library.setVisibility(View.VISIBLE);
-        play_story.setVisibility(View.VISIBLE);
-        record_story.setVisibility(View.VISIBLE);
-        welcome.setVisibility(View.VISIBLE);
-        top_half__video.setVisibility(View.VISIBLE);
-        top_holder.setVisibility(View.VISIBLE);
+//        miine_library.setVisibility(View.VISIBLE);
+//        play_story.setVisibility(View.VISIBLE);
+//        record_story.setVisibility(View.VISIBLE);
+//        welcome.setVisibility(View.VISIBLE);
+//        top_half__video.setVisibility(View.VISIBLE);
+//        top_holder.setVisibility(View.VISIBLE);
     }
 
     //Logout and return to the Login Screen
@@ -78,6 +88,7 @@ public class MainMenu extends AppCompatActivity {
     public void onBackPressed() {
 
         Intent intent = new Intent(MainMenu.this, LoginScreen.class);
+        intent.putExtra("Orientation", mode);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -105,6 +116,7 @@ public class MainMenu extends AppCompatActivity {
 
         play_story.setEnabled(false);
         Intent intent = new Intent(MainMenu.this, NFCRead.class);
+        intent.putExtra("Orientation", mode);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
@@ -115,6 +127,7 @@ public class MainMenu extends AppCompatActivity {
 
         record_story.setEnabled(false);
         Intent intent = new Intent(MainMenu.this, StoryMediaChooser.class);
+        intent.putExtra("Orientation", mode);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
@@ -122,6 +135,7 @@ public class MainMenu extends AppCompatActivity {
 
     public void StoryLibrary(View view) {
         Intent intent = new Intent(MainMenu.this, StoryGallery.class);
+        intent.putExtra("Orientation", mode);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -181,5 +195,11 @@ public class MainMenu extends AppCompatActivity {
         super.onDestroy();  // Always call the superclass method first
         // Do what you want.
     }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+//        ActivityInit();
+//    }
 
 }
