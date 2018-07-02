@@ -128,22 +128,23 @@ public class LoginScreen extends AppCompatActivity {
     public void Login (View login){
 
         //Show passcode keypad and instruction; hide login, sign up buttons, and trove logo
-        keypad_background.startAnimation(keypad_background_fade_in);
+//        keypad_background.startAnimation(keypad_background_fade_in);
         welcome.startAnimation(welcome_fade_out);
-        keypad.startAnimation(keypad_fade_in);
+//        keypad.startAnimation(keypad_fade_in);
         miine.startAnimation(miine_fade_out);
 //        loginButton.startAnimation(login_fade_out);
 //        signupButton.startAnimation(signup_fade_out);
-        instruction.startAnimation(instruction_fade_in);
+//        instruction.startAnimation(instruction_fade_in);
         miine.setVisibility(View.INVISIBLE);
         miine_open.setVisibility(View.INVISIBLE);
 //        loginButton.setVisibility(View.INVISIBLE);
 //        signupButton.setVisibility(View.INVISIBLE);
-        keypad.setVisibility(View.VISIBLE);
-        keypad_background.setVisibility(View.VISIBLE);
-        instruction.setVisibility(View.VISIBLE);
+//        keypad.setVisibility(View.VISIBLE);
+//        keypad_background.setVisibility(View.VISIBLE);
+//        instruction.setVisibility(View.VISIBLE);
         welcome.setVisibility(View.INVISIBLE);
         miine.setClickable(false);
+        Advance();
     }
 
     //Balloon animation scheduler
@@ -170,16 +171,21 @@ public class LoginScreen extends AppCompatActivity {
     private void Advance(){
 
 
-        keypad_background.startAnimation(keypad_background_fade_out);
-        keypad.startAnimation(keypad_fade_out);
-        passCodeBoxTable.startAnimation(passcode_box_fade_out);
-        instruction.startAnimation(instruction_fade_out);
+//        keypad_background.startAnimation(keypad_background_fade_out);
+//        keypad.startAnimation(keypad_fade_out);
+//        passCodeBoxTable.startAnimation(passcode_box_fade_out);
+//        instruction.startAnimation(instruction_fade_out);
 //        welcome.startAnimation(welcome_fade_out);
         miine.setVisibility(View.VISIBLE);
-        instruction.setVisibility(View.INVISIBLE);
+//        instruction.setVisibility(View.INVISIBLE);
         welcome.setVisibility(View.INVISIBLE);
-        passCodeBoxTable.setVisibility(View.INVISIBLE);
+//        passCodeBoxTable.setVisibility(View.INVISIBLE);
 
+        miine_open.setVisibility(View.VISIBLE);
+        miine.setVisibility(View.VISIBLE);
+        AnimateBalloons();
+
+        /*
         //Listen for the keypad view to finish fade out, then perform success balloon animation
         keypad_fade_out.setAnimationListener(new AnimationListener() {
 
@@ -202,6 +208,7 @@ public class LoginScreen extends AppCompatActivity {
                 AnimateBalloons();
             }
         });
+        */
 
         //Listen for the success balloon animation to finish, then fade out trove logo
         balloon_move_faster.setAnimationListener(new AnimationListener() {

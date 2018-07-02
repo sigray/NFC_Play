@@ -100,7 +100,7 @@ public class AudioStoryFragment extends Fragment {
 
    public void PlaybackButtonSwitch(boolean audioplaying, View view) {
 
-       record_instruction.setText("Press the green tick to save or the red cross to delete and record something new.");
+       record_instruction.setText("Use the buttons to listen to your story.");
 
        if(!audioplaying) {
             pause_play_button.setImageResource(R.drawable.play_arrow_black);

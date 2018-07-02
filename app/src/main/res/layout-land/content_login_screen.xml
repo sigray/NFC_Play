@@ -42,13 +42,12 @@
 
     <ImageView
         android:id="@+id/miine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="50dp"
         android:clickable="true"
         android:onClick="Login"
-        android:scaleType="centerInside"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,12 +57,12 @@
 
     <ImageView
         android:id="@+id/keypad_background"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
         android:layout_marginBottom="24dp"
         android:scaleType="centerInside"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,7 +80,7 @@
         android:layout_marginTop="8dp"
         android:onClick="Login"
         android:text="\nLogin\n"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/miine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.92"
@@ -93,7 +92,7 @@
         android:id="@+id/signup_button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:text="\nSignUp\n" />
 
     <ImageView
@@ -138,11 +137,10 @@
 
     <ImageView
         android:id="@+id/miine_open"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
-        android:scaleType="centerInside"
+        android:layout_marginBottom="50dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -158,12 +156,12 @@
         android:layout_gravity="center"
         android:layout_marginBottom="24dp"
         android:stretchColumns="*"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9">
+        app:layout_constraintVertical_bias="1.0">
 
         <TableRow
             android:id="@+id/keypadRow1"
@@ -251,7 +249,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:stretchColumns="*"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

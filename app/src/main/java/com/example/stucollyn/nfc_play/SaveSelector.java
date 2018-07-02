@@ -34,6 +34,7 @@ public class SaveSelector extends AppCompatActivity {
     public void StartConfirmation(View view){
 
         Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
+        intent.putExtra("Orientation", mode);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -42,6 +43,7 @@ public class SaveSelector extends AppCompatActivity {
 
         Intent intent = new Intent(SaveSelector.this, SaveStoryToNFC.class);
         intent.putExtra("TagData", tag_data);
+        intent.putExtra("Orientation", mode);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -50,6 +52,7 @@ public class SaveSelector extends AppCompatActivity {
     public void onBackPressed() {
 
         Intent intent = new Intent(SaveSelector.this, NewStoryReview.class);
+        intent.putExtra("Orientation", mode);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

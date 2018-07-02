@@ -62,6 +62,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
 
 //        Log.i("Files on tag UID: ", filesOnTag.toString());
         Bundle bundle = new Bundle();
+        bundle.putInt("Orientation", mode);
         bundle.putSerializable("filesOnTag", filesOnTag);
         showTagContentFragment.setArguments(bundle);
         ft = getSupportFragmentManager().beginTransaction();

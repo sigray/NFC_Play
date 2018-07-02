@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/audio_media_thumb"
+        android:id="@+id/audio_media_review_cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -29,15 +29,15 @@
         android:src="@drawable/audio_media"
         android:translationZ="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/video_media_thumb"
+        app:layout_constraintBottom_toTopOf="@+id/video_media_review_cover"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintRight_toLeftOf="@+id/picture_media_thumb"
+        app:layout_constraintRight_toLeftOf="@+id/picture_media_review_cover"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
         app:layout_constraintTop_toBottomOf="@id/instruction_review"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
-        android:id="@+id/picture_media_thumb"
+        android:id="@+id/picture_media_review_cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
@@ -46,14 +46,14 @@
         android:src="@drawable/camera_media"
         android:translationZ="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/written_notes_thumb"
+        app:layout_constraintBottom_toTopOf="@+id/written_media_review_cover"
         app:layout_constraintEnd_toEndOf="@+id/guideline2"
-        app:layout_constraintLeft_toRightOf="@+id/audio_media_thumb"
+        app:layout_constraintLeft_toRightOf="@+id/audio_media_review_cover"
         app:layout_constraintTop_toBottomOf="@id/instruction_review"
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
-        android:id="@+id/video_media_thumb"
+        android:id="@+id/video_media_review_cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -64,13 +64,13 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintRight_toLeftOf="@+id/written_notes_thumb"
+        app:layout_constraintRight_toLeftOf="@+id/written_media_review_cover"
         app:layout_constraintStart_toStartOf="@+id/guideline1"
-        app:layout_constraintTop_toBottomOf="@+id/audio_media_thumb"
+        app:layout_constraintTop_toBottomOf="@+id/audio_media_review_cover"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
-        android:id="@+id/written_notes_thumb"
+        android:id="@+id/written_media_review_cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -82,8 +82,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/guideline2"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintLeft_toRightOf="@+id/video_media_thumb"
-        app:layout_constraintTop_toBottomOf="@+id/picture_media_thumb"
+        app:layout_constraintLeft_toRightOf="@+id/video_media_review_cover"
+        app:layout_constraintTop_toBottomOf="@+id/picture_media_review_cover"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageButton
@@ -102,7 +102,7 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/picture_media_thumb"
+        app:layout_constraintStart_toEndOf="@+id/picture_media_review_cover"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.304" />
 
@@ -122,7 +122,7 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/written_notes_thumb"
+        app:layout_constraintStart_toEndOf="@+id/written_media_review_cover"
         app:layout_constraintTop_toBottomOf="@+id/confirm_review" />
 
     <android.support.constraint.Guideline
@@ -140,6 +140,18 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="120dp"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cl1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>
 

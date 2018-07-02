@@ -136,7 +136,11 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 uobLogo.setVisibility(View.INVISIBLE);
-                animateMiineLogo();
+//Note, no transition required as trove logo is to remain constantly visible
+                Intent intent = new Intent(SplashScreen.this, LoginScreen.class);
+                intent.putExtra("Orientation", mode);
+                SplashScreen.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         });
 
