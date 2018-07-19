@@ -20,6 +20,12 @@ import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -49,6 +55,7 @@ public class StoryGallery extends AppCompatActivity {
     Activity activity;
     int mode;
     ProgressBar progressBar;
+    private StorageReference mStorageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +64,7 @@ public class StoryGallery extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
         mode = (Integer) getIntent().getExtras().get("Orientation");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(mode);
@@ -113,6 +121,26 @@ public class StoryGallery extends AppCompatActivity {
         new LoadImages().execute();
         numberOfThumbs = files.length;
         gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
+    }
+
+    void downloadFromCloud() throws IOException {
+
+        File localFile = File.createTempFile("images", "jpg");
+        StorageReference riversRef = null;
+        riversRef.getFile(localFile)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        // Successfully downloaded data to local file
+                        // ...
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle failed download
+                // ...
+            }
+        });
     }
 
     public void setupLists(File[] files) {

@@ -19,6 +19,9 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 //The MainMenu Activity is the app home page, where all functionality can be found and selected
 public class MainMenu extends AppCompatActivity {
 
@@ -30,7 +33,7 @@ public class MainMenu extends AppCompatActivity {
     ConstraintLayout top_holder;
     Context context;
     int mode;
-
+    private StorageReference mStorageRef;
 
     //onCreate is called when Activity begins
     @Override

@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 //NewStoryReview Activity lets the user review the contents of a newly created story
@@ -60,7 +61,6 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
     Canvas galleryThumb;
     ConstraintLayout cl1, cl2;
     int mode;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -471,6 +471,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
 //        textDrawable.saveBitmap(bitmap);
 
         Intent intent = new Intent(NewStoryReview.this, SaveSelector.class);
+        intent.putExtra("StoryDirectory", fileDirectory);
         intent.putExtra("Orientation", mode);
         intent.putExtra("TagData", tag_data);
         NewStoryReview.this.startActivity(intent);

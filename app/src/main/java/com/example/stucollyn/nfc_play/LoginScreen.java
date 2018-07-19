@@ -15,6 +15,11 @@ import android.widget.TextView;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 
 /*LoginScreen Activity follows after the SplashScreen introduction and allows existing users to
 login to the trove app or new users sign up*/
@@ -36,6 +41,7 @@ public class LoginScreen extends AppCompatActivity {
     String passcodeAttempt, passcodeTarget;
     int passcodeCounter;
     int mode;
+//    FirebaseFirestore db;
 
 
     //onCreate method called on Activity start
@@ -46,6 +52,9 @@ public class LoginScreen extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
+        // Access a Cloud Firestore instance from your Activity
+
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         //Initialize String builder to accept passcode keypad input
         passcodeAppend = new StringBuilder("");
@@ -361,6 +370,10 @@ public class LoginScreen extends AppCompatActivity {
 
     //Future method for sign-up functionality
     private void SignUp() {
+
+
+
+
 
     }
 
