@@ -50,11 +50,11 @@ public class SaveSelector extends AppCompatActivity {
 
     public void StartConfirmation(View view){
 
-        ShowMedia();
-//        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
-//        intent.putExtra("Orientation", mode);
-//        SaveSelector.this.startActivity(intent);
-//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        //ShowMedia();
+        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
+        intent.putExtra("Orientation", mode);
+        SaveSelector.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     public void StartSaveStoryToNFC(View view) {

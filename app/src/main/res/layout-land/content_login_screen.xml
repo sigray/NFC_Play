@@ -47,53 +47,48 @@
         android:layout_gravity="center"
         android:layout_marginBottom="50dp"
         android:clickable="true"
-        android:onClick="Login"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/trove_logo" />
-
-    <ImageView
-        android:id="@+id/keypad_background"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="24dp"
-        android:scaleType="centerInside"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/trove_logo_blank" />
-
+        android:src="@drawable/trove_logo" />
 
     <Button
         android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:onClick="Login"
         android:text="\nLogin\n"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/miine"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintHorizontal_bias="0.88"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/instruction_text"
-        app:layout_constraintVertical_bias="0.85" />
+        app:layout_constraintTop_toBottomOf="@+id/signup_button"
+        app:layout_constraintVertical_bias="0.110000014" />
 
     <Button
         android:id="@+id/signup_button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:visibility="gone"
-        android:text="\nSignUp\n" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="SignUp"
+        android:text="\nSignUp\n"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.88"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.32" />
 
     <ImageView
         android:id="@+id/balloon1"
@@ -147,152 +142,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/trove_logo_open"/>
-
-    <TableLayout
-        android:id="@+id/keypad"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="24dp"
-        android:stretchColumns="*"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <TableRow
-            android:id="@+id/keypadRow1"
-            android:layout_width="0dp">
-
-            <Button
-                android:id="@+id/keypad1"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="1"></Button>
-
-            <Button
-                android:id="@+id/keypad2"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="2"></Button>
-
-            <Button
-                android:id="@+id/keypad3"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="3"></Button>
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/keypadRow2"
-            android:layout_width="0dp">
-
-            <Button
-                android:id="@+id/keypad4"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="4"></Button>
-
-            <Button
-                android:id="@+id/keypad5"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="5"></Button>
-
-            <Button
-                android:id="@+id/keypad6"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="6"></Button>
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/keypadRow3"
-            android:layout_width="0dp">
-
-            <Button
-                android:id="@+id/keypad7"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="7"></Button>
-
-            <Button
-                android:id="@+id/keypad8"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="8"></Button>
-
-            <Button
-                android:id="@+id/keypad9"
-                android:layout_width="0dp"
-                android:minHeight="50dp"
-                android:onClick="Keypad"
-                android:text="9"></Button>
-        </TableRow>
-    </TableLayout>
-
-    <TableLayout
-        android:id="@+id/passcode_box"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
-        android:stretchColumns="*"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.18">
-
-        <TableRow
-            android:id="@+id/passcode_box_row"
-            android:layout_width="40dp">
-
-            <TextView
-                android:id="@+id/passcode_box_1"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:minHeight="40dp"
-                android:text=""
-                android:textSize="40dp"></TextView>
-
-            <TextView
-                android:id="@+id/passcode_box_2"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:minHeight="40dp"
-                android:text=""
-                android:textSize="40dp"></TextView>
-
-            <TextView
-                android:id="@+id/passcode_box_3"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:minHeight="40dp"
-                android:text=""
-                android:textSize="40dp"></TextView>
-
-            <TextView
-                android:id="@+id/passcode_box_4"
-                android:layout_width="0dp"
-                android:gravity="center"
-                android:minHeight="40dp"
-                android:text=""
-                android:textSize="40dp"></TextView>
-        </TableRow>
-    </TableLayout>
-
 
 </android.support.constraint.ConstraintLayout>
