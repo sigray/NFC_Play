@@ -1,7 +1,9 @@
 package com.example.stucollyn.nfc_play;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -23,6 +29,9 @@ import com.google.firebase.storage.UploadTask;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class SaveSelector extends AppCompatActivity {
 
@@ -30,12 +39,14 @@ public class SaveSelector extends AppCompatActivity {
     String tag_data = "";
     int mode;
     private StorageReference mStorageRef;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_selector);
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        db = FirebaseFirestore.getInstance();
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -50,11 +61,11 @@ public class SaveSelector extends AppCompatActivity {
 
     public void StartConfirmation(View view){
 
-        //ShowMedia();
-        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
-        intent.putExtra("Orientation", mode);
-        SaveSelector.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        ShowMedia();
+//        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
+//        intent.putExtra("Orientation", mode);
+//        SaveSelector.this.startActivity(intent);
+//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     public void StartSaveStoryToNFC(View view) {
@@ -80,30 +91,55 @@ public class SaveSelector extends AppCompatActivity {
         Log.i("File to upload: ", fileDirectory.toString());
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
-
+        UUID storyUUID = UUID.randomUUID();
+        String fileType = "";
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-        for(int i = 0; i<files.length; i++) {
+//        WifiManager wifi = (WifiManager)this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//        if (wifi.isWifiEnabled()){
+//
 
-            //Log.i("File to upload: ", files[i].toString());
+            for(int i = 0; i<files.length; i++) {
 
-           uploadToCloud(files[i]);
+                String extension = FilenameUtils.getExtension(files[i].toString());
+                String fileName = files[i].toString();
 
-        }
+                if (extension.equalsIgnoreCase("jpg")) {
 
+                    fileType = "PictureFile";
+                }
 
+                if (extension.equalsIgnoreCase("mp3")) {
+
+                    fileType = "AudioFile";
+                }
+
+                if (extension.equalsIgnoreCase("mp4")) {
+
+                    fileType = "VideoFile";
+                }
+
+                if (extension.equalsIgnoreCase("txt")) {
+
+                    fileType = "WrittenFile";
+                }
+
+                uploadToCloud(files[i], storyUUID, fileType);
+            }
+
+        //}
 
     }
 
-    public void uploadToCloud(File fileToUpload) {
+    void uploadToCloud(File fileToUpload, final UUID storyUUID, final String fileType) {
 
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
         final StorageReference riversRef = mStorageRef.child(fileToUpload.toString());
 
         uploadTask = riversRef.putFile(file);
-// Register observers to listen for when the download is done or if it fails
+        // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -133,12 +169,42 @@ public class SaveSelector extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     Log.i("Download Link", downloadUri.toString());
+                    uploadToDatabase(downloadUri, storyUUID, fileType);
                 } else {
                     // Handle failures
                     // ...
                 }
             }
         });
+    }
+
+    void uploadToDatabase(Uri downloadURI, UUID storyUUID, String fileType) {
+
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        String name = user.getDisplayName();
+
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("Username", "test");
+        newUser.put("Story ID", storyUUID.toString());
+        newUser.put("Type", fileType);
+        newUser.put("URL", downloadURI.toString());
+
+        db.collection("Stories")
+                .add(newUser)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("Success", "DocumentSnapshot written with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Failure", "Error adding document", e);
+                    }
+                });
+
+
     }
 
     @Override

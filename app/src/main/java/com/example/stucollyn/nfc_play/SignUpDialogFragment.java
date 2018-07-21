@@ -18,13 +18,15 @@ public class SignUpDialogFragment extends DialogFragment {
 
     String username = "";
     String password = "";
+    String firstName = "";
+    String lastName = "";
 
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface NoticeSignUpDialogListener {
-        public void onDialogSignUpPositiveClick(String username, String password);
+        public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName);
         public void onDialogSignUpNegativeClick(DialogFragment dialog);
     }
 
@@ -57,6 +59,9 @@ public class SignUpDialogFragment extends DialogFragment {
         builder.setView(prompt);
         final EditText user = (EditText) prompt.findViewById(R.id.username);
         final EditText pass = (EditText) prompt.findViewById(R.id.password);
+        final EditText fn = (EditText) prompt.findViewById(R.id.firstname);
+        final EditText ln = (EditText) prompt.findViewById(R.id.lastname);
+
 
 
         // Add action buttons
@@ -64,9 +69,11 @@ public class SignUpDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // sign in the user ...
+                firstName = fn.getText().toString();
+                lastName = ln.getText().toString();
                 password = pass.getText().toString();
                 username = user.getText().toString();
-                mListener.onDialogSignUpPositiveClick(username, password);
+                mListener.onDialogSignUpPositiveClick(username, password, firstName, lastName);
             }
         })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

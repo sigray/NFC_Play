@@ -27,6 +27,8 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,7 +39,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /*LoginScreen Activity follows after the SplashScreen introduction and allows existing users to
@@ -59,6 +63,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
     int passcodeCounter;
     int mode;
     private FirebaseAuth mAuth;
+    FirebaseFirestore db;
 
     //onCreate method called on Activity start
     @Override
@@ -69,6 +74,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         // Access a Cloud Firestore instance from your Activity
 
 //        FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -119,11 +125,11 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
-    public void onDialogSignUpPositiveClick(String username, String password) {
+    public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
         // User touched the dialog's positive button
         Log.i("good", "success");
 
-        FirebaseSignUp(username, password);
+        FirebaseSignUp(username, password, firstName, lastName);
     }
 
     @Override
@@ -210,7 +216,34 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         }
     }
 
-    void FirebaseSignUp(final String username, final String password) {
+    void FirebaseDatabaseNewUser(String username, String password, String firstName, String lastName) {
+
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("Username", username);
+        newUser.put("Password", password);
+        newUser.put("First Name", firstName);
+        newUser.put("Last Name", lastName);
+
+        db.collection("User").document(username)
+                .set(newUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+
+    }
+
+    void FirebaseSignUp(final String username, final String password, final String firstName, final String lastName) {
 
         mAuth.createUserWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -222,6 +255,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
                             Toast.makeText(LoginScreen.this, "Account Created.",
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseDatabaseNewUser(username, password, firstName, lastName);
                             FirebaseLogin(username, password);
                         } else {
                             // If sign in fails, display a message to the user.
