@@ -8,21 +8,6 @@
     tools:context="com.example.stucollyn.nfc_play.LoginScreen"
     tools:showIn="@layout/activity_login_screen">
 
-    <ImageButton
-        android:id="@+id/logout_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="13dp"
-        android:layout_marginRight="13dp"
-        android:layout_marginTop="12dp"
-        android:onClick="Logout"
-        android:src="@drawable/onoff"
-        android:translationZ="0dp"
-        android:visibility="invisible" />
-
     <TextView
         android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
@@ -32,6 +17,15 @@
         android:layout_marginTop="60dp"
         android:textSize="32dp"
         android:text="Welcome." />
+
+    <TextView
+        android:id="@+id/welcome_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/welcome_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/instruction_text"
@@ -73,17 +67,17 @@
         android:text="\nLogin\n" />
 
     <Button
-        android:id="@+id/logout_button2"
+        android:id="@+id/logout_button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_alignLeft="@+id/instruction_text"
-        android:layout_alignStart="@+id/instruction_text"
+        android:layout_alignEnd="@+id/instruction_text"
+        android:layout_alignRight="@+id/instruction_text"
         android:layout_below="@+id/miine_open"
-        android:layout_marginLeft="21dp"
-        android:layout_marginStart="21dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
         android:onClick="Logout"
         android:visibility="invisible"
-        android:text="\nLogin\n" />
+        android:text="\nLogout\n" />
 
     <Button
         android:id="@+id/signup_button"
@@ -95,7 +89,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginRight="20dp"
         android:onClick="SignUp"
-        android:visibility="visible"
+        android:visibility="invisible"
         android:text="\nSign Up\n" />
 
     <ImageView

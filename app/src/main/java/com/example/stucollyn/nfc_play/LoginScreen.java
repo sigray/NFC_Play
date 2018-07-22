@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,13 +52,13 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
     //Declare global variables
     private static final String TAG = "miine App: ";
-    Animation welcome_fade_in, welcome_fade_out, login_fade_in, login_fade_out, signup_fade_in, signup_fade_out, logout_fade_in,
+    Animation welcome_fade_in, welcome_fade_out, welcome2_fade_in, welcome2_fade_out, login_fade_in, login_fade_out, signup_fade_in, signup_fade_out, logout_fade_in,
             logout_fade_out, miine_fade_in, miine_fade_out, miine_shrink, miine_shake,
             miine_open_fade_in, miine_open_fade_out, instruction_fade_in, instruction_fade_out,
             balloon_move_normal, balloon_move_slower, balloon_move_faster, passcode_box_fade_out;
     Button loginButton, signupButton;
-    ImageButton logoutButton;
-    TextView welcome, instruction, passCodeBox1, passCodeBox2, passCodeBox3, passCodeBox4;
+    Button logoutButton;
+    TextView welcome, welcome2, instruction, passCodeBox1, passCodeBox2, passCodeBox3, passCodeBox4;
     ImageView keypad_background, miine, miine_open, balloon1, balloon2, balloon3;
     TableLayout keypad, passCodeBoxTable;
     StringBuilder passcodeAppend;
@@ -96,9 +97,19 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         if (user != null) {
 
             logoutButton.setVisibility(View.VISIBLE);
+            signupButton.setVisibility(View.INVISIBLE);
+            loginButton.setText("Continue");
+            welcome2.setText(user.getEmail());
+            welcome2.setGravity(Gravity.CENTER);
+
+            welcome2.startAnimation(welcome_fade_in);
+        }
+
+        else {
+            signupButton.startAnimation(logout_fade_in);
+            signupButton.setVisibility(View.VISIBLE);
         }
     }
-
 
     public void showLoginNoticeDialog() {
         // Create an instance of the dialog fragment and show it
@@ -150,6 +161,8 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
         welcome_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
         welcome_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
+        welcome2_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
+        welcome2_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
         login_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
         login_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
         signup_fade_in = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_in);
@@ -174,8 +187,9 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
     private void InitView() {
 
         welcome = (TextView) findViewById(R.id.welcome_text);
+        welcome2 = (TextView) findViewById(R.id.welcome_text2);
         loginButton = (Button) findViewById(R.id.login_button);
-        logoutButton = (ImageButton) findViewById(R.id.logout_button);
+        logoutButton = (Button) findViewById(R.id.logout_button);
         signupButton = (Button) findViewById(R.id.signup_button);
         miine = (ImageView) findViewById(R.id.miine);
         balloon1 = (ImageView) findViewById(R.id.balloon1);
@@ -191,7 +205,8 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         miine.startAnimation(miine_fade_in);
         welcome.startAnimation(welcome_fade_in);
         loginButton.startAnimation(login_fade_in);
-        signupButton.startAnimation(logout_fade_in);
+//        welcome2.startAnimation(welcome_fade_in);
+//        signupButton.startAnimation(logout_fade_in);
     }
 
     public void SignUp(View signUp) {
@@ -289,6 +304,11 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(LoginScreen.this, "Logging in as: " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
+                            welcome2.setText(user.getEmail());
+                            welcome2.startAnimation(welcome2_fade_in);
+                            welcome2.setVisibility(View.VISIBLE);
+                            signupButton.startAnimation(signup_fade_out);
+                            signupButton.setVisibility(View.INVISIBLE);
                             Advance();
                         }
 
@@ -379,14 +399,18 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 //        instruction.setVisibility(View.INVISIBLE);
 
         welcome.startAnimation(welcome_fade_out);
+        welcome2.startAnimation(welcome_fade_out);
         miine.startAnimation(miine_fade_out);
         loginButton.startAnimation(login_fade_out);
-        signupButton.startAnimation(logout_fade_out);
+        logoutButton.startAnimation(login_fade_out);
+//        signupButton.startAnimation(logout_fade_out);
         miine.setVisibility(View.INVISIBLE);
         miine_open.setVisibility(View.INVISIBLE);
         loginButton.setVisibility(View.INVISIBLE);
+        logoutButton.setVisibility(View.INVISIBLE);
         signupButton.setVisibility(View.INVISIBLE);
         welcome.setVisibility(View.INVISIBLE);
+        welcome2.setVisibility(View.INVISIBLE);
         miine.setClickable(false);
 
         miine.setVisibility(View.VISIBLE);
@@ -410,6 +434,11 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         Toast.makeText(LoginScreen.this, "Logging out: " + user.getEmail(),
                 Toast.LENGTH_SHORT).show();
         FirebaseAuth.getInstance().signOut();
+
+        welcome2.startAnimation(welcome_fade_out);
+        loginButton.setText("Login");
+        signupButton.setVisibility(View.VISIBLE);
+        welcome2.setVisibility(View.INVISIBLE);
         logout_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
         logoutButton.setVisibility(View.VISIBLE);
 
