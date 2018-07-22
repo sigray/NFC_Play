@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -40,12 +41,19 @@ public class SaveSelector extends AppCompatActivity {
     int mode;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_selector);
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        firestore.setFirestoreSettings(settings);
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setRequestedOrientation(mode);
@@ -62,10 +70,10 @@ public class SaveSelector extends AppCompatActivity {
     public void StartConfirmation(View view){
 
         ShowMedia();
-//        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
-//        intent.putExtra("Orientation", mode);
-//        SaveSelector.this.startActivity(intent);
-//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
+        intent.putExtra("Orientation", mode);
+        SaveSelector.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     public void StartSaveStoryToNFC(View view) {
@@ -136,7 +144,9 @@ public class SaveSelector extends AppCompatActivity {
 
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
-        final StorageReference riversRef = mStorageRef.child(fileToUpload.toString());
+        String userID = mAuth.getCurrentUser().getUid();
+        Log.i("User ID", userID);
+        final StorageReference riversRef = mStorageRef.child(userID).child(fileToUpload.toString());
 
         uploadTask = riversRef.putFile(file);
         // Register observers to listen for when the download is done or if it fails

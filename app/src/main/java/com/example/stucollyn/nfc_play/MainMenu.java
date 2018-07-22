@@ -1,9 +1,7 @@
 package com.example.stucollyn.nfc_play;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -12,14 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 //The MainMenu Activity is the app home page, where all functionality can be found and selected
@@ -140,7 +136,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void StoryLibrary(View view) {
-        Intent intent = new Intent(MainMenu.this, StoryGallery.class);
+        Intent intent = new Intent(MainMenu.this, StoryGalleryMenu.class);
         intent.putExtra("Orientation", mode);
         MainMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

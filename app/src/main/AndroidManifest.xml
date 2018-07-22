@@ -51,12 +51,14 @@
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
             </intent-filter>
         </activity>
-        <activity android:name=".SelectMode"
+        <activity
+            android:name=".SelectMode"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -64,8 +66,7 @@
             android:name=".SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginScreen"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -94,35 +95,37 @@
         <activity
             android:name=".NewStoryReview"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        </activity>
-        <activity android:name=".SaveStoryToNFC"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".SaveSelector"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".SavedStoryConfirmation"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".ReviewAudioStory"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".ReviewVideoStory"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".ReviewWrittenStory"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".ReviewPictureStory"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".StoryGallery"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
-        <activity android:name=".StoryGallerySaveOrView"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity
+            android:name=".SaveStoryToNFC"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".SaveSelector"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".SavedStoryConfirmation"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".ReviewAudioStory"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".ReviewVideoStory"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".ReviewWrittenStory"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".ReviewPictureStory"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".LocalStoryGallery"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity
+            android:name=".StoryGallerySaveOrView"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".StoryGalleryMenu" />
+        <activity android:name=".CloudStoryGalleryMenu" />
+        <activity android:name=".CloudStoryGallery"></activity>
     </application>
 
 </manifest>

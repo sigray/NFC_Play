@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -31,14 +30,12 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-public class StoryGallery extends AppCompatActivity {
+public class LocalStoryGallery extends AppCompatActivity {
 
     ArrayList<File> folders;
     LinkedHashMap<File, List<File>> folderFiles;
@@ -289,9 +286,9 @@ public class StoryGallery extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(StoryGallery.this, MainMenu.class);
+        Intent intent = new Intent(LocalStoryGallery.this, MainMenu.class);
         intent.putExtra("Orientation", mode);
-        StoryGallery.this.startActivity(intent);
+        LocalStoryGallery.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         finish();
     }

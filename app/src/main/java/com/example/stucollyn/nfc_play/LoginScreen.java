@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TableLayout;
@@ -54,7 +55,8 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
             logout_fade_out, miine_fade_in, miine_fade_out, miine_shrink, miine_shake,
             miine_open_fade_in, miine_open_fade_out, instruction_fade_in, instruction_fade_out,
             balloon_move_normal, balloon_move_slower, balloon_move_faster, passcode_box_fade_out;
-    Button loginButton, logoutButton, signupButton;
+    Button loginButton, signupButton;
+    ImageButton logoutButton;
     TextView welcome, instruction, passCodeBox1, passCodeBox2, passCodeBox3, passCodeBox4;
     ImageView keypad_background, miine, miine_open, balloon1, balloon2, balloon3;
     TableLayout keypad, passCodeBoxTable;
@@ -89,6 +91,12 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         InitAnimation();
         InitView();
         FadeInLogin();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+
+            logoutButton.setVisibility(View.VISIBLE);
+        }
     }
 
 
@@ -167,7 +175,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
         welcome = (TextView) findViewById(R.id.welcome_text);
         loginButton = (Button) findViewById(R.id.login_button);
-        logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton = (ImageButton) findViewById(R.id.logout_button);
         signupButton = (Button) findViewById(R.id.signup_button);
         miine = (ImageView) findViewById(R.id.miine);
         balloon1 = (ImageView) findViewById(R.id.balloon1);
@@ -204,8 +212,8 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
             // Check if user's email is verified
             boolean emailVerified = user.isEmailVerified();
 
-            Log.i("email", email);
-            Log.i("email verified", String.valueOf(emailVerified));
+            Toast.makeText(LoginScreen.this, "Already logged in as: " + user.getEmail(),
+                    Toast.LENGTH_SHORT).show();
             Advance();
         }
 
@@ -279,7 +287,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginScreen.this, "Logging in as: " + user,
+                            Toast.makeText(LoginScreen.this, "Logging in as: " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
                             Advance();
                         }
@@ -398,7 +406,12 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
     public void Logout(View view) {
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        Toast.makeText(LoginScreen.this, "Logging out: " + user.getEmail(),
+                Toast.LENGTH_SHORT).show();
         FirebaseAuth.getInstance().signOut();
+        logout_fade_out = AnimationUtils.loadAnimation(this, R.anim.splash_screen_fade_out);
+        logoutButton.setVisibility(View.VISIBLE);
 
     }
 

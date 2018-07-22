@@ -8,6 +8,21 @@
     tools:context="com.example.stucollyn.nfc_play.LoginScreen"
     tools:showIn="@layout/activity_login_screen">
 
+    <ImageButton
+        android:id="@+id/logout_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:layout_marginTop="12dp"
+        android:onClick="Logout"
+        android:src="@drawable/onoff"
+        android:translationZ="0dp"
+        android:visibility="invisible" />
+
     <TextView
         android:id="@+id/welcome_text"
         android:layout_width="wrap_content"
@@ -58,7 +73,7 @@
         android:text="\nLogin\n" />
 
     <Button
-        android:id="@+id/logout_button"
+        android:id="@+id/logout_button2"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignLeft="@+id/instruction_text"

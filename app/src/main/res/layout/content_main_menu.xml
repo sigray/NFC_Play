@@ -89,8 +89,6 @@
         app:layout_constraintTop_toTopOf="@+id/guidelineLeft"
         app:layout_constraintVertical_bias="0.0" />
 
-
-
     <ImageButton
         android:id="@+id/record_story"
         android:layout_width="0dp"

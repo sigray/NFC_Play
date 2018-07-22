@@ -82,7 +82,7 @@ public class StoryGallerySaveOrView extends AppCompatActivity implements Seriali
     @Override
     public void onBackPressed() {
 
-//        Intent intent = new Intent(StoryGallerySaveOrView.this, StoryGallery.class);
+//        Intent intent = new Intent(StoryGallerySaveOrView.this, LocalStoryGallery.class);
 //        StoryGallerySaveOrView.this.startActivity(intent);
 //        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         finish();

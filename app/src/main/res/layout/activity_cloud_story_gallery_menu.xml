@@ -4,53 +4,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.stucollyn.nfc_play.SaveSelector">
+    tools:context="com.example.stucollyn.nfc_play.CloudStoryGalleryMenu">
 
     <TextView
         android:id="@+id/save_selector_instruction_text"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="Save story to:"
+        android:gravity="top|center"
+        android:text="Find Story By:"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/find_date"
+        app:layout_constraintBottom_toTopOf="@+id/search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/find_date"
+        android:id="@+id/search"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="StartConfirmation"
-        android:src="@drawable/save"
+        android:onClick="SearchText"
+        android:src="@drawable/search"
+        android:translationZ="0dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/search_caption"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_selector_instruction_text" />
+
+    <TextView
+        android:id="@+id/search_caption"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="top"
+        android:text="Search"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/find_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search" />
+
+    <ImageButton
+        android:id="@+id/find_date"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:onClick="SearchDate"
+        android:src="@drawable/date"
         android:translationZ="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/find_date_caption"
         app:layout_constraintEnd_toStartOf="@+id/find_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_selector_instruction_text" />
+        app:layout_constraintTop_toBottomOf="@+id/search_caption" />
 
     <ImageButton
         android:id="@+id/find_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:onClick="StartSaveStoryToNFC"
-        android:src="@drawable/phone_nfc_android"
+        android:layout_marginTop="16dp"
+        android:onClick="SearchImage"
+        android:src="@drawable/image"
         android:translationZ="0dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/find_image_caption"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/find_date"
-        app:layout_constraintTop_toBottomOf="@+id/save_selector_instruction_text" />
+        app:layout_constraintTop_toBottomOf="@+id/search_caption" />
 
     <TextView
         android:id="@+id/find_date_caption"
@@ -59,9 +90,9 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:gravity="top"
-        android:text="Device\n"
+        android:text="Find by\nDate"
         android:textAlignment="center"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -76,9 +107,9 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:gravity="top"
-        android:text="Device + NFC"
+        android:text="Find by\nImage"
         android:textAlignment="center"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
