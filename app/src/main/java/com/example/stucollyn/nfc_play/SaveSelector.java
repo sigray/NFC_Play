@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.storage.FirebaseStorage;
@@ -30,6 +31,7 @@ import com.google.firebase.storage.UploadTask;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -38,10 +40,12 @@ public class SaveSelector extends AppCompatActivity {
 
     File fileDirectory = null;
     String tag_data = "";
+    String storyNameString, tag1String, tag2String, tag3String;
     int mode;
     private StorageReference mStorageRef;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    Date FireStoreTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,11 @@ public class SaveSelector extends AppCompatActivity {
         getSupportActionBar().setTitle("Save New Story");
         fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
         tag_data = (String)getIntent().getExtras().get("TagData");
+        storyNameString = (String)getIntent().getExtras().get("StoryName");
+        tag1String = (String)getIntent().getExtras().get("Tag1");
+        tag2String = (String)getIntent().getExtras().get("Tag2");
+        tag3String = (String)getIntent().getExtras().get("Tag3");
+
     }
 
     public void StartConfirmation(View view){
@@ -190,14 +199,19 @@ public class SaveSelector extends AppCompatActivity {
 
     void uploadToDatabase(Uri downloadURI, UUID storyUUID, String fileType) {
 
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        String name = user.getDisplayName();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String name = user.getEmail();
 
         Map<String, Object> newUser = new HashMap<>();
-        newUser.put("Username", "test");
+        newUser.put("Username", name);
         newUser.put("Story ID", storyUUID.toString());
         newUser.put("Type", fileType);
         newUser.put("URL", downloadURI.toString());
+        newUser.put( "Date", FieldValue.serverTimestamp());
+        newUser.put( "StoryName", storyNameString);
+        newUser.put( "Tag 1", tag1String);
+        newUser.put( "Tag 2", tag2String);
+        newUser.put( "Tag 3", tag3String);
 
         db.collection("Stories")
                 .add(newUser)

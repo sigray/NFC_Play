@@ -30,12 +30,14 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /* The NewStoryRecord Activity is the main class for dealing with recording of different media.
 * It takes in the types of media defined in StoryMediaChooser and lets the user record stories
@@ -131,12 +133,22 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         SetupStoryLocation();
     }
 
+//    public Date getDateFromString(String datetoSaved){
+//
+//        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//        try {
+//            Date date = format.parse(datetoSaved);
+//            return date ;
+//        } catch (ParseException e){
+//            return null ;
+//        }
+//
+//    }
 
     //Setup new storage folder
     private void SetupStoryLocation() {
 
         String packageLocation = ("/Stories");
-//        String timeStamp = new SimpleDateFormat("EEE, MMM d, ''yy, HH:mm:ss").format(new Date());
         String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH).format(new Date());
 
 

@@ -20,6 +20,7 @@ public class CloudStoryGalleryMenu extends AppCompatActivity {
 
         Intent intent = new Intent(CloudStoryGalleryMenu.this, CloudStoryGallery.class);
         intent.putExtra("Orientation", mode);
+        intent.putExtra("QueryType", "text");
         CloudStoryGalleryMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -29,6 +30,7 @@ public class CloudStoryGalleryMenu extends AppCompatActivity {
 
         Intent intent = new Intent(CloudStoryGalleryMenu.this, CloudStoryGallery.class);
         intent.putExtra("Orientation", mode);
+        intent.putExtra("QueryType", "image");
         CloudStoryGalleryMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -38,6 +40,7 @@ public class CloudStoryGalleryMenu extends AppCompatActivity {
 
         Intent intent = new Intent(CloudStoryGalleryMenu.this, CloudStoryGallery.class);
         intent.putExtra("Orientation", mode);
+        intent.putExtra("QueryType", "date");
         CloudStoryGalleryMenu.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

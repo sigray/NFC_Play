@@ -125,7 +125,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity android:name=".StoryGalleryMenu" />
         <activity android:name=".CloudStoryGalleryMenu" />
-        <activity android:name=".CloudStoryGallery"></activity>
+        <activity android:name=".CloudStoryGallery" />
+        <activity android:name=".NewStorySaveMetadata"></activity>
     </application>
 
 </manifest>
