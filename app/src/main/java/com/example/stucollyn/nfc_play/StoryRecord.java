@@ -9,16 +9,18 @@ public class StoryRecord {
     String StoryID;
     String StoryName;
     String StoryDate;
-    String URLLink;
+    String StoryRef;
+    String StoryType;
     String linkedText;
 
 
-    public StoryRecord(String StoryID, String StoryName, String StoryDate, String URLLink) {
+    public StoryRecord(String StoryID, String StoryName, String StoryDate, String StoryRef, String StoryType) {
 
         this.StoryID = StoryID;
         this.StoryName = StoryName;
         this.StoryDate = StoryDate;
-        this.URLLink = URLLink;
+        this.StoryRef = StoryRef;
+        this.StoryType = StoryType;
 
     }
 
@@ -37,9 +39,13 @@ public class StoryRecord {
         return  StoryDate;
     }
 
-    public String getURLLink() {
+    public String getStoryRef() {
 
-        return  URLLink;
+        return  StoryRef;
     }
 
+    public String getStoryType() {
+
+        return  StoryType;
+    }
 }

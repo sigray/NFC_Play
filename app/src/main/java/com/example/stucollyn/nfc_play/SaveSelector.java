@@ -46,6 +46,7 @@ public class SaveSelector extends AppCompatActivity {
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     Date FireStoreTime;
+    StorageReference riversRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +156,7 @@ public class SaveSelector extends AppCompatActivity {
         Uri file = Uri.fromFile(fileToUpload);
         String userID = mAuth.getCurrentUser().getUid();
         Log.i("User ID", userID);
-        final StorageReference riversRef = mStorageRef.child(userID).child(fileToUpload.toString());
+        riversRef = mStorageRef.child(userID).child(fileToUpload.toString());
 
         uploadTask = riversRef.putFile(file);
         // Register observers to listen for when the download is done or if it fails
@@ -206,6 +207,7 @@ public class SaveSelector extends AppCompatActivity {
         newUser.put("Username", name);
         newUser.put("Story ID", storyUUID.toString());
         newUser.put("Type", fileType);
+        newUser.put("Link", riversRef);
         newUser.put("URL", downloadURI.toString());
         newUser.put( "Date", FieldValue.serverTimestamp());
         newUser.put( "StoryName", storyNameString);
