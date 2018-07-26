@@ -84,7 +84,7 @@ public class CloudStoryGallery extends AppCompatActivity {
     int currentColour;
     int[] colourCode;
     int numberOfThumbs;
-    ImageAdapter imageAdapter;
+    CloudImageAdapter imageAdapter;
 
 
     @Override
@@ -112,31 +112,21 @@ public class CloudStoryGallery extends AppCompatActivity {
         storyButtonArrayList = new ArrayList<Button>();
         context = this;
         activity = this;
+        progressBar = (ProgressBar) findViewById(R.id.cloud_progressbar);
         queryFireStoreDatabase();
-/*
+    }
+
+    void setupImageAdapter(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+
+        progressBar.setVisibility(View.INVISIBLE);
         gridview = (GridView) findViewById(R.id.gridview);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
-
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
-        File directory = new File(path);
-        files = directory.listFiles();
-
-        folders = new ArrayList<File>();
-        folderFiles = new LinkedHashMap<>();
-        folderImages = new HashMap<File, File>();
-        imageFiles = new HashMap<File, Bitmap>();
-
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");
-        ;
-        colourCode = new int[files.length];
+
+        colourCode = new int[storyRecordMap.size()];
 
 
         for (int i = 0; i < files.length; i++) {
-
-//            Log.i("Files in Folder: ", files[i].getName());
-
 
             if (colourCounter == 0) {
 
@@ -157,10 +147,10 @@ public class CloudStoryGallery extends AppCompatActivity {
         }
 
         //new LoadImages().execute();
-        numberOfThumbs = files.length;
-        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
+        numberOfThumbs = storyRecordMap.size();
+        gridview.setAdapter(imageAdapter = new CloudImageAdapter(this, this, numberOfThumbs, colourCode, mode, storyRecordMap, queryType));
 
-*/
+
     }
 
     public void SearchByNameButton(View view) {
@@ -178,6 +168,9 @@ public class CloudStoryGallery extends AppCompatActivity {
         for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
             String value = entry.getValue().get(0).getStoryName();
+            setupImageAdapter(value);
+
+            /*
 
             Button valueTV = new Button(context);
             valueTV.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -190,6 +183,8 @@ public class CloudStoryGallery extends AppCompatActivity {
             valueTV.setClickable(true);
             valueTV.setMovementMethod(LinkMovementMethod.getInstance());
             linearLayout.addView(valueTV);
+
+            */
 
         }
     }
@@ -325,6 +320,7 @@ public class CloudStoryGallery extends AppCompatActivity {
                                 String key = entry.getKey();
                                 ArrayList<StoryRecord> value = entry.getValue();
                             }
+
                         }
 
                         else {

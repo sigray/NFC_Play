@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.example.stucollyn.nfc_play.CloudStoryGallery">
 
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/cloud_progressbar"
+        android:visibility="visible"/>
+
     <ImageButton
         android:id="@+id/search"
         android:layout_width="60dp"
@@ -14,7 +20,7 @@
         android:onClick="SearchByNameButton"
         android:src="@drawable/searchmini"
         android:translationZ="0dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -48,7 +54,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:hint="Enter story name"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toStartOf="@+id/search"
         app:layout_constraintStart_toStartOf="parent"

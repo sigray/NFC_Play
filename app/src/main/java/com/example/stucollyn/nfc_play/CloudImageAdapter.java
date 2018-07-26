@@ -22,54 +22,36 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Created by StuCollyn on 07/06/2018.
  */
 
-public class ImageAdapter extends BaseAdapter {
+public class CloudImageAdapter extends BaseAdapter {
     private Context mContext;
     ImageView[] imageButtons;
     TextView[] imageDesc;
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
     Activity storyGallery;
-    ArrayList<File> filesOnTag;
     int[] colourCode;
-    HashMap<File, Bitmap> imageMap;
-    HashMap<File, File> folderToImageRef;
     int mode;
+    String queryType;
+    LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
 
-    public ImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap, int mode) {
+    public CloudImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, int[] colourCode, int mode, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap, String queryType) {
 
         this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
         imageButtons = new ImageView[numberOfThumbs];
         imageDesc = new TextView[numberOfThumbs];
-        this.filesOnTag = filesOnTag;
         this.colourCode = colourCode;
-        this.imageMap = imageMap;
-        this.folderToImageRef = folderToImageRef;
         this.mode = mode;
-
-        for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
-            File key = entry.getKey();
-            File value = entry.getValue();
-
-            Log.i("Folders with images: ", "Key: " + key + ", Value: " + value);
-        }
-
-        for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
-            File key = entry.getKey();
-            Bitmap value = entry.getValue();
-
-            Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + value);
-        }
-
-//        Log.i("Folder to image ref: ", folderToImageRef.toString());
-//        Log.i("Image map: ", imageMap.toString());
+        this.storyRecordMap = storyRecordMap;
+        this.queryType = queryType;
     }
 
     @Override
@@ -88,6 +70,8 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     // create a new TextView for each item referenced by the Adapter
+
+    /*
 
     File[] FilesForThumbnail(int position) {
 
@@ -173,6 +157,8 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
+    */
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -191,7 +177,7 @@ public class ImageAdapter extends BaseAdapter {
 
             TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
             imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
-            imageCaption.setText(filesOnTag.get(position).getName());
+            imageCaption.setText(.get(position).getName());
             imageButtons[position].setBackgroundColor(currentColour);
 
 
@@ -199,6 +185,7 @@ public class ImageAdapter extends BaseAdapter {
 
             File value = folderToImageRef.get(filesOnTag.get(position));
 
+            Log.i("Test bitty", filesOnTag.get(position).toString());
 
             for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
                 File key = entry.getKey();
