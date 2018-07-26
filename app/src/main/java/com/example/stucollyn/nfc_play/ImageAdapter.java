@@ -215,12 +215,10 @@ public class ImageAdapter extends BaseAdapter {
                     Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
 
                 }
-//            Log.i("Test bitty list", folderToImageRef.toString());
 
 
                 Bitmap bitmap = imageMap.get(filesOnTag.get(position));
 
-//            Log.i("Test bitty", bitmap.toString());
 
                 imageButtons[position].setImageBitmap(bitmap);
             }

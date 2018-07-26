@@ -103,6 +103,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
             welcome2.setGravity(Gravity.CENTER);
 
             welcome2.startAnimation(welcome_fade_in);
+            logoutButton.startAnimation(logout_fade_in);
         }
 
         else {
@@ -327,6 +328,8 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
     //Balloon animation scheduler
     private void AnimateBalloons() {
 
+        miine_open.setVisibility(View.VISIBLE);
+
         //If no balloons have started, start the slow, fast, and normal paced balloon animations
         if (!balloon_move_slower.hasStarted()) {
 
@@ -400,11 +403,9 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
         welcome.startAnimation(welcome_fade_out);
         welcome2.startAnimation(welcome_fade_out);
-        miine.startAnimation(miine_fade_out);
+        signupButton.startAnimation(logout_fade_out);
         loginButton.startAnimation(login_fade_out);
         logoutButton.startAnimation(login_fade_out);
-//        signupButton.startAnimation(logout_fade_out);
-        miine.setVisibility(View.INVISIBLE);
         miine_open.setVisibility(View.INVISIBLE);
         loginButton.setVisibility(View.INVISIBLE);
         logoutButton.setVisibility(View.INVISIBLE);
@@ -412,12 +413,25 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         welcome.setVisibility(View.INVISIBLE);
         welcome2.setVisibility(View.INVISIBLE);
         miine.setClickable(false);
-
-        miine.setVisibility(View.VISIBLE);
         welcome.setVisibility(View.INVISIBLE);
-        miine_open.setVisibility(View.VISIBLE);
-        miine.setVisibility(View.VISIBLE);
-        AnimateBalloons();
+
+        login_fade_out.setAnimationListener(new AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                AnimateBalloons();
+            }
+        });
+
     }
 
     @Override

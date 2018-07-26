@@ -40,6 +40,7 @@ public class CloudImageAdapter extends BaseAdapter {
     int mode;
     String queryType;
     LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
+    ArrayList<StoryRecord> storyRecords;
 
     public CloudImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, int[] colourCode, int mode, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap, String queryType) {
 
@@ -52,6 +53,11 @@ public class CloudImageAdapter extends BaseAdapter {
         this.mode = mode;
         this.storyRecordMap = storyRecordMap;
         this.queryType = queryType;
+
+        for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
+
+            storyRecords = entry.getValue();
+        }
     }
 
     @Override
@@ -177,126 +183,32 @@ public class CloudImageAdapter extends BaseAdapter {
 
             TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
             imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
-            imageCaption.setText(.get(position).getName());
             imageButtons[position].setBackgroundColor(currentColour);
 
 
-            if(!imageMap.isEmpty()) {
+            if (queryType.equals("text")) {
 
-            File value = folderToImageRef.get(filesOnTag.get(position));
+                imageCaption.setText(storyRecords.get(position).getStoryName());
+                Log.i("QueryType", storyRecords.get(position).getStoryName());
 
-            Log.i("Test bitty", filesOnTag.get(position).toString());
+            } else if (queryType.equals("date")) {
 
-            for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
-                File key = entry.getKey();
-                File values = entry.getValue();
+                imageCaption.setText(storyRecords.get(position).getStoryDate());
+                Log.i("QueryType", storyRecords.get(position).getStoryName());
 
-                Log.i("Folders with images: ", "Key: " + key + ", Value: " + values);
+            } else if (queryType.equals("image")) {
 
             }
 
-                for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
-                    File key = entry.getKey();
-                    Bitmap values = entry.getValue();
+            else {
 
-                    Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
-
-                }
-//            Log.i("Test bitty list", folderToImageRef.toString());
-
-
-                Bitmap bitmap = imageMap.get(filesOnTag.get(position));
-
-//            Log.i("Test bitty", bitmap.toString());
-
-                imageButtons[position].setImageBitmap(bitmap);
+                Log.i("QueryType", "none");
             }
-/*
-            if(!imageMap.isEmpty()) {
-                if (folderToImageRef.containsKey(filesOnTag[position])) {
-
-                    File value = folderToImageRef.get(filesOnTag[position]);
-
-                    Log.i("value File: ", value.getName());
-
-                    Bitmap bitmap = imageMap.get(value);
-
-                    Log.i("value File: ", bitmap.toString());
-                    //imageButtons[position].setImageBitmap(bitmap);
-
-                }
-            }
-
-           */
-
-
-           imageButtons[position].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    File[] files = FilesForThumbnail(position);
-
-                    //ThumbnailSelected();
-                    Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("Orientation", mode);
-                    intent.putExtra("StoryDetails", filesOnTag.get(position));
-                    intent.putExtra("filesOnTag", files);
-                    storyGallery.getApplicationContext().startActivity(intent);
-                    storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-                }
-            });
-
-
-
-
-//            File[] files = FilesForThumbnail(position);
-//            File file = GetPicture(files);
-//
-//
-//
-//            if(file!= null) {
-//
-//                Bitmap coverConv = ShowPicture(file);
-//                imageButtons[position].setImageBitmap(coverConv);
-//                imageButtons[position].setBackgroundColor(currentColour);
-//
-//            }
-
-        }
-
-        else {
+        } else {
 
             grid = (View) convertView;
         }
 
         return grid;
     }
-
-    void ThumbnailSelected() {
-
-        imageButtonSelected = true;
-    }
-
-    boolean checkButtonSelection() {
-
-        return  imageButtonSelected;
-    }
-
-    // references to our images
-    private Integer[] mThumbIds = {
-
-            R.drawable.nfc_icon, R.drawable.nfc
-//            R.drawable.sample_2, R.drawable.sample_3,
-//            R.drawable.sample_4, R.drawable.sample_5,
-//            R.drawable.sample_6, R.drawable.sample_7,
-//            R.drawable.sample_0, R.drawable.sample_1,
-//            R.drawable.sample_2, R.drawable.sample_3,
-//            R.drawable.sample_4, R.drawable.sample_5,
-//            R.drawable.sample_6, R.drawable.sample_7,
-//            R.drawable.sample_0, R.drawable.sample_1,
-//            R.drawable.sample_2, R.drawable.sample_3,
-//            R.drawable.sample_4, R.drawable.sample_5,
-//            R.drawable.sample_6, R.drawable.sample_7
-    };
 }

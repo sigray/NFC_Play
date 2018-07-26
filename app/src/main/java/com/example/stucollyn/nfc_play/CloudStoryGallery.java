@@ -120,13 +120,15 @@ public class CloudStoryGallery extends AppCompatActivity {
 
         progressBar.setVisibility(View.INVISIBLE);
         gridview = (GridView) findViewById(R.id.gridview);
+
+
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");
 
         colourCode = new int[storyRecordMap.size()];
 
 
-        for (int i = 0; i < files.length; i++) {
+        for (int i = 0; i < storyRecordMap.size(); i++) {
 
             if (colourCounter == 0) {
 
@@ -150,7 +152,6 @@ public class CloudStoryGallery extends AppCompatActivity {
         numberOfThumbs = storyRecordMap.size();
         gridview.setAdapter(imageAdapter = new CloudImageAdapter(this, this, numberOfThumbs, colourCode, mode, storyRecordMap, queryType));
 
-
     }
 
     public void SearchByNameButton(View view) {
@@ -167,8 +168,8 @@ public class CloudStoryGallery extends AppCompatActivity {
 
         for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
-            String value = entry.getValue().get(0).getStoryName();
-            setupImageAdapter(value);
+//            String value = entry.getValue().get(0).getStoryName();
+            setupImageAdapter(storyRecordMap);
 
             /*
 
@@ -309,11 +310,13 @@ public class CloudStoryGallery extends AppCompatActivity {
                                 storySearchBar.setVisibility(View.VISIBLE);
                             } else if (queryType.equals("image")) {
 
-                                orderByImage(storyRecordMap);
+//                                orderByImage(storyRecordMap);
                             } else if (queryType.equals("date")) {
 
-                                orderByDate(storyRecordMap);
+//                                orderByDate(storyRecordMap);
                             }
+
+                            showAllStories(storyRecordMap);
 
                             for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
