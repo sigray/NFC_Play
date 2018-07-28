@@ -403,9 +403,9 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
         welcome.startAnimation(welcome_fade_out);
         welcome2.startAnimation(welcome_fade_out);
-        signupButton.startAnimation(logout_fade_out);
         loginButton.startAnimation(login_fade_out);
         logoutButton.startAnimation(login_fade_out);
+        signupButton.startAnimation(logout_fade_out);
         miine_open.setVisibility(View.INVISIBLE);
         loginButton.setVisibility(View.INVISIBLE);
         logoutButton.setVisibility(View.INVISIBLE);

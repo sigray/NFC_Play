@@ -47,7 +47,7 @@ public class SaveSelector extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Date FireStoreTime;
     StorageReference riversRef;
-
+    FirebaseStorage storage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +58,7 @@ public class SaveSelector extends AppCompatActivity {
                 .build();
         firestore.setFirestoreSettings(settings);
         mStorageRef = FirebaseStorage.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         mode = (Integer) getIntent().getExtras().get("Orientation");
@@ -156,7 +157,7 @@ public class SaveSelector extends AppCompatActivity {
         Uri file = Uri.fromFile(fileToUpload);
         String userID = mAuth.getCurrentUser().getUid();
         Log.i("User ID", userID);
-        riversRef = mStorageRef.child(userID).child(fileToUpload.toString());
+        riversRef = mStorageRef.child(userID).child(storyNameString);
 
         uploadTask = riversRef.putFile(file);
         // Register observers to listen for when the download is done or if it fails
@@ -202,13 +203,16 @@ public class SaveSelector extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String name = user.getEmail();
+        String storage = riversRef.toString();
+
+        Log.i("Reference", riversRef.toString());
+
 
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("Username", name);
         newUser.put("Story ID", storyUUID.toString());
         newUser.put("Type", fileType);
-        newUser.put("Link", riversRef);
-        newUser.put("URL", downloadURI.toString());
+        newUser.put("URL", storage);
         newUser.put( "Date", FieldValue.serverTimestamp());
         newUser.put( "StoryName", storyNameString);
         newUser.put( "Tag 1", tag1String);

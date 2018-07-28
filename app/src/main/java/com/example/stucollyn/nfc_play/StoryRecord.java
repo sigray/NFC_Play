@@ -1,10 +1,12 @@
 package com.example.stucollyn.nfc_play;
 
+import java.io.Serializable;
+
 /**
  * Created by StuCollyn on 24/07/2018.
  */
 
-public class StoryRecord {
+public class StoryRecord implements Serializable {
 
     String StoryID;
     String StoryName;

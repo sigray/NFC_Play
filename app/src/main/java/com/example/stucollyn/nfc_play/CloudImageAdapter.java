@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.io.Serializable;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -29,35 +31,31 @@ import java.util.Map;
  * Created by StuCollyn on 07/06/2018.
  */
 
-public class CloudImageAdapter extends BaseAdapter {
+public class CloudImageAdapter extends BaseAdapter implements Serializable {
     private Context mContext;
     ImageView[] imageButtons;
     TextView[] imageDesc;
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
-    Activity storyGallery;
+    Activity cloudStoryGallery;
     int[] colourCode;
     int mode;
     String queryType;
     LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
-    ArrayList<StoryRecord> storyRecords;
+    ArrayList<String> storyRecords;
 
-    public CloudImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, int[] colourCode, int mode, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap, String queryType) {
+    public CloudImageAdapter(Activity cloudStoryGallery, Context c, int numberOfThumbs, int[] colourCode, int mode, ArrayList<String> storyRecords, String queryType, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
 
-        this.storyGallery = storyGallery;
+        this.cloudStoryGallery = cloudStoryGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
         imageButtons = new ImageView[numberOfThumbs];
         imageDesc = new TextView[numberOfThumbs];
         this.colourCode = colourCode;
         this.mode = mode;
-        this.storyRecordMap = storyRecordMap;
+        this.storyRecords = storyRecords;
         this.queryType = queryType;
-
-        for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
-
-            storyRecords = entry.getValue();
-        }
+        this.storyRecordMap = storyRecordMap;
     }
 
     @Override
@@ -174,41 +172,61 @@ public class CloudImageAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         grid = new View(mContext);
-        grid = inflater.inflate(R.layout.activity_story_gallery_grid_item, null);
+        grid = inflater.inflate(R.layout.activity_cloud_story_gallery_grid_item, null);
 
         int currentColour = colourCode[position];
 
         if (convertView == null) {
 
 
-            TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
-            imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
+            TextView imageCaption = (TextView) grid.findViewById(R.id.grid_cloud_item_text);
+            imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_cloud_item_background);
             imageButtons[position].setBackgroundColor(currentColour);
+            imageButtons[position].setClickable(true);
+            imageCaption.setTextSize(30);
+
+                if (queryType.equals("text")) {
+
+                  imageCaption.setText(storyRecords.get(position));
+
+                } else if (queryType.equals("date")) {
+
+                  imageCaption.setText(storyRecords.get(position));
+                } else if (queryType.equals("image")) {
+
+                }
+
+                else {
+
+                    Log.i("QueryType", "none");
+                }
 
 
-            if (queryType.equals("text")) {
+            imageButtons[position].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                imageCaption.setText(storyRecords.get(position).getStoryName());
-                Log.i("QueryType", storyRecords.get(position).getStoryName());
+                    Log.i("StoryMap", storyRecordMap.get(storyRecords.get(position)).toString());
 
-            } else if (queryType.equals("date")) {
+                    Intent intent = new Intent(cloudStoryGallery.getApplicationContext(), ShowCloudStories.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("Orientation", mode);
+                    bundle.putString("StoryName", storyRecords.get(position));
+                    bundle.putSerializable("StoryRecordArray", storyRecordMap.get(storyRecords.get(position)));
+                    bundle.putString("QueryType", queryType);
+                    intent.putExtras(bundle);
+                    cloudStoryGallery.getApplicationContext().startActivity(intent);
+                    cloudStoryGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+                }
+            });
 
-                imageCaption.setText(storyRecords.get(position).getStoryDate());
-                Log.i("QueryType", storyRecords.get(position).getStoryName());
 
-            } else if (queryType.equals("image")) {
-
-            }
-
-            else {
-
-                Log.i("QueryType", "none");
-            }
         } else {
 
             grid = (View) convertView;
         }
 
+        Log.i("ImageButton", imageButtons[position].toString());
         return grid;
     }
 }

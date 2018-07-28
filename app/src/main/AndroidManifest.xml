@@ -126,7 +126,9 @@
         <activity android:name=".StoryGalleryMenu" />
         <activity android:name=".CloudStoryGalleryMenu" />
         <activity android:name=".CloudStoryGallery" />
-        <activity android:name=".NewStorySaveMetadata"></activity>
+        <activity android:name=".NewStorySaveMetadata" />
+        <activity android:name=".ShowCloudStories" />
+        <activity android:name=".ShowCloudStoryContent"></activity>
     </application>
 
 </manifest>

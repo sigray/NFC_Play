@@ -25,6 +25,7 @@ public class ReviewPictureStory extends AppCompatActivity {
     Bitmap adjustedFullSizedBitmap, adjustedBitmap;
     int rotationInDegrees;
     int mode;
+    boolean cloudRequest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class ReviewPictureStory extends AppCompatActivity {
 
         ShowPicture();
     }
+
+
+
 
     void ShowPicture() {
 

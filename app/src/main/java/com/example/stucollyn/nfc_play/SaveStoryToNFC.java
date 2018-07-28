@@ -67,8 +67,6 @@ public class SaveStoryToNFC extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
     }
 
-
-
     private void write(Tag tag) throws IOException, FormatException {
 
 //        String fileToWrite = fileDirectory.getAbsolutePath();
@@ -86,8 +84,6 @@ public class SaveStoryToNFC extends AppCompatActivity {
         // Close the connection
         ndef.close();
     }
-
-
 
     private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
         String lang       = "en";
@@ -109,7 +105,6 @@ public class SaveStoryToNFC extends AppCompatActivity {
 
         return recordNFC;
     }
-
 
     @Override
     protected void onNewIntent(Intent intent){
@@ -157,9 +152,7 @@ public class SaveStoryToNFC extends AppCompatActivity {
         else {
 
 //            writeinstruction.setText("Error writing object. Please rescan.");
-
         }
-
     }
 
     @Override

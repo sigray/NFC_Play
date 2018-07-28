@@ -13,7 +13,9 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.MenuItem;
@@ -85,6 +87,7 @@ public class CloudStoryGallery extends AppCompatActivity {
     int[] colourCode;
     int numberOfThumbs;
     CloudImageAdapter imageAdapter;
+    ArrayList<String> fullList;
 
 
     @Override
@@ -105,7 +108,7 @@ public class CloudStoryGallery extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         setContentView(R.layout.activity_cloud_story_gallery);
-        linearLayout = findViewById(R.id.test_linear);
+//        linearLayout = findViewById(R.id.test_linear);
         storySearchBar = findViewById(R.id.search_bar);
         searchButton = (ImageButton) findViewById(R.id.search);
         context = this;
@@ -114,9 +117,34 @@ public class CloudStoryGallery extends AppCompatActivity {
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.cloud_progressbar);
         queryFireStoreDatabase();
+
+        storySearchBar.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() == 0) {
+                    setupImageAdapter(storyRecordMap, fullList);
+                }
+
+                else {
+
+                    orderByStoryName(storyRecordMap);
+                }
+            }
+
+        });
     }
 
-    void setupImageAdapter(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+    void setupImageAdapter(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap, ArrayList<String> storyRecords) {
 
         progressBar.setVisibility(View.INVISIBLE);
         gridview = (GridView) findViewById(R.id.gridview);
@@ -125,10 +153,10 @@ public class CloudStoryGallery extends AppCompatActivity {
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");
 
-        colourCode = new int[storyRecordMap.size()];
+        colourCode = new int[storyRecords.size()];
 
 
-        for (int i = 0; i < storyRecordMap.size(); i++) {
+        for (int i = 0; i < storyRecords.size(); i++) {
 
             if (colourCounter == 0) {
 
@@ -148,9 +176,11 @@ public class CloudStoryGallery extends AppCompatActivity {
 
         }
 
+        Log.i("StoryMApSize: ", storyRecordMap.size() + ", " + storyRecordMap.toString());
+
         //new LoadImages().execute();
-        numberOfThumbs = storyRecordMap.size();
-        gridview.setAdapter(imageAdapter = new CloudImageAdapter(this, this, numberOfThumbs, colourCode, mode, storyRecordMap, queryType));
+        numberOfThumbs = storyRecords.size();
+        gridview.setAdapter(imageAdapter = new CloudImageAdapter(this, this, numberOfThumbs, colourCode, mode, storyRecords, queryType, storyRecordMap));
 
     }
 
@@ -165,11 +195,15 @@ public class CloudStoryGallery extends AppCompatActivity {
     }
 
     void showAllStories(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+        ArrayList<String> mediaItems = new ArrayList<String>();
+        fullList = mediaItems;
 
         for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
-//            String value = entry.getValue().get(0).getStoryName();
-            setupImageAdapter(storyRecordMap);
+            String value = entry.getValue().get(0).getStoryName();
+            mediaItems.add(value);
+        }
+            setupImageAdapter(storyRecordMap, mediaItems);
 
             /*
 
@@ -186,8 +220,6 @@ public class CloudStoryGallery extends AppCompatActivity {
             linearLayout.addView(valueTV);
 
             */
-
-        }
     }
 
     boolean patternMatch(String value) {
@@ -209,6 +241,7 @@ public class CloudStoryGallery extends AppCompatActivity {
 
     void orderByStoryName(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
 
+        ArrayList<String> mediaItems = new ArrayList<String>();
         boolean matchMade = false;
         for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
@@ -216,34 +249,36 @@ public class CloudStoryGallery extends AppCompatActivity {
             matchMade = patternMatch(value);
 
             if (matchMade) {
-                Button valueTV = new Button(context);
-                valueTV.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-                        LayoutParams.WRAP_CONTENT));
-                valueTV.setText(Html.fromHtml(value));
-                valueTV.setTextSize(30);
-                valueTV.setClickable(true);
-                valueTV.setMovementMethod(LinkMovementMethod.getInstance());
-                linearLayout.addView(valueTV);
-                storyButtonArrayList.add(valueTV);
+
+                mediaItems.add(value);
+                setupImageAdapter(storyRecordMap, mediaItems);
+//                Button valueTV = new Button(context);
+//                valueTV.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
+//                        LayoutParams.WRAP_CONTENT));
+//                valueTV.setText(Html.fromHtml(value));
+//                valueTV.setTextSize(30);
+//                valueTV.setClickable(true);
+//                valueTV.setMovementMethod(LinkMovementMethod.getInstance());
+//                linearLayout.addView(valueTV);
+//                storyButtonArrayList.add(valueTV);
             }
         }
     }
 
     void orderByDate(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
 
+        ArrayList<String> storyNames = new ArrayList<String>();
+        ArrayList<String> storyDates = new ArrayList<String>();
+
         for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
-            //HashMap<String, Date> dates= new HashMap<String, Date>();
-            String value = entry.getValue().get(0).getStoryName();
-            Button valueTV = new Button(context);
-            valueTV.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.WRAP_CONTENT));
-            valueTV.setText(Html.fromHtml(value));
-            valueTV.setTextSize(30);
-            valueTV.setClickable(true);
-            valueTV.setMovementMethod(LinkMovementMethod.getInstance());
-            linearLayout.addView(valueTV);
+            String date = entry.getValue().get(0).getStoryDate();
+            String name = entry.getValue().get(0).getStoryName();
+            storyNames.add(name);
+            storyDates.add(date);
         }
+
+        setupImageAdapter(storyRecordMap, storyNames);
     }
 
     void orderByImage(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
@@ -308,15 +343,16 @@ public class CloudStoryGallery extends AppCompatActivity {
 
                                 searchButton.setVisibility(View.VISIBLE);
                                 storySearchBar.setVisibility(View.VISIBLE);
+                                showAllStories(storyRecordMap);
+
                             } else if (queryType.equals("image")) {
 
 //                                orderByImage(storyRecordMap);
                             } else if (queryType.equals("date")) {
 
-//                                orderByDate(storyRecordMap);
+                                orderByDate(storyRecordMap);
                             }
 
-                            showAllStories(storyRecordMap);
 
                             for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
 
