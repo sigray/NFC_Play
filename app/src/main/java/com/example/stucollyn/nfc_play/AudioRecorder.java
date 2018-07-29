@@ -62,7 +62,7 @@ public class AudioRecorder extends Application {
     private void createAudioFile() {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
+        String imageFileName = "AudioMPEG3_" + timeStamp + "_";
         File storageDir;
 
         if (Build.VERSION.SDK_INT >= 19) {

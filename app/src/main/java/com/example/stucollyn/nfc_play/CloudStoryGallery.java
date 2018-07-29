@@ -234,6 +234,11 @@ public class CloudStoryGallery extends AppCompatActivity {
             return false;
         }
 
+        if(findMe.toLowerCase().contains(searchMe)) {
+
+            return true;
+        }
+
         Pattern p = Pattern.compile(findMe, Pattern.CASE_INSENSITIVE + Pattern.LITERAL);
         Matcher m = p.matcher(searchMe);
         return m.find();

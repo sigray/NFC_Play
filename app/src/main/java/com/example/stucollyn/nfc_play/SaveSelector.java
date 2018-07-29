@@ -46,8 +46,9 @@ public class SaveSelector extends AppCompatActivity {
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     Date FireStoreTime;
-    StorageReference riversRef;
     FirebaseStorage storage;
+//    StorageReference riversRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,28 +127,30 @@ public class SaveSelector extends AppCompatActivity {
 
                 if (extension.equalsIgnoreCase("jpg")) {
 
+                    Log.i("Uploading Picture", " true");
                     fileType = "PictureFile";
                 }
 
-                if (extension.equalsIgnoreCase("mp3")) {
+                else if (extension.equalsIgnoreCase("mp3")) {
 
+                    Log.i("Uploading Audio", " true");
                     fileType = "AudioFile";
                 }
 
-                if (extension.equalsIgnoreCase("mp4")) {
+                else if (extension.equalsIgnoreCase("mp4")) {
 
+                    Log.i("Uploading Video", " true");
                     fileType = "VideoFile";
                 }
 
-                if (extension.equalsIgnoreCase("txt")) {
+                else if (extension.equalsIgnoreCase("txt")) {
 
+                    Log.i("Uploading Text", " true");
                     fileType = "WrittenFile";
                 }
 
                 uploadToCloud(files[i], storyUUID, fileType);
             }
-
-        //}
 
     }
 
@@ -156,9 +159,12 @@ public class SaveSelector extends AppCompatActivity {
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
         String userID = mAuth.getCurrentUser().getUid();
+        String name = UUID.randomUUID().toString();
         Log.i("User ID", userID);
-        riversRef = mStorageRef.child(userID).child(storyNameString);
-
+        StorageReference riversRef = mStorageRef.child(userID).child(name);
+        Log.i("Rivers Ref Name ", " " + name);
+        Log.i("Rivers Ref Name Ref ", " " + riversRef.toString());
+        uploadToDatabase(storyUUID, fileType, riversRef);
         uploadTask = riversRef.putFile(file);
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
@@ -171,41 +177,19 @@ public class SaveSelector extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
-            }
-        });
+                Log.i("Mission Accomplished", "Completed ");
 
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Continue with the task to get the download URL
-                return riversRef.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    Log.i("Download Link", downloadUri.toString());
-                    uploadToDatabase(downloadUri, storyUUID, fileType);
-                } else {
-                    // Handle failures
-                    // ...
-                }
             }
         });
     }
 
-    void uploadToDatabase(Uri downloadURI, UUID storyUUID, String fileType) {
+    void uploadToDatabase(UUID storyUUID, String fileType, StorageReference reference) {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String name = user.getEmail();
-        String storage = riversRef.toString();
+        String storage = reference.toString();
 
-        Log.i("Reference", riversRef.toString());
+        Log.i("Reference", reference.toString());
 
 
         Map<String, Object> newUser = new HashMap<>();
@@ -224,17 +208,15 @@ public class SaveSelector extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d("Success", "DocumentSnapshot written with ID: " + documentReference.getId());
+                        Log.i("Success", "DocumentSnapshot written with ID: " + documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.w("Failure", "Error adding document", e);
+                        Log.i("Failure", "Error adding document", e);
                     }
                 });
-
-
     }
 
     @Override

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -57,6 +58,7 @@ public class ShowCloudStoryContent extends AppCompatActivity {
     ImageButton expand_video_button, shrink_video_button;
     ImageView captured_video_background, full_screen_video_background;
     boolean is_fullscreen_video_on = false;
+    ProgressBar progressBar;
 
 
     @Override
@@ -64,6 +66,8 @@ public class ShowCloudStoryContent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setContentView(R.layout.activity_show_cloud_story_content);
+        showImage = (ImageView) findViewById(R.id.cloud_show_image);
+        progressBar = (ProgressBar) findViewById(R.id.cloud_progressbar);
         storyType = (String) getIntent().getExtras().get("StoryType");
         storyName = (String) getIntent().getExtras().get("StoryName");
         thisStory = (StoryRecord) getIntent().getExtras().get("StoryRecordArray");
@@ -80,6 +84,7 @@ public class ShowCloudStoryContent extends AppCompatActivity {
 
         if(storyType.equals("PictureFile")) {
 
+            showImage.setVisibility(View.VISIBLE);
             PictureFile();
         }
 
@@ -229,6 +234,7 @@ public class ShowCloudStoryContent extends AppCompatActivity {
         captured_video.setVideoURI(story_directory_uri);
         mediaController.setAnchorView(captured_video);
         captured_video.setMediaController(mediaController);
+        progressBar.setVisibility(View.INVISIBLE);
         captured_video.start();
     }
 
@@ -247,13 +253,15 @@ public class ShowCloudStoryContent extends AppCompatActivity {
         int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
         rotationInDegrees = exifToDegrees(rotation);
 
+
+        /*
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 500, photoH / 500);
+        int smallSizeScaleFactor = Math.min(photoW / 300, photoH / 300);
 
 
         // Decode the image file into a Bitmap sized to fill the View
@@ -261,6 +269,9 @@ public class ShowCloudStoryContent extends AppCompatActivity {
         bmOptions.inSampleSize = smallSizeScaleFactor;
         bmOptions.inPurgeable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
+        */
+
+        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath());
         Matrix matrix = new Matrix();
         if (rotation != 0f) {
             matrix.preRotate(rotationInDegrees);
@@ -275,8 +286,8 @@ public class ShowCloudStoryContent extends AppCompatActivity {
             adjustedBitmap = bitmap;
         }
 
-        showImage = (ImageView) findViewById(R.id.cloud_show_image);
-        showImage.setVisibility(View.VISIBLE);
+//        showImage.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
         showImage.setImageBitmap(adjustedBitmap);
     }
 
