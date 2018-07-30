@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -206,8 +207,6 @@ public class CloudImageAdapter extends BaseAdapter implements Serializable {
                 @Override
                 public void onClick(View v) {
 
-                    Log.i("StoryMap", storyRecordMap.get(storyRecords.get(position)).toString());
-
                     Intent intent = new Intent(cloudStoryGallery.getApplicationContext(), ShowCloudStories.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("Orientation", mode);
@@ -226,7 +225,6 @@ public class CloudImageAdapter extends BaseAdapter implements Serializable {
             grid = (View) convertView;
         }
 
-        Log.i("ImageButton", imageButtons[position].toString());
         return grid;
     }
 }

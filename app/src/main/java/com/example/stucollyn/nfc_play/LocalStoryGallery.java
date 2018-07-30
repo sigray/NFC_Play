@@ -286,7 +286,7 @@ public class LocalStoryGallery extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(LocalStoryGallery.this, MainMenu.class);
+        Intent intent = new Intent(LocalStoryGallery.this, StoryGalleryMenu.class);
         intent.putExtra("Orientation", mode);
         LocalStoryGallery.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

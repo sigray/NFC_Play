@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,15 +32,22 @@ public class ShowCloudStories extends AppCompatActivity {
     Intent intent;
     int j;
     StoryRecord thisStorySend;
+    TextView storyTitleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Show Cloud Story");
         setContentView(R.layout.activity_show_cloud_stories);
         mode = (Integer) getIntent().getExtras().get("Orientation");
         queryType = (String) getIntent().getExtras().get("QueryType");
         storyName = (String) getIntent().getExtras().get("StoryName");
         storyRecords = (ArrayList<StoryRecord>) getIntent().getExtras().get("StoryRecordArray");
+        storyTitleText = (TextView) findViewById(R.id.story_title_text);
         linearLayout = (LinearLayout) findViewById(R.id.cloud_stories_linear);
         mediaButton = new ImageButton[storyRecords.size()];
         listMediaItems();
@@ -66,13 +75,19 @@ public class ShowCloudStories extends AppCompatActivity {
             if (storyRecords.get(i).getStoryType().equals("WrittenFile")) {
 
                 mediaButton[i].setImageResource(R.drawable.written_media);
-            } else if (storyRecords.get(i).getStoryType().equals("PictureFile")) {
+            }
+
+            else if (storyRecords.get(i).getStoryType().equals("PictureFile")) {
 
                 mediaButton[i].setImageResource(R.drawable.camera_media);
-            } else if (storyRecords.get(i).getStoryType().equals("VideoFile")) {
+            }
+
+            else if (storyRecords.get(i).getStoryType().equals("VideoFile")) {
 
                 mediaButton[i].setImageResource(R.drawable.video_media);
-            } else if (storyRecords.get(i).getStoryType().equals("AudioFile")) {
+            }
+
+            else if (storyRecords.get(i).getStoryType().equals("AudioFile")) {
 
                 mediaButton[i].setImageResource(R.drawable.audio_media);
             }
@@ -97,5 +112,23 @@ public class ShowCloudStories extends AppCompatActivity {
                 }
             });
         }
-     }
+
+        storyTitleText.setText(storyRecords.get(0).getStoryName());
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
@@ -67,6 +69,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
     int mode;
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
+    boolean isNetworkConnected;
 
     //onCreate method called on Activity start
     @Override
@@ -92,24 +95,39 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
         InitAnimation();
         InitView();
         FadeInLogin();
+        isNetworkConnected = isNetworkConnected();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
+        if(!isNetworkConnected) {
 
-            logoutButton.setVisibility(View.VISIBLE);
+            logoutButton.setVisibility(View.INVISIBLE);
             signupButton.setVisibility(View.INVISIBLE);
             loginButton.setText("Continue");
-            welcome2.setText(user.getEmail());
-            welcome2.setGravity(Gravity.CENTER);
-
-            welcome2.startAnimation(welcome_fade_in);
-            logoutButton.startAnimation(logout_fade_in);
         }
 
         else {
-            signupButton.startAnimation(logout_fade_in);
-            signupButton.setVisibility(View.VISIBLE);
+
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+
+                logoutButton.setVisibility(View.VISIBLE);
+                signupButton.setVisibility(View.INVISIBLE);
+                loginButton.setText("Continue");
+                welcome2.setText(user.getEmail());
+                welcome2.setGravity(Gravity.CENTER);
+
+                welcome2.startAnimation(welcome_fade_in);
+                logoutButton.startAnimation(logout_fade_in);
+            } else {
+                signupButton.startAnimation(logout_fade_in);
+                signupButton.setVisibility(View.VISIBLE);
+            }
         }
+    }
+
+    private boolean isNetworkConnected() {
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
     }
 
     public void showLoginNoticeDialog() {
@@ -217,6 +235,11 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
     //When login button is pressed execute the following
     public void Login(View login) {
+
+        if(!isNetworkConnected) {
+
+            Advance();
+        }
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {

@@ -1,9 +1,11 @@
 package com.example.stucollyn.nfc_play;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -11,12 +13,14 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,7 +31,9 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -52,21 +58,34 @@ public class ShowCloudStoryContent extends AppCompatActivity {
     String newDirectory;
     StorageReference gsReference;
     String userID;
-    TextView instruction;
     MediaController mediaController, fullScreenMediaController;
     VideoView captured_video, full_sized_video;
     ImageButton expand_video_button, shrink_video_button;
     ImageView captured_video_background, full_screen_video_background;
     boolean is_fullscreen_video_on = false;
     ProgressBar progressBar;
-
+    private StringBuilder text = new StringBuilder();
+    TextView written_text_story;
+    ImageButton pause_play_button, stop_button;
+    TextView instruction;
+    private MediaPlayer mPlayer = null;
+    boolean mPlayerSetup = false, playbackStatus = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Play Cloud Story");
         mode = (Integer) getIntent().getExtras().get("Orientation");
         setContentView(R.layout.activity_show_cloud_story_content);
         showImage = (ImageView) findViewById(R.id.cloud_show_image);
+        written_text_story = (TextView) findViewById(R.id.written_text_story);
+        pause_play_button = findViewById(R.id.review_audio_story_pause_play_button);
+        stop_button = findViewById(R.id.review_audio_story_stop_button);
+        instruction = findViewById(R.id.review_audio_story_instruction);
         progressBar = (ProgressBar) findViewById(R.id.cloud_progressbar);
         storyType = (String) getIntent().getExtras().get("StoryType");
         storyName = (String) getIntent().getExtras().get("StoryName");
@@ -115,6 +134,7 @@ public class ShowCloudStoryContent extends AppCompatActivity {
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
                     Log.i("Success: ", "Found you stuff");
+                    ShowWriting();
 
                     // Local temp file has been created
                     //ShowWritten();
@@ -164,16 +184,16 @@ public class ShowCloudStoryContent extends AppCompatActivity {
 
         try {
 
-            pictureFile = File.createTempFile("audio", ".mp3", story_directory);
+            audioFile = File.createTempFile("audio", ".mp3", story_directory);
 
-            gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            gsReference.getFile(audioFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
                     Log.i("Success: ", "Found you stuff");
 
                     // Local temp file has been created
-//                    ShowAudio();
+                    ShowAudio();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -301,6 +321,145 @@ public class ShowCloudStoryContent extends AppCompatActivity {
             return 270;
         }
         return 0;
+    }
+
+    void ShowWriting() {
+
+        progressBar.setVisibility(View.INVISIBLE);
+        written_text_story.setVisibility(View.VISIBLE);
+        BufferedReader reader = null;
+
+        try {
+            FileReader in = new FileReader(writtenFile);
+            reader = new BufferedReader(in);
+
+            // do reading, usually loop until end of file reading
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                text.append(mLine);
+                text.append('\n');
+            }
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(),"Error reading file!",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                }
+            }
+
+            written_text_story.setText((CharSequence) text);
+
+        }
+    }
+
+    void ShowAudio() {
+
+        progressBar.setVisibility(View.INVISIBLE);
+        pause_play_button.setVisibility(View.VISIBLE);
+        stop_button.setVisibility(View.VISIBLE);
+        instruction.setVisibility(View.VISIBLE);
+    }
+
+    public void PlaybackButtonSwitch(boolean audioplaying) {
+
+        instruction.setText("Press the green tick to save or the red cross to delete and record something new.");
+
+        if(!audioplaying) {
+            pause_play_button.setImageResource(R.drawable.play_arrow_black);
+        }
+
+        else {
+            pause_play_button.setImageResource(R.drawable.pause_black);
+        }
+
+        audioplaying = !audioplaying;
+    }
+
+    /*When audio playback buttons are selected for first time, setup new audio media player. When
+  user interacts with playback buttons after audio media player has already been setup, toggle
+  between media player pause and play*/
+    public void onPlay(View view) {
+        if (!mPlayerSetup) {
+            setupAudioMediaPlayer();
+        }
+
+        if (!playbackStatus) {
+            startPlaying(view);
+            playbackStatus = true;
+        } else {
+            pausePlaying(view);
+            playbackStatus = false;
+        }
+
+        PlaybackButtonSwitch(playbackStatus);
+    }
+
+    //Setup new audio media player drawing from audio file location
+    protected void setupAudioMediaPlayer() {
+
+        Uri story_directory_uri = FileProvider.getUriForFile(this,
+                "com.example.android.fileprovider",
+                audioFile);
+
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(this, story_directory_uri);
+            mPlayer.prepare();
+            mPlayerSetup = true;
+        } catch (IOException e) {
+            Log.e("Error", "prepare() failed");
+        }
+    }
+
+    //Start audio media player and start listening for stop button to be pressed
+    public void startPlaying(View view) {
+        mPlayer.start();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                stopPlaying(findViewById(R.id.stop_button));
+            }
+
+        });
+    }
+
+    //Pause audio media player
+    public void pausePlaying(View view) {
+
+        mPlayer.pause();
+    }
+
+    //Stop audio media player, delete current media player (requires new setup for future playback)
+    public void stopPlaying(View view) {
+
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+            mPlayerSetup = false;
+            playbackStatus = false;
+            PlaybackButtonSwitch(playbackStatus);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

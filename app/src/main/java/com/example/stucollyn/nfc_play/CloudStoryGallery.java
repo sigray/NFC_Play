@@ -97,6 +97,8 @@ public class CloudStoryGallery extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Cloud Story Gallery");
+
         mode = (Integer) getIntent().getExtras().get("Orientation");
         queryType = (String) getIntent().getExtras().get("QueryType");
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -576,5 +578,26 @@ public class CloudStoryGallery extends AppCompatActivity {
         }
     }
 */
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(CloudStoryGallery.this, StoryGalleryMenu.class);
+        intent.putExtra("Orientation", mode);
+        CloudStoryGallery.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     }
 
