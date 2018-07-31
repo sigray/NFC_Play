@@ -2,6 +2,7 @@ package com.example.stucollyn.nfc_play;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,7 +50,8 @@ public class SaveSelector extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Date FireStoreTime;
     FirebaseStorage storage;
-//    StorageReference riversRef;
+    boolean isNetworkConnected;
+    HashMap<String,String> selectedMedia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +80,22 @@ public class SaveSelector extends AppCompatActivity {
         tag1String = (String)getIntent().getExtras().get("Tag1");
         tag2String = (String)getIntent().getExtras().get("Tag2");
         tag3String = (String)getIntent().getExtras().get("Tag3");
+        selectedMedia = new HashMap<String,String>();
+        selectedMedia = (HashMap<String,String>)getIntent().getSerializableExtra("RecordedMedia");
+        isNetworkConnected = false;
+        isNetworkConnected = isNetworkConnected();
+        if(isNetworkConnected) {
 
+            ImageButton cloudButton = (ImageButton) findViewById(R.id.save_to_cloud);
+            TextView cloudButtonCaption = (TextView) findViewById(R.id.save_to_cloud_caption);
+            cloudButton.setVisibility(View.VISIBLE);
+            cloudButtonCaption.setVisibility(View.VISIBLE);
+        }
     }
 
-    public void StartConfirmation(View view){
+    public void SaveLocally(View view){
 
-        ShowMedia();
+        LocalSave();
         Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
         intent.putExtra("Orientation", mode);
         SaveSelector.this.startActivity(intent);
@@ -97,30 +111,74 @@ public class SaveSelector extends AppCompatActivity {
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
-    @Override
-    public void onBackPressed() {
+    public void SaveToCloud(View view) {
 
-        Intent intent = new Intent(SaveSelector.this, NewStoryReview.class);
+        CloudSave();
+        Intent intent = new Intent(SaveSelector.this, SavedStoryConfirmation.class);
         intent.putExtra("Orientation", mode);
         SaveSelector.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
-    public void ShowMedia() {
+    @Override
+    public void onBackPressed() {
 
-        Log.i("File to upload: ", fileDirectory.toString());
+        Intent intent = new Intent(SaveSelector.this, NewStorySaveMetadata.class);
+        intent.putExtra("StoryDirectory", fileDirectory);
+        intent.putExtra("Orientation", mode);
+        intent.putExtra("TagData", tag_data);
+        intent.putExtra("RecordedMedia", selectedMedia);
+        SaveSelector.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    private boolean isNetworkConnected() {
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    void LocalSave() {
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
-        UUID storyUUID = UUID.randomUUID();
-        String fileType = "";
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-//        WifiManager wifi = (WifiManager)this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-//        if (wifi.isWifiEnabled()){
-//
+        if(!isNetworkConnected) {
+            String name = UUID.randomUUID().toString();
+            String cloudPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/CloudUpload/" + name;
+            File cloudDirectory = new File(cloudPath);
+            File[] cloudFiles = directory.listFiles();
+        }
+    }
 
-            for(int i = 0; i<files.length; i++) {
+    void DeleteLocalFiles() {
+
+        Log.i("File Directory", fileDirectory.toString());
+
+        if (fileDirectory.isDirectory())
+        {
+            String[] children = fileDirectory.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(fileDirectory, children[i]).delete();
+            }
+        }
+
+        boolean deletedFile = fileDirectory.delete();
+    }
+
+    void CloudSave() {
+
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+        File directory = new File(path);
+        UUID storyUUID = UUID.randomUUID();
+        String fileType = "";
+        File[] files = directory.listFiles();
+
+        if(isNetworkConnected) {
+
+            for (int i = 0; i < files.length; i++) {
 
                 String extension = FilenameUtils.getExtension(files[i].toString());
                 String fileName = files[i].toString();
@@ -129,21 +187,15 @@ public class SaveSelector extends AppCompatActivity {
 
                     Log.i("Uploading Picture", " true");
                     fileType = "PictureFile";
-                }
-
-                else if (extension.equalsIgnoreCase("mp3")) {
+                } else if (extension.equalsIgnoreCase("mp3")) {
 
                     Log.i("Uploading Audio", " true");
                     fileType = "AudioFile";
-                }
-
-                else if (extension.equalsIgnoreCase("mp4")) {
+                } else if (extension.equalsIgnoreCase("mp4")) {
 
                     Log.i("Uploading Video", " true");
                     fileType = "VideoFile";
-                }
-
-                else if (extension.equalsIgnoreCase("txt")) {
+                } else if (extension.equalsIgnoreCase("txt")) {
 
                     Log.i("Uploading Text", " true");
                     fileType = "WrittenFile";
@@ -151,7 +203,7 @@ public class SaveSelector extends AppCompatActivity {
 
                 uploadToCloud(files[i], storyUUID, fileType);
             }
-
+        }
     }
 
     void uploadToCloud(File fileToUpload, final UUID storyUUID, final String fileType) {
@@ -178,6 +230,7 @@ public class SaveSelector extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
                 Log.i("Mission Accomplished", "Completed ");
+                DeleteLocalFiles();
 
             }
         });

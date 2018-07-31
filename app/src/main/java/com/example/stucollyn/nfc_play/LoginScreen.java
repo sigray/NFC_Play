@@ -238,27 +238,29 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
         if(!isNetworkConnected) {
 
-            Advance();
-        }
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-//            Uri photoUrl = user.getPhotoUrl();
-
-            // Check if user's email is verified
-            boolean emailVerified = user.isEmailVerified();
-
-            Toast.makeText(LoginScreen.this, "Already logged in as: " + user.getEmail(),
-                    Toast.LENGTH_SHORT).show();
-            Advance();
+            AdvanceOffline();
         }
 
         else {
 
-            showLoginNoticeDialog();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user != null) {
+                // Name, email address, and profile photo Url
+                String name = user.getDisplayName();
+                String email = user.getEmail();
+//            Uri photoUrl = user.getPhotoUrl();
+
+                // Check if user's email is verified
+                boolean emailVerified = user.isEmailVerified();
+
+                Toast.makeText(LoginScreen.this, "Already logged in as: " + user.getEmail(),
+                        Toast.LENGTH_SHORT).show();
+                Advance();
+            } else {
+
+                showLoginNoticeDialog();
+
+            }
 
         }
     }
@@ -410,6 +412,37 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         });
+    }
+
+    private void AdvanceOffline() {
+
+        welcome.startAnimation(welcome_fade_out);
+        welcome2.startAnimation(welcome_fade_out);
+        loginButton.startAnimation(login_fade_out);
+        miine_open.setVisibility(View.INVISIBLE);
+        loginButton.setVisibility(View.INVISIBLE);
+        welcome.setVisibility(View.INVISIBLE);
+        welcome2.setVisibility(View.INVISIBLE);
+        miine.setClickable(false);
+        welcome.setVisibility(View.INVISIBLE);
+
+        login_fade_out.setAnimationListener(new AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+                AnimateBalloons();
+            }
+        });
+
     }
 
     //When correct pass code is matched, start advancement animations, before opening new MainMenu Activity

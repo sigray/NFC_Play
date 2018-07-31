@@ -13,6 +13,12 @@ public class CloudStoryGalleryMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setTitle("Cloud Story Gallery Menu");
         setContentView(R.layout.activity_cloud_story_gallery_menu);
     }
 

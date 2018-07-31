@@ -475,6 +475,7 @@ public class NewStoryReview extends AppCompatActivity implements Serializable {
         intent.putExtra("StoryDirectory", fileDirectory);
         intent.putExtra("Orientation", mode);
         intent.putExtra("TagData", tag_data);
+        intent.putExtra("RecordedMedia", selectedMedia);
         NewStoryReview.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }

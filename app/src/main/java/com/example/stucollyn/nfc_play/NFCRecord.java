@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.UUID;
 
 /* The NewStoryRecord Activity is the main class for dealing with recording of different media.
 * It takes in the types of media defined in StoryMediaChooser and lets the user record stories
@@ -149,8 +150,8 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     private void SetupStoryLocation() {
 
         String packageLocation = ("/Stories");
-        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss", Locale.ENGLISH).format(new Date());
-
+        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
+        String name = UUID.randomUUID().toString();
 
 //        Calendar currentTime = Calendar.getInstance();
 //        int day = currentTime.get(Calendar.DAY_OF_MONTH);
@@ -166,7 +167,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         Log.i("time stamp: ", timeStamp);
 
 
-        String newDirectory = packageLocation + "/" + timeStamp;
+        String newDirectory = packageLocation + "/" + timeStamp + " " + name;
 
 //        String dayOfTheWeek = (String) DateFormat.format("EEEE", timeStamp); // Thursday
 //        String day          = (String) DateFormat.format("dd",   timeStamp); // 20

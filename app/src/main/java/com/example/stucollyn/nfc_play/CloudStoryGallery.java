@@ -100,6 +100,7 @@ public class CloudStoryGallery extends AppCompatActivity {
         getSupportActionBar().setTitle("Cloud Story Gallery");
 
         mode = (Integer) getIntent().getExtras().get("Orientation");
+        setRequestedOrientation(mode);
         queryType = (String) getIntent().getExtras().get("QueryType");
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()

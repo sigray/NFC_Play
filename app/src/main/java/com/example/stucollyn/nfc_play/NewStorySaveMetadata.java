@@ -3,11 +3,13 @@ package com.example.stucollyn.nfc_play;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class NewStorySaveMetadata extends AppCompatActivity {
 
@@ -15,6 +17,7 @@ public class NewStorySaveMetadata extends AppCompatActivity {
     int mode;
     File fileDirectory;
     String tag_data;
+    HashMap<String,String> selectedMedia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,8 @@ public class NewStorySaveMetadata extends AppCompatActivity {
         getSupportActionBar().setTitle("Save New Story");
         fileDirectory = (File)getIntent().getExtras().get("StoryDirectory");
         tag_data = (String)getIntent().getExtras().get("TagData");
+        selectedMedia = new HashMap<String,String>();
+        selectedMedia = (HashMap<String,String>)getIntent().getSerializableExtra("RecordedMedia");
         setContentView(R.layout.activity_new_story_save_metadata);
         storyName = (EditText) findViewById(R.id.enter_story_name);
         tag1 = (EditText) findViewById(R.id.enter_story_tag1);
@@ -51,12 +56,36 @@ public class NewStorySaveMetadata extends AppCompatActivity {
         intent.putExtra("Tag1", tag1String);
         intent.putExtra("Tag2", tag2String);
         intent.putExtra("Tag3", tag3String);
+        intent.putExtra("RecordedMedia", selectedMedia);
         NewStorySaveMetadata.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     public void Discard (View view) {
 
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(NewStorySaveMetadata.this, NewStoryReview.class);
+        intent.putExtra("StoryDirectory", fileDirectory);
+        intent.putExtra("Orientation", mode);
+        intent.putExtra("TagData", tag_data);
+        intent.putExtra("RecordedMedia", selectedMedia);
+        NewStorySaveMetadata.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

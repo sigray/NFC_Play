@@ -48,13 +48,13 @@
         android:text="Search"
         android:textAlignment="center"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/find_date"
+        app:layout_constraintBottom_toTopOf="@+id/save_to_device"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search" />
 
     <ImageButton
-        android:id="@+id/find_date"
+        android:id="@+id/save_to_device"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -63,13 +63,13 @@
         android:src="@drawable/date"
         android:translationZ="0dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/find_date_caption"
-        app:layout_constraintEnd_toStartOf="@+id/find_image"
+        app:layout_constraintBottom_toTopOf="@+id/save_to_device_caption"
+        app:layout_constraintEnd_toStartOf="@+id/save_to_nfc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_caption" />
 
     <ImageButton
-        android:id="@+id/find_image"
+        android:id="@+id/save_to_nfc"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
@@ -78,13 +78,13 @@
         android:src="@drawable/image"
         android:translationZ="0dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/find_image_caption"
+        app:layout_constraintBottom_toTopOf="@+id/save_to_nfc_caption"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/find_date"
+        app:layout_constraintStart_toEndOf="@+id/save_to_device"
         app:layout_constraintTop_toBottomOf="@+id/search_caption" />
 
     <TextView
-        android:id="@+id/find_date_caption"
+        android:id="@+id/save_to_device_caption"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -96,12 +96,12 @@
         android:textAlignment="center"
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/find_image_caption"
+        app:layout_constraintEnd_toStartOf="@+id/save_to_nfc_caption"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/find_date" />
+        app:layout_constraintTop_toBottomOf="@+id/save_to_device" />
 
     <TextView
-        android:id="@+id/find_image_caption"
+        android:id="@+id/save_to_nfc_caption"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -114,7 +114,7 @@
         android:textSize="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/find_date_caption"
-        app:layout_constraintTop_toBottomOf="@+id/find_image" />
+        app:layout_constraintStart_toEndOf="@+id/save_to_device_caption"
+        app:layout_constraintTop_toBottomOf="@+id/save_to_nfc" />
 
 </android.support.constraint.ConstraintLayout>
