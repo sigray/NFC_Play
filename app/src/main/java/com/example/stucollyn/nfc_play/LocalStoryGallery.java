@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -90,9 +91,6 @@ public class LocalStoryGallery extends AppCompatActivity {
 
         for (int i = 0; i < files.length; i++) {
 
-//            Log.i("Files in Folder: ", files[i].getName());
-
-
             if(colourCounter==0) {
 
                 currentColour = Color.parseColor("#756bc7");
@@ -117,7 +115,7 @@ public class LocalStoryGallery extends AppCompatActivity {
 
         new LoadImages().execute();
         numberOfThumbs = files.length;
-        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
+//        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
     }
 
     void downloadFromCloud() throws IOException {

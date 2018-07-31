@@ -168,62 +168,60 @@ public class CloudImageAdapter extends BaseAdapter implements Serializable {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         View grid;
-        LayoutInflater inflater;
-        inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        grid = new View(mContext);
-        grid = inflater.inflate(R.layout.activity_cloud_story_gallery_grid_item, null);
-
-        int currentColour = colourCode[position];
 
         if (convertView == null) {
 
+            LayoutInflater inflater;
+            inflater = (LayoutInflater) mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            TextView imageCaption = (TextView) grid.findViewById(R.id.grid_cloud_item_text);
-            imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_cloud_item_background);
-            imageButtons[position].setBackgroundColor(currentColour);
-            imageButtons[position].setClickable(true);
-            imageCaption.setTextSize(30);
-
-                if (queryType.equals("text")) {
-
-                  imageCaption.setText(storyRecords.get(position));
-
-                } else if (queryType.equals("date")) {
-
-                  imageCaption.setText(storyRecords.get(position));
-                } else if (queryType.equals("image")) {
-
-                }
-
-                else {
-
-                    Log.i("QueryType", "none");
-                }
-
-
-            imageButtons[position].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent intent = new Intent(cloudStoryGallery.getApplicationContext(), ShowCloudStories.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("Orientation", mode);
-                    bundle.putString("StoryName", storyRecords.get(position));
-                    bundle.putSerializable("StoryRecordArray", storyRecordMap.get(storyRecords.get(position)));
-                    bundle.putString("QueryType", queryType);
-                    intent.putExtras(bundle);
-                    cloudStoryGallery.getApplicationContext().startActivity(intent);
-                    cloudStoryGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-                }
-            });
-
+            grid = new View(mContext);
+            grid = inflater.inflate(R.layout.activity_cloud_story_gallery_grid_item, null);
 
         } else {
 
             grid = (View) convertView;
         }
+
+        int currentColour = colourCode[position];
+        TextView imageCaption = (TextView) grid.findViewById(R.id.grid_cloud_item_text);
+        imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_cloud_item_background);
+        imageButtons[position].setBackgroundColor(currentColour);
+        imageButtons[position].setClickable(true);
+        imageCaption.setTextSize(30);
+
+        if (queryType.equals("text")) {
+
+            imageCaption.setText(storyRecords.get(position));
+
+        } else if (queryType.equals("date")) {
+
+            imageCaption.setText(storyRecords.get(position));
+        } else if (queryType.equals("image")) {
+
+        }
+
+        else {
+
+            Log.i("QueryType", "none");
+        }
+
+
+        imageButtons[position].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(cloudStoryGallery.getApplicationContext(), ShowCloudStories.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("Orientation", mode);
+                bundle.putString("StoryName", storyRecords.get(position));
+                bundle.putSerializable("StoryRecordArray", storyRecordMap.get(storyRecords.get(position)));
+                bundle.putString("QueryType", queryType);
+                intent.putExtras(bundle);
+                cloudStoryGallery.getApplicationContext().startActivity(intent);
+                cloudStoryGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        });
 
         return grid;
     }

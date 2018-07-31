@@ -54,18 +54,30 @@ public class ImageAdapter extends BaseAdapter {
         this.folderToImageRef = folderToImageRef;
         this.mode = mode;
 
+        /*
+        Log.i("Files in Folder ASize: ", String.valueOf(filesOnTag.size()));
+        Log.i("Number of thumbs: ", String.valueOf(numberOfThumbs));
+
+
+
+        for(int i=0; i<filesOnTag.size(); i++) {
+            Log.i("Files in Folder Array: ", filesOnTag.get(i).toString());
+        }
+        */
+
+
         for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
             File key = entry.getKey();
             File value = entry.getValue();
 
-            Log.i("Folders with images: ", "Key: " + key + ", Value: " + value);
+//            Log.i("Folders with images: ", "Key: " + key + ", Value: " + value);
         }
 
         for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
             File key = entry.getKey();
             Bitmap value = entry.getValue();
 
-            Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + value);
+//            Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + value);
         }
 
 //        Log.i("Folder to image ref: ", folderToImageRef.toString());
@@ -177,86 +189,16 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         View grid;
-        LayoutInflater inflater;
-        inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        grid = new View(mContext);
-        grid = inflater.inflate(R.layout.activity_story_gallery_grid_item, null);
-
-        int currentColour = colourCode[position];
 
         if (convertView == null) {
 
+            LayoutInflater inflater;
+            inflater = (LayoutInflater) mContext
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
-            imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
-            imageCaption.setText(filesOnTag.get(position).getName());
-            imageButtons[position].setBackgroundColor(currentColour);
+            grid = new View(mContext);
+            grid = inflater.inflate(R.layout.activity_story_gallery_grid_item, null);
 
-
-            if(!imageMap.isEmpty()) {
-
-            File value = folderToImageRef.get(filesOnTag.get(position));
-
-
-            for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
-                File key = entry.getKey();
-                File values = entry.getValue();
-
-                Log.i("Folders with images: ", "Key: " + key + ", Value: " + values);
-
-            }
-
-                for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
-                    File key = entry.getKey();
-                    Bitmap values = entry.getValue();
-
-                    Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
-
-                }
-
-
-                Bitmap bitmap = imageMap.get(filesOnTag.get(position));
-
-
-                imageButtons[position].setImageBitmap(bitmap);
-            }
-/*
-            if(!imageMap.isEmpty()) {
-                if (folderToImageRef.containsKey(filesOnTag[position])) {
-
-                    File value = folderToImageRef.get(filesOnTag[position]);
-
-                    Log.i("value File: ", value.getName());
-
-                    Bitmap bitmap = imageMap.get(value);
-
-                    Log.i("value File: ", bitmap.toString());
-                    //imageButtons[position].setImageBitmap(bitmap);
-
-                }
-            }
-
-           */
-
-
-           imageButtons[position].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    File[] files = FilesForThumbnail(position);
-
-                    //ThumbnailSelected();
-                    Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("Orientation", mode);
-                    intent.putExtra("StoryDetails", filesOnTag.get(position));
-                    intent.putExtra("filesOnTag", files);
-                    storyGallery.getApplicationContext().startActivity(intent);
-                    storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-                }
-            });
 
 
 
@@ -280,6 +222,82 @@ public class ImageAdapter extends BaseAdapter {
 
             grid = (View) convertView;
         }
+
+        int currentColour = colourCode[position];
+
+        TextView imageCaption = (TextView) grid.findViewById(R.id.grid_item_text);
+        imageButtons[position] = (ImageView) grid.findViewById(R.id.grid_item_background);
+        imageCaption.setText(filesOnTag.get(position).getName());
+        imageButtons[position].setBackgroundColor(currentColour);
+
+
+
+            if(!imageMap.isEmpty()) {
+
+            File value = folderToImageRef.get(filesOnTag.get(position));
+
+
+            for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
+                File key = entry.getKey();
+                File values = entry.getValue();
+
+//                Log.i("Folders with images: ", "Key: " + key + ", Value: " + values);
+//
+            }
+
+                for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
+                    File key = entry.getKey();
+                    Bitmap values = entry.getValue();
+
+//                    Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
+
+                }
+
+
+           Bitmap bitmap = imageMap.get(filesOnTag.get(position));
+
+
+             imageButtons[position].setImageBitmap(bitmap);
+            }
+/*
+            if(!imageMap.isEmpty()) {
+                if (folderToImageRef.containsKey(filesOnTag[position])) {
+
+                    File value = folderToImageRef.get(filesOnTag[position]);
+
+                    Log.i("value File: ", value.getName());
+
+                    Bitmap bitmap = imageMap.get(value);
+
+                    Log.i("value File: ", bitmap.toString());
+                    //imageButtons[position].setImageBitmap(bitmap);
+
+                }
+            }
+
+           */
+
+
+        imageButtons[position].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                File[] files = FilesForThumbnail(position);
+
+//                    Log.i("Files: ", String.valueOf(filesOnTag.size()));
+
+//                Log.i("Position Onclick: ", String.valueOf(position));
+
+                //ThumbnailSelected();
+                Intent intent = new Intent(storyGallery.getApplicationContext(), StoryGallerySaveOrView.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("Orientation", mode);
+                intent.putExtra("StoryDetails", filesOnTag.get(position));
+                intent.putExtra("filesOnTag", files);
+                storyGallery.getApplicationContext().startActivity(intent);
+                storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        });
 
         return grid;
     }

@@ -164,10 +164,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 //        String timeStamp = String.valueOf(day+ "," + date + "," + month+ "," + year + ","
 //                + hour+ ":"+ minute);
 
-        Log.i("time stamp: ", timeStamp);
-
-
-        String newDirectory = packageLocation + "/" + timeStamp + " " + name;
+        String newDirectory = packageLocation + "/" + name;
 
 //        String dayOfTheWeek = (String) DateFormat.format("EEEE", timeStamp); // Thursday
 //        String day          = (String) DateFormat.format("dd",   timeStamp); // 20
@@ -175,7 +172,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
 //        String monthNumber  = (String) DateFormat.format("MM",   timeStamp); // 06
 //        String year         = (String) DateFormat.format("yyyy", timeStamp); // 2013
 
-        tag_data = timeStamp;
+        tag_data = name;
         story_directory = getExternalFilesDir(newDirectory);
         // story_directory_uri = FileProvider.getUriForFile(this,
         //       "com.example.android.fileprovider",

@@ -138,11 +138,49 @@ public class SaveSelector extends AppCompatActivity {
         return cm.getActiveNetworkInfo() != null;
     }
 
+    private void setFileName() {
+
+        File stories = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/");
+        File dir = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName());
+
+        if(dir.exists()){
+//            Log.i("Name Change", "Found dir");
+//            Log.i("FileDirectory", dir.getName());
+            File from = new File(stories, dir.getName());
+            File to = new File(stories, storyNameString + " " + dir.getName());
+            if(from.exists()) {
+                from.renameTo(to);
+            }
+
+            else {
+
+//                Log.i("Name Change", "Canny find it mate");
+            }
+        }
+
+        /*
+        String currentFileName = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory;
+        currentFileName = currentFileName.substring(1);
+        Log.i("Current file name", currentFileName);
+
+        File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/");
+        File from      = new File(directory, currentFileName);
+        File to        = new File(directory, storyNameString);
+        from.renameTo(to);
+
+        */
+//        Log.i("Directory is", directory.toString());
+//        Log.i("Default path is", videoURI.toString());
+//        Log.i("From path is", from.toString());
+//        Log.i("To path is", to.toString());
+    }
+
     void LocalSave() {
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
+        setFileName();
 
         if(!isNetworkConnected) {
             String name = UUID.randomUUID().toString();
