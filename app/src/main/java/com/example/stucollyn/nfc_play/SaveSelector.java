@@ -104,6 +104,7 @@ public class SaveSelector extends AppCompatActivity {
 
     public void StartSaveStoryToNFC(View view) {
 
+        setFileName();
         Intent intent = new Intent(SaveSelector.this, SaveStoryToNFC.class);
         intent.putExtra("TagData", tag_data);
         intent.putExtra("Orientation", mode);
@@ -150,6 +151,7 @@ public class SaveSelector extends AppCompatActivity {
             File to = new File(stories, storyNameString + " " + dir.getName());
             if(from.exists()) {
                 from.renameTo(to);
+                tag_data = storyNameString + " " + dir.getName();
             }
 
             else {

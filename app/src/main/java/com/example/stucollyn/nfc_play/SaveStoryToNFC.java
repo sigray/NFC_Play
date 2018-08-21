@@ -57,7 +57,7 @@ public class SaveStoryToNFC extends AppCompatActivity {
 
        // Log.i("FD: ", fileDirectory.toString());
         nfc_transmit = findViewById(R.id.nfc_transmit);
-        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.flash);
+        nfc_transmit_animation = AnimationUtils.loadAnimation(this, R.anim.shrink);
         nfc_transmit.startAnimation(nfc_transmit_animation);
 
         adapter = NfcAdapter.getDefaultAdapter(this);
