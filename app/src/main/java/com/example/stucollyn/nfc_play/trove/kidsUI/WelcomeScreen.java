@@ -18,7 +18,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-
 import com.example.stucollyn.nfc_play.LoginScreen;
 import com.example.stucollyn.nfc_play.R;
 import com.example.stucollyn.nfc_play.SelectMode;
@@ -30,7 +29,7 @@ public class WelcomeScreen extends AppCompatActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, halfcircle, heart, trove, back;
-    Animation spin, shrink, blink, draw, bounce;
+    Animation spin, shrink, blink, draw, bounce, fadeout;
     ImageView zigzagArray[], largeItemArray[], allViews[];
     Handler startupZigZagHandler, startupLargeObjectsHandler, idleZigZagHandler,
             idleLargeObjectsHandler, idleTroveHandler;
@@ -38,6 +37,7 @@ public class WelcomeScreen extends AppCompatActivity {
     int largeObjectsInt = 0;
     boolean startupZigZagAnimationComplete = false, startupLargeObjectsAnimationComplete = false;
     ViewGroup mRootView;
+    Runnable TroveRunnable;
 
 
     @Override
@@ -112,6 +112,7 @@ public class WelcomeScreen extends AppCompatActivity {
         draw = AnimationUtils.loadAnimation(this, R.anim.draw);
         shrink = AnimationUtils.loadAnimation(this, R.anim.shrink);
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
 
         //Introduce object animation
         animationStartSequence();
@@ -146,12 +147,12 @@ public class WelcomeScreen extends AppCompatActivity {
         idleTroveHandler = new Handler();
 
         //Runnable to handle idle trove animation
-        Runnable TroveRunnable = new Runnable() {
+        TroveRunnable = new Runnable() {
 
             @Override
             public void run() {
                 idleTroveAnimation();
-                idleTroveHandler.postDelayed(this, 3000);
+                idleTroveHandler.postDelayed(this, 2000);
             }
         };
 
@@ -161,7 +162,7 @@ public class WelcomeScreen extends AppCompatActivity {
             @Override
             public void run() {
 //                zigZagAnimation();
-                idleZigZagHandler.postDelayed(this, 3000);
+                idleZigZagHandler.postDelayed(this, 2000);
             }
         };
 
@@ -210,7 +211,7 @@ public class WelcomeScreen extends AppCompatActivity {
 
                 if(!startupZigZagAnimationComplete) {
 
-                    startupZigZagHandler.postDelayed(this, 2000);
+                    startupZigZagHandler.postDelayed(this, 1000);
                 }
 
                 else {
@@ -231,7 +232,7 @@ public class WelcomeScreen extends AppCompatActivity {
 
                 if(!startupLargeObjectsAnimationComplete) {
 
-                    startupLargeObjectsHandler.postDelayed(this, 2000);
+                    startupLargeObjectsHandler.postDelayed(this, 1000);
                 }
 
                 else {
@@ -310,8 +311,33 @@ public class WelcomeScreen extends AppCompatActivity {
 
     public void Continue(View view) {
 
+        idleTroveHandler.removeCallbacks(TroveRunnable);
+        trove.clearAnimation();
+        trove.startAnimation(fadeout);
 
-        Transition explode = new Explode();
+        fadeout.setAnimationListener(new AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                trove.setVisibility(View.INVISIBLE);
+                //Note, no transition required as trove logo is to remain constantly visible
+                Intent intent = new Intent(WelcomeScreen.this, LoginKidsUI.class);
+                WelcomeScreen.this.startActivity(intent);
+            }
+        });
+
+
+
+
+        /*Transition explode = new Explode();
 
 
         explode.addListener(new Transition.TransitionListener() {
@@ -323,9 +349,8 @@ public class WelcomeScreen extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(WelcomeScreen.this, SelectMode.class);
+                Intent intent = new Intent(WelcomeScreen.this, LoginKidsUI.class);
                 WelcomeScreen.this.startActivity(intent);
-
             }
 
             @Override
@@ -349,6 +374,7 @@ public class WelcomeScreen extends AppCompatActivity {
         toggleVisibility(backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
                 leaf, umbrella, tear, teddy, halfcircle, heart, trove, back);
 
+                */
     }
 
     private static void toggleVisibility(ImageView... views) {
