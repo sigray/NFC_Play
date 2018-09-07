@@ -61,10 +61,10 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
-    private void createAudioFile() {
+    protected void createAudioFile() {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "AudioMPEG3_" + timeStamp + "_";
+        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
         File storageDir;
 
         if (Build.VERSION.SDK_INT >= 19) {
@@ -79,7 +79,7 @@ public class AudioRecorderKidsUI extends Application {
 
         try {
 
-            audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
+            audioFile = File.createTempFile(imageFileName, ".mp4", storageDir);
             audioFileName = audioFile.getAbsolutePath();
 
         }

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,8 +14,10 @@ import android.support.graphics.drawable.Animatable2Compat;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.example.stucollyn.nfc_play.AudioRecorder;
@@ -52,6 +55,7 @@ public class HomeScreenKidsUI extends AppCompatActivity {
     Drawable recordButtonNonAnim;
     Handler animationHandler;
     Runnable RecordButtonRunnable;
+    private MediaPlayer mPlayer = null;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -75,40 +79,12 @@ public class HomeScreenKidsUI extends AppCompatActivity {
 //        d = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim); // Insert your AnimatedVectorDrawable resource identifier
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
+
+        //Prepare new story directory
+        SetupStoryLocation();
+        mPlayer = new MediaPlayer();
+
     }
-
-    public void Record(View view) {
-
-       animateRecordButton();
-       recordAudio(view);
-    }
-
-    void recordAudio(View view) {
-
-        //Request permission to record audio (required for some newer Android devices)
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-        recordingStatus = !recordingStatus;
-        onRecord(recordingStatus, view);
-        audioFileName = audioRecorder.getAudioFileName();
-    }
-
-    /*When audio recording is started, try to startRecording(). When audio recording is stopped,
-    stopRecording() and change fragment views accordingly*/
-    public void onRecord(boolean start, View view) {
-        if (start) {
-
-            try {
-                audioRecorder = new AudioRecorderKidsUI(this, story_directory);
-                audioRecorder.startRecording();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-
-        } else {
-            audioRecorder.stopRecording();
-        }
-    }
-
 
     //Setup new storage folder
     private void SetupStoryLocation() {
@@ -126,9 +102,29 @@ public class HomeScreenKidsUI extends AppCompatActivity {
         story_directory_path = story_directory.getAbsolutePath();
     }
 
-    void animateRecordButton() {
 
-        if(!recordingStatus) {
+    public void Record(View view) {
+
+       recordingManager(view);
+    }
+
+    void recordAudio(View view) {
+
+        //Request permission to record audio (required for some newer Android devices)
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+        try {
+            audioRecorder = new AudioRecorderKidsUI(this, story_directory);
+            audioRecorder.startRecording();
+        } catch (IOException ex) {
+            // Error occurred while creating the File
+        }
+        audioFileName = audioRecorder.getAudioFileName();
+    }
+
+    void recordingManager(View view) {
+
+        if (!recordingStatus) {
+
             recordButton.setImageDrawable(recordButtonAnim);
 
             animationHandler = new Handler();
@@ -144,14 +140,64 @@ public class HomeScreenKidsUI extends AppCompatActivity {
             };
 
             animationHandler.post(RecordButtonRunnable);
+            recordAudio(view);
         }
 
         else {
 
+            Log.i("stop recording", ": found");
+            audioRecorder.stopRecording();
             animationHandler.removeCallbacks(RecordButtonRunnable);
-            recordButton.setImageDrawable(recordButtonNonAnim);
+            //recordButton.setImageDrawable(recordButtonNonAnim);
+
+//            Uri audioFileUri = FileProvider.getUriForFile(this,
+//                    "com.example.android.fileprovider",
+//                    audioRecorder.getAudioFile());
+
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag1a);
+            onPlay(audioFileUri);
         }
 
+        recordingStatus = !recordingStatus;
+    }
+
+    /*When audio playback buttons are selected for first time, setup new audio media player. When
+    user interacts with playback buttons after audio media player has already been setup, toggle
+    between media player pause and play*/
+    public void onPlay(Uri audioFileUri) {
+
+        setupAudioMediaPlayer(audioFileUri);
+        if (!playbackStatus) {
+            startPlaying();
+            playbackStatus = true;
+        }
+    }
+
+    //Setup new audio media player drawing from audio file location
+    protected void setupAudioMediaPlayer(Uri audioFileUri) {
+        Log.i("audio file", audioFileName);
+
+        try {
+            mPlayer.setDataSource(this, audioFileUri);
+            mPlayer.prepare();
+            mPlayerSetup = true;
+        } catch (IOException e) {
+            Log.e("Error", "prepare() failed");
+        }
+    }
+
+    //Start audio media player and start listening for stop button to be pressed
+    public void startPlaying() {
+        mPlayer.start();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+
+                mPlayer.stop();
+                mPlayer.reset();
+                playbackStatus = false;
+            }
+        });
+    }
 
 /*
             new Thread(new Runnable() {
@@ -173,7 +219,6 @@ public class HomeScreenKidsUI extends AppCompatActivity {
             }).start();
 
             */
-    }
 
     public void Camera(View view) {
 
