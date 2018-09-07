@@ -1,31 +1,23 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Scene;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-import com.example.stucollyn.nfc_play.LoginScreen;
+
 import com.example.stucollyn.nfc_play.R;
-import com.example.stucollyn.nfc_play.SelectMode;
-import com.example.stucollyn.nfc_play.SplashScreen;
 
 import java.util.Random;
 
-public class WelcomeScreen extends AppCompatActivity {
+public class WelcomeScreenKidsUI extends AppCompatActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, halfcircle, heart, trove, back;
@@ -329,8 +321,8 @@ public class WelcomeScreen extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 trove.setVisibility(View.INVISIBLE);
                 //Note, no transition required as trove logo is to remain constantly visible
-                Intent intent = new Intent(WelcomeScreen.this, LoginKidsUI.class);
-                WelcomeScreen.this.startActivity(intent);
+                Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+                WelcomeScreenKidsUI.this.startActivity(intent);
             }
         });
 
@@ -349,8 +341,8 @@ public class WelcomeScreen extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(WelcomeScreen.this, LoginKidsUI.class);
-                WelcomeScreen.this.startActivity(intent);
+                Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+                WelcomeScreenKidsUI.this.startActivity(intent);
             }
 
             @Override

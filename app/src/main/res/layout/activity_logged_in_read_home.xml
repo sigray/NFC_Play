@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/kids_ui_background"
     android:id="@+id/activity_logged_in_read_home"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInReadHome">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInReadHomeKidsUI">
 
     <ImageView
         android:id="@+id/small_shapes"

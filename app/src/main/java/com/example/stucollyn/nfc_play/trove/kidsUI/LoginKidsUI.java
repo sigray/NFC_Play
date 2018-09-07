@@ -1,7 +1,6 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -12,15 +11,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
 
 import com.example.stucollyn.nfc_play.R;
-
-import android.transition.Explode;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 
 import java.util.HashMap;
 
@@ -247,7 +241,7 @@ public class LoginKidsUI extends AppCompatActivity {
 
     void Login() {
 
-        Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHome.class);
+        Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
         LoginKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
@@ -265,7 +259,7 @@ public class LoginKidsUI extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHome.class);
+                Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
                 LoginKidsUI.this.startActivity(intent);
             }
 

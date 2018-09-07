@@ -18,11 +18,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.example.stucollyn.nfc_play.R;
-import com.example.stucollyn.nfc_play.SelectMode;
 
 import java.util.HashMap;
 
-public class LoggedInReadHome extends AppCompatActivity {
+public class LoggedInReadHomeKidsUI extends AppCompatActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -193,8 +192,8 @@ public class LoggedInReadHome extends AppCompatActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(LoggedInReadHome.this, HomeScreenKidsUI.class);
-                LoggedInReadHome.this.startActivity(intent);
+                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, HomeScreenKidsUI.class);
+                LoggedInReadHomeKidsUI.this.startActivity(intent);
             }
 
             @Override

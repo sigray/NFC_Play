@@ -124,7 +124,7 @@
         <activity android:name=".ShowCloudStories" />
         <activity android:name=".ShowCloudStoryContent" />
         <activity
-            android:name=".trove.kidsUI.WelcomeScreen"
+            android:name=".trove.kidsUI.WelcomeScreenKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"
@@ -142,7 +142,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".trove.kidsUI.LoggedInReadHome"
+            android:name=".trove.kidsUI.LoggedInReadHomeKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"
