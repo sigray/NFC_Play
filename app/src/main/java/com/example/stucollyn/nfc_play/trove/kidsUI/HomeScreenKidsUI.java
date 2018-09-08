@@ -1,7 +1,9 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimatedVectorDrawable;
@@ -13,7 +15,9 @@ import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +38,7 @@ import java.util.UUID;
 
 public class HomeScreenKidsUI extends AppCompatActivity {
 
-    ImageView recordButton, cameraButton;
+    ImageView recordButton, cameraButton, back;
 //    AnimatedVectorDrawable d;
     //Request Code Variables
     //General Variables
@@ -64,10 +68,14 @@ public class HomeScreenKidsUI extends AppCompatActivity {
     File story_directory;
     String story_directory_path;
     Uri story_directory_uri;
-    String tag_data;
-    NFCWrite nfcWrite;
+    String tag_data = null;
+    NFCInteraction nfcInteraction;
     Tag mytag;
+    boolean newStoryReady = false;
 
+    NfcAdapter adapter;
+    PendingIntent pendingIntent;
+    IntentFilter writeTagFilters[];
     //Classes
     CameraRecorder cameraRecorder;
 
@@ -91,25 +99,55 @@ public class HomeScreenKidsUI extends AppCompatActivity {
 
         recordButton = (ImageView) findViewById(R.id.record);
         cameraButton = (ImageView) findViewById(R.id.camera);
+        back = (ImageView) findViewById(R.id.back);
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
 
         //Prepare new story directory
         SetupStoryLocation();
         mPlayer = new MediaPlayer();
-        nfcWrite = new NFCWrite(this, this);
+        nfcInteraction = new NFCInteraction(this, this);
+
+        adapter = NfcAdapter.getDefaultAdapter(this);
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
     }
 
-    @Override
+    void paintViews() {
+
+
+        int paintColour = android.graphics.Color.rgb(253, 195, 204);
+        Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back_anim, null);
+            d = DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d, paintColour);
+            back.setImageDrawable(d);
+        }
+
+            @Override
     protected void onNewIntent(Intent intent){
         if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
+            Log.i("Hello", "Found it");
         }
 
-        if(tag_data!=null) {
-            nfcWrite.doWrite(mytag, tag_data);
+        if(newStoryReady) {
+            nfcInteraction.doWrite(mytag, tag_data);
         }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        nfcInteraction.WriteModeOff(adapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
     }
 
     //Setup new storage folder
@@ -178,6 +216,7 @@ public class HomeScreenKidsUI extends AppCompatActivity {
             cameraButton.startAnimation(slidein);
             audioRecorder.stopRecording();
             animationHandler.removeCallbacks(RecordButtonRunnable);
+            newStoryReady = true;
             //recordButton.setImageDrawable(recordButtonNonAnim);
 
 //            Uri audioFileUri = FileProvider.getUriForFile(this,
@@ -327,8 +366,7 @@ public class HomeScreenKidsUI extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
 
-//            picture_story_fragment.ShowPicture(processedBitmap);
-
+            newStoryReady = true;
         }
     }
 

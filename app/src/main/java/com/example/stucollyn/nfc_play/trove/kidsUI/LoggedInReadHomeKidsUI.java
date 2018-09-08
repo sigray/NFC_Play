@@ -1,27 +1,40 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.nfc.FormatException;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.R;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 
-public class LoggedInReadHomeKidsUI extends AppCompatActivity {
+public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -33,12 +46,23 @@ public class LoggedInReadHomeKidsUI extends AppCompatActivity {
     HashMap<ImageView, Integer> IvDrawable;
     ViewGroup mRootView;
 
+    NFCInteraction nfcInteraction;
+    Tag mytag;
+    boolean newStoryReady = false;
+    NfcAdapter adapter;
+    PendingIntent pendingIntent;
+    IntentFilter readTagFilters[];
+    private MediaPlayer mPlayer = null;
+    ShowStoryContent showStoryContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in_read_home);
 
         mRootView = (ViewGroup) findViewById(R.id.activity_logged_in_read_home);
+
+        mPlayer = new MediaPlayer();
 
         paintColourArray = new Integer[4];
         paintColourArray[0] = android.graphics.Color.rgb(255, 157, 0);
@@ -111,6 +135,75 @@ public class LoggedInReadHomeKidsUI extends AppCompatActivity {
         paintViews();
         animateViews();
 //        delay();
+
+        nfcInteraction = new NFCInteraction(this, this);
+        adapter = NfcAdapter.getDefaultAdapter(this);
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        readTagFilters = new IntentFilter[] {tagDetected };
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+
+            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
+        }
+
+
+        try {
+            if (mytag == null) {
+
+                Toast.makeText(this, "Tag Null", Toast.LENGTH_LONG ).show();
+            }
+
+            else {
+
+                PackageManager m = getPackageManager();
+                String packageName = getPackageName();
+                File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
+                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
+
+                if(filesOnTag!=null){
+
+                    Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
+                    ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this);
+
+                }
+            }
+
+        } catch (IOException e) {
+            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            System.out.println("Fail 1");
+        } catch (FormatException e) {
+            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            System.out.println("Fail 2");
+        } catch (IndexOutOfBoundsException e) {
+            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            System.out.println("Fail 3");
+        } catch (NullPointerException e) {
+            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            System.out.println("Fail 4");
+        }
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        nfcInteraction.ReadModeOff(adapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        nfcInteraction.ReadModeOn(adapter, pendingIntent, readTagFilters);
     }
 
     void paintViews() {

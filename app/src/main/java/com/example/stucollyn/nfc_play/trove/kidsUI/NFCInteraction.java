@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -12,9 +14,12 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +27,11 @@ import android.widget.Toast;
 import com.example.stucollyn.nfc_play.R;
 import com.example.stucollyn.nfc_play.SavedStoryConfirmation;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-public class NFCWrite {
+public class NFCInteraction {
 
     String action;
     String themessage;
@@ -37,26 +43,78 @@ public class NFCWrite {
     static String display;
     boolean success = true;
     Tag mytag;
-    NfcAdapter adapter;
-    PendingIntent pendingIntent;
-    IntentFilter writeTagFilters[];
    // File fileDirectory;
     String tag_data = "";
     int mode;
     Context context;
     Activity activity;
+    NdefMessage tagContents;
+    File[] filesOnTag;
 
-    public NFCWrite(Context context, Activity activity) {
+    public NFCInteraction(Context context, Activity activity) {
 
         this.context = context;
         this.activity = activity;
+    }
 
+    protected void onNewIntent(Intent intent){
+        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            Toast.makeText(context, "Tag Discovered", Toast.LENGTH_LONG ).show();
+            Log.i("Hello", "Found it 2");
+        }
 
-        adapter = NfcAdapter.getDefaultAdapter(context);
-        pendingIntent = PendingIntent.getActivity(context, 0, new Intent(context, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        if(tag_data!=null) {
+            doWrite(mytag, tag_data);
+        }
+    }
+
+    File[] read(Tag tag, PackageManager m, String packageName) throws IOException, FormatException, IndexOutOfBoundsException, NullPointerException {
+
+        String s = null;
+        // Get an instance of Ndef for the tag.
+        Ndef ndef = Ndef.get(tag);
+        // Enable I/O
+        ndef.connect();
+        // Write the message
+        tagContents = ndef.getNdefMessage();
+
+        // get NDEF message details
+        NdefMessage ndefMesg = ndef.getCachedNdefMessage();
+        NdefRecord[] ndefRecords = ndefMesg.getRecords();
+        int len = ndefRecords.length;
+
+        byte[] mesg = null;
+        String[] recTypes = new String[len];     // will contain the NDEF record types
+        for (int i = 0; i < len; i++)
+        {
+            recTypes[i] = new String(ndefRecords[i].getType());
+            mesg = ndefRecords[i].getPayload();
+            s = new String(mesg);
+        }
+
+        s = s.substring(3);
+
+        try {
+            PackageInfo p = m.getPackageInfo(packageName, 0);
+            packageName = p.applicationInfo.dataDir;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w("yourtag", "Error Package name not found ", e);
+        }
+
+        ndef.close();
+
+//        String path = packageName.toString()+"/files";
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+        for (int i = 0; i < files.length; i++)
+        {
+            Log.d("Files", "FileName:" + files[i].getName());
+        }
+
+        filesOnTag = files;
+        return  filesOnTag;
     }
 
     private void write(Tag tag) throws IOException, FormatException {
@@ -98,6 +156,7 @@ public class NFCWrite {
         return recordNFC;
     }
 
+
     public void doWrite(Tag mytag, String tag_data){
 
         this.mytag = mytag;
@@ -135,13 +194,21 @@ public class NFCWrite {
         }
     }
 
-    private void WriteModeOn(){
-//        writeMode = true;
+    void WriteModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter writeTagFilters[]){
+
         adapter.enableForegroundDispatch(activity, pendingIntent, writeTagFilters, null);
     }
 
-    private void WriteModeOff(){
-//        writeMode = false;
+    void WriteModeOff(NfcAdapter adapter){
+        adapter.disableForegroundDispatch(activity);
+    }
+
+    void ReadModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter readTagFilters[]){
+
+        adapter.enableForegroundDispatch(activity, pendingIntent, readTagFilters, null);
+    }
+
+    void ReadModeOff(NfcAdapter adapter){
         adapter.disableForegroundDispatch(activity);
     }
 }
