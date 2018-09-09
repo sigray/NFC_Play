@@ -1,24 +1,37 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
-import com.example.stucollyn.nfc_play.R;
+import com.example.stucollyn.nfc_play.*;
+import com.example.stucollyn.nfc_play.LoginDialogFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
-public class LoginKidsUI extends AppCompatActivity {
+public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginDialogListener, LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -35,6 +48,9 @@ public class LoginKidsUI extends AppCompatActivity {
     int paintColourArrayInt = 0;
     int attemptInt = 0;
     ViewGroup mRootView;
+    private FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    boolean isNetworkConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,14 +119,99 @@ public class LoginKidsUI extends AppCompatActivity {
 
         //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
-        startupLargeItemAnimation();
+        isNetworkConnected = isNetworkConnected();
+        if(isNetworkConnected) {
+
+            AuthenticatedLogin();
+        }
+
+        else {
+
+//            startupLargeItemAnimation();
+        }
     }
 
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onLoginDialogPositiveClick(String username, String password) {
+        // User touched the dialog's positive button
+        Log.i("username: ", username);
+        Log.i("password: ", password);
+
+        FirebaseLogin(username, password);
+    }
+
+    @Override
+    public void onLoginDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+    }
+
+    @Override
+    public void onLoginButton() {
+
+        Toast.makeText(LoginKidsUI.this,
+                "Wooohoo",
+                Toast.LENGTH_LONG).show();
+        DialogFragment dialog = new LoginDialogFragmentKidsUI();
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
+
+    public void onSignUpButton(){
+
+        DialogFragment dialog = new LoginOrSignUpDialogFragment();
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
+
+    private boolean isNetworkConnected() {
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
 
     void AuthenticatedLogin() {
 
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
 
+            Toast.makeText(LoginKidsUI.this,
+                    "Logged in as " + user.getEmail(),
+                    Toast.LENGTH_LONG).show();
+            startupLargeItemAnimation();
+        }
+
+        else {
+
+            DialogFragment dialog = new LoginOrSignUpDialogFragment();
+            dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+        }
+    }
+
+    void FirebaseLogin(String username, String password) {
+
+        mAuth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(LoginKidsUI.this, "Logging in as: " + user.getEmail(),
+                                    Toast.LENGTH_SHORT).show();
+//                            Advance();
+                        }
+
+                        else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     void startupLargeItemAnimation() {

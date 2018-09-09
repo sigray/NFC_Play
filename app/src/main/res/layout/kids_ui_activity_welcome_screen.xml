@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.WelcomeScreenKidsUI"
-    android:background="@drawable/kids_ui_background"
+    android:background="#4559de"
     >
 
     <ImageView

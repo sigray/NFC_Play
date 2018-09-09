@@ -55,6 +55,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,7 +170,8 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 if(filesOnTag!=null){
 
                     Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
-                    ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this);
+                    ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this, filesOnTag);
+                    showStoryContent.checkFilesOnTag();
 
                 }
             }

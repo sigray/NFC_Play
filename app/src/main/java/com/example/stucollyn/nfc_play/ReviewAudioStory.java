@@ -81,13 +81,13 @@ public class ReviewAudioStory extends AppCompatActivity {
     protected void setupAudioMediaPlayer() {
 
          Uri story_directory_uri = FileProvider.getUriForFile(this,
-               "com.example.android.fileprovider",
-                 audioFile);
+                    "com.example.android.fileprovider",
+                    audioFile);
 
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(this, story_directory_uri);
-            mPlayer.prepare();
+            mPlayer = new MediaPlayer();
+            try {
+                mPlayer.setDataSource(this, story_directory_uri);
+                mPlayer.prepare();
             mPlayerSetup = true;
         } catch (IOException e) {
             Log.e("Error", "prepare() failed");

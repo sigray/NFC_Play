@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/kids_ui_background"
+    android:background="#4559de"
     android:id="@+id/login_kids_ui"
     tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoginKidsUI">
 
