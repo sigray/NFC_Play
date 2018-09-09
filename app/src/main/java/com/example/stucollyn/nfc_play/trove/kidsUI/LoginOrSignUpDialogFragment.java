@@ -4,15 +4,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.*;
@@ -55,7 +60,6 @@ public class LoginOrSignUpDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
         View prompt;
         AlertDialog.Builder builder;
         LayoutInflater inflater;
@@ -77,6 +81,7 @@ public class LoginOrSignUpDialogFragment extends DialogFragment {
 
                 Log.i("HELP HELP",  "HEY");
                 mListener.onLoginButton();
+                dismiss();
             }
         });
 

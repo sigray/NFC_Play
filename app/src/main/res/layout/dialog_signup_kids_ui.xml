@@ -31,7 +31,7 @@
         android:textColor="#fff"
         android:gravity="center"
         android:inputType="textEmailAddress"
-        android:text="Login"
+        android:text="Sign Up"
         android:textSize="30sp" />
 
     <EditText

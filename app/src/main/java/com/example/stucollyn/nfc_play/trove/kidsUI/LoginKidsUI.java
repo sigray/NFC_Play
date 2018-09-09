@@ -2,6 +2,7 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Handler;
@@ -23,6 +24,8 @@ import android.widget.Toast;
 import com.example.stucollyn.nfc_play.*;
 import com.example.stucollyn.nfc_play.LoginDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,8 +33,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginDialogListener, LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
+public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginDialogListener, LoginDialogFragmentKidsUI.NoticeLoginDialogListener,
+        SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -113,22 +118,42 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         otherItemArray[2] = zigzag2;
         otherItemArray[3] = zigzag3;
         otherItemArray[4] = zigzag4;
-        otherItemArray[5] = back;
-        otherItemArray[6] = halfcircle;
+        otherItemArray[5] = halfcircle;
+        otherItemArray[6] = trove;
 
+        Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, Color.WHITE);
+        back.setImageDrawable(d);
 
-        //Initialize animations
+    //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         isNetworkConnected = isNetworkConnected();
         if(isNetworkConnected) {
 
-            AuthenticatedLogin();
+           AuthenticatedLogin();
         }
 
         else {
 
 //            startupLargeItemAnimation();
         }
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
+        // User touched the dialog's positive button
+        Log.i("good", "success");
+
+        FirebaseSignUp(username, password, firstName, lastName);
+    }
+
+    @Override
+    public void onDialogSignUpNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
     }
 
     // The dialog fragment receives a reference to this Activity through the
@@ -170,6 +195,12 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         return cm.getActiveNetworkInfo() != null;
     }
 
+    void newLoginSignUp() {
+
+        DialogFragment dialog = new LoginOrSignUpDialogFragment();
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
+
     void AuthenticatedLogin() {
 
         mAuth = FirebaseAuth.getInstance();
@@ -181,13 +212,12 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             Toast.makeText(LoginKidsUI.this,
                     "Logged in as " + user.getEmail(),
                     Toast.LENGTH_LONG).show();
-            startupLargeItemAnimation();
+            PasscodePhase();
         }
 
         else {
 
-            DialogFragment dialog = new LoginOrSignUpDialogFragment();
-            dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+            newLoginSignUp();
         }
     }
 
@@ -202,7 +232,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(LoginKidsUI.this, "Logging in as: " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
-//                            Advance();
+                            PasscodePhase();
                         }
 
                         else {
@@ -212,6 +242,59 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
                         }
                     }
                 });
+    }
+
+    void FirebaseDatabaseNewUser(String username, String password, String firstName, String lastName) {
+
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("Username", username);
+        newUser.put("Password", password);
+        newUser.put("First Name", firstName);
+        newUser.put("Last Name", lastName);
+
+        db.collection("User").document(username)
+                .set(newUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
+
+    }
+
+    void FirebaseSignUp(final String username, final String password, final String firstName, final String lastName) {
+
+        mAuth.createUserWithEmailAndPassword(username, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(LoginKidsUI.this, "Account Created.",
+                                    Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseDatabaseNewUser(username, password, firstName, lastName);
+                            FirebaseLogin(username, password);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+    void PasscodePhase() {
+
+        startupLargeItemAnimation();
     }
 
     void startupLargeItemAnimation() {
@@ -404,6 +487,16 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         }
     };
 
+    public void Back(View view) {
+
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        newLoginSignUp();
+    }
 
    /* public void setPasscodeReady(){
 

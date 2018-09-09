@@ -305,7 +305,10 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         idleTroveHandler.removeCallbacks(TroveRunnable);
         trove.clearAnimation();
-        trove.startAnimation(fadeout);
+        Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        WelcomeScreenKidsUI.this.startActivity(intent);
+
+    /*    trove.startAnimation(fadeout);
 
         fadeout.setAnimationListener(new AnimationListener() {
 
@@ -326,7 +329,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
             }
         });
 
-
+*/
 
 
         /*Transition explode = new Explode();

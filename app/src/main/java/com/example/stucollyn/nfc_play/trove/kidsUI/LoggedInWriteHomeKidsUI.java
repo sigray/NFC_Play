@@ -36,7 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-public class HomeScreenKidsUI extends AppCompatActivity {
+public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     ImageView recordButton, cameraButton, back;
 //    AnimatedVectorDrawable d;
@@ -324,14 +324,14 @@ public class HomeScreenKidsUI extends AppCompatActivity {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
 
-                new HomeScreenKidsUI.ProcessPicture().execute();
+                new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
             }
         }
 
         if (requestCode == 200) {
             if (resultCode == RESULT_OK) {
 
-//                new HomeScreenKidsUI.ProcessVideo().execute();
+//                new LoggedInWriteHomeKidsUI.ProcessVideo().execute();
 
             }
         }
@@ -378,8 +378,8 @@ public class HomeScreenKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(HomeScreenKidsUI.this, LoggedInReadHomeKidsUI.class);
-        HomeScreenKidsUI.this.startActivity(intent);
+        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
+        LoggedInWriteHomeKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 }

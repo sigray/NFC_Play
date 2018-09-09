@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4559de"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HomeScreenKidsUI">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsUI">
 
         <ImageView
             android:id="@+id/small_shapes"
@@ -28,7 +28,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/kids_ui_back_anim"
+            android:src="@drawable/kids_ui_back"
             android:onClick="Back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

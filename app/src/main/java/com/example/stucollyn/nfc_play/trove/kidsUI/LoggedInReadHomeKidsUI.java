@@ -14,12 +14,10 @@ import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -31,7 +29,6 @@ import com.example.stucollyn.nfc_play.R;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 
 public class LoggedInReadHomeKidsUI extends FragmentActivity {
@@ -287,7 +284,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, HomeScreenKidsUI.class);
+                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
                 LoggedInReadHomeKidsUI.this.startActivity(intent);
             }
 
@@ -318,5 +315,18 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             boolean isVisible = view.getVisibility() == View.VISIBLE;
             view.setVisibility(isVisible ? View.INVISIBLE : View.VISIBLE);
         }
+    }
+
+    public void Back(View view) {
+
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoginKidsUI.class);
+        LoggedInReadHomeKidsUI.this.startActivity(intent);
+//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 }
