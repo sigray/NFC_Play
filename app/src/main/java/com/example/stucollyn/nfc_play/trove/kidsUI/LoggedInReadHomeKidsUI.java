@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.nfc.FormatException;
@@ -42,7 +43,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     int paintColourArrayInt = 0;
     HashMap<ImageView, Integer> IvDrawable;
     ViewGroup mRootView;
-
+    AnimatedVectorDrawable backRetrace;
     NFCInteraction nfcInteraction;
     Tag mytag;
     boolean newStoryReady = false;
@@ -86,6 +87,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         halfcircle = (ImageView) findViewById(R.id.circle);
         trove = (ImageView) findViewById(R.id.trove);
         back = (ImageView) findViewById(R.id.back);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
 
         IvDrawable = new HashMap<ImageView, Integer>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
@@ -325,8 +327,18 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoginKidsUI.class);
-        LoggedInReadHomeKidsUI.this.startActivity(intent);
-//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        back.setImageDrawable(backRetrace);
+        backRetrace.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoginKidsUI.class);
+                LoggedInReadHomeKidsUI.this.startActivity(intent);
+            }
+        }, 1000);
+
     }
 }

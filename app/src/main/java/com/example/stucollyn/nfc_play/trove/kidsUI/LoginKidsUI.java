@@ -136,7 +136,9 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
         else {
 
-//            startupLargeItemAnimation();
+            back.startAnimation(fadeout);
+            back.setVisibility(View.INVISIBLE);
+            PasscodePhase();
         }
     }
 
@@ -495,7 +497,9 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     @Override
     public void onBackPressed() {
 
-        newLoginSignUp();
+        if(isNetworkConnected) {
+            newLoginSignUp();
+        }
     }
 
    /* public void setPasscodeReady(){

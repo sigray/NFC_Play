@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
@@ -38,7 +39,7 @@ import java.util.UUID;
 
 public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
-    ImageView recordButton, cameraButton, back;
+    ImageView recordButton, cameraButton, archive, back;
 //    AnimatedVectorDrawable d;
     //Request Code Variables
     //General Variables
@@ -48,12 +49,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //File Save Variables
 
     AudioRecorderKidsUI audioRecorder;
-    AnimatedVectorDrawable recordButtonAnim;
+    AnimatedVectorDrawable recordButtonAnim, backRetrace;
     Drawable recordButtonNonAnim;
     Handler animationHandler;
     Runnable RecordButtonRunnable;
     private MediaPlayer mPlayer = null;
     String photoPath;
+    Animation slideout, slidein;
 
     //Request Code Variables
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -95,18 +97,27 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_screen_kids_ui);
+        setContentView(R.layout.activity_logged_in_write_home);
 
         recordButton = (ImageView) findViewById(R.id.record);
         cameraButton = (ImageView) findViewById(R.id.camera);
+        archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
 
         //Prepare new story directory
-        SetupStoryLocation();
         mPlayer = new MediaPlayer();
         nfcInteraction = new NFCInteraction(this, this);
+
+        Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, Color.WHITE);
+        back.setImageDrawable(d);
+
+        slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
+        slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
 
         adapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -188,9 +199,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         if (!recordingStatus) {
 
-            Animation slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
-            cameraButton.setVisibility(View.INVISIBLE);
-            cameraButton.startAnimation(slideout);
+            SetupStoryLocation();
+            archive.startAnimation(slideout);
+            archive.setVisibility(View.INVISIBLE);
             recordButton.setImageDrawable(recordButtonAnim);
 
             animationHandler = new Handler();
@@ -211,7 +222,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         else {
 
-            Animation slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
             cameraButton.setVisibility(View.VISIBLE);
             cameraButton.startAnimation(slidein);
             audioRecorder.stopRecording();
@@ -222,12 +232,15 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 //            Uri audioFileUri = FileProvider.getUriForFile(this,
 //                    "com.example.android.fileprovider",
 //                    audioRecorder.getAudioFile());
-
-            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag1a);
-            onPlay(audioFileUri);
         }
 
         recordingStatus = !recordingStatus;
+    }
+
+    void AttachToNFCInstruction() {
+
+        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag1a);
+        onPlay(audioFileUri);
     }
 
     /*When audio playback buttons are selected for first time, setup new audio media player. When
@@ -297,13 +310,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    // Do something after 5s = 5000ms
-                    cameraRecorder.dispatchTakePictureIntent();
-                }
-            }, 500);
-        } catch (NullPointerException e) {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                cameraRecorder.dispatchTakePictureIntent();
+            }
+        }, 500);
+    } catch (NullPointerException e) {
 
         }
     }
@@ -325,6 +338,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+                cameraButton.startAnimation(slideout);
+                cameraButton.setVisibility(View.INVISIBLE);
+                archive.setVisibility(View.VISIBLE);
+                archive.startAnimation(slidein);
+                AttachToNFCInstruction();
             }
         }
 
@@ -378,8 +396,18 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
-        LoggedInWriteHomeKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        back.setImageDrawable(backRetrace);
+        backRetrace.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
+                LoggedInWriteHomeKidsUI.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        }, 1000);
+
     }
 }
