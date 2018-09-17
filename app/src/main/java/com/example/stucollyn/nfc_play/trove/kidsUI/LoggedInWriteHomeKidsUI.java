@@ -22,12 +22,15 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.stucollyn.nfc_play.NewStoryReview;
+import com.example.stucollyn.nfc_play.NewStorySaveMetadata;
 import com.example.stucollyn.nfc_play.R;
 
 import java.io.File;
@@ -43,7 +46,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 //    AnimatedVectorDrawable d;
     //Request Code Variables
     //General Variables
-    boolean record_button_on, video_record_button_on, recordingStatus = false,
+    boolean record_button_on, video_record_button_on,
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
             permissionToRecordAccepted = false, isFullSizedVideo = false;
     //File Save Variables
@@ -119,11 +122,36 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
         slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
 
+        recordButtonController();
+
         adapter = NfcAdapter.getDefaultAdapter(this);
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        writeTagFilters = new IntentFilter[] {
+                tagDetected
+        };
+
+    }
+
+    void recordButtonController() {
+
+        recordButton.setOnTouchListener((new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        recordingManager(v, false);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        recordingManager(v, true);
+                        break;
+                }
+
+                return true;
+            }
+        }));
     }
 
     void paintViews() {
@@ -177,11 +205,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         story_directory_path = story_directory.getAbsolutePath();
     }
 
-    public void Record(View view) {
-
-       recordingManager(view);
-    }
-
     void recordAudio(View view) {
 
         //Request permission to record audio (required for some newer Android devices)
@@ -195,7 +218,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         audioFileName = audioRecorder.getAudioFileName();
     }
 
-    void recordingManager(View view) {
+    void recordingManager(View view, boolean recordingStatus) {
 
         if (!recordingStatus) {
 
@@ -212,7 +235,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 @Override
                 public void run() {
                     recordButtonAnim.start();
-                    animationHandler.postDelayed(this, 2000);
+                    animationHandler.postDelayed(this, 1000);
                 }
             };
 
@@ -226,6 +249,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             cameraButton.startAnimation(slidein);
             audioRecorder.stopRecording();
             animationHandler.removeCallbacks(RecordButtonRunnable);
+            recordButton.setImageDrawable(recordButtonNonAnim);
             newStoryReady = true;
             //recordButton.setImageDrawable(recordButtonNonAnim);
 
@@ -239,7 +263,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void AttachToNFCInstruction() {
 
-        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag1a);
+        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app);
         onPlay(audioFileUri);
     }
 
@@ -268,7 +292,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
-    //Start audio media player and start listening for stop button to be pressed
+    //Start audio media player and start listening for stop imageView to be pressed
     public void startPlaying() {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -355,6 +379,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
+    public void Archive(View view) {
+
+        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
+        LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
     class ProcessPicture extends AsyncTask<View, Void, Void> {
 
         Bitmap processedBitmap;
@@ -362,7 +393,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         @Override
         protected Void doInBackground(View... params) {
 
-//            button = params[0];
+//            imageView = params[0];
 
             try {
 
@@ -404,6 +435,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
+                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
                 LoggedInWriteHomeKidsUI.this.startActivity(intent);
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }

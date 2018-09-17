@@ -183,7 +183,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
     //Setup action bar
     private void ActionBarSetup() {
 
-        //Display both title and image, and a back button in action bar
+        //Display both title and image, and a back imageView in action bar
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -227,7 +227,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         ft.commit();
     }
 
-    //When red audio record button is pressed, activate audio recording sequence
+    //When red audio record imageView is pressed, activate audio recording sequence
     public void AudioRecordButton(View view) {
 
 //        new ProcessAudio().execute(view);
@@ -293,7 +293,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         }
     }
 
-    //Start audio media player and start listening for stop button to be pressed
+    //Start audio media player and start listening for stop imageView to be pressed
     public void startPlaying(View view) {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -582,7 +582,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         @Override
         protected Void doInBackground(View... params) {
 
-//            button = params[0];
+//            imageView = params[0];
 
             try {
 
@@ -616,7 +616,7 @@ public class NFCRecord extends AppCompatActivity implements Serializable {
         @Override
         protected Void doInBackground(View... params) {
 
-//            button = params[0];
+//            imageView = params[0];
 
             try {
 

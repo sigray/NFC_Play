@@ -111,7 +111,7 @@ public class WrittenStoryFragment extends Fragment {
 
     public void DiscardWriting() {
 
-        record_instruction.setText("Touch the green button to write a message.");
+        record_instruction.setText("Touch the green imageView to write a message.");
         written_text_story.setVisibility(View.INVISIBLE);
         discard_written_button.setVisibility(View.INVISIBLE);
         save_written_button.setVisibility(View.INVISIBLE);

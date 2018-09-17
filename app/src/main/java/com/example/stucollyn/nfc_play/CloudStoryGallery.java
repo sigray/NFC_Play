@@ -547,7 +547,7 @@ public class CloudStoryGallery extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
 
-//            button = params[0];
+//            imageView = params[0];
 
             try {
 

@@ -231,8 +231,8 @@ public class StoryMediaChooser extends AppCompatActivity {
 
     }
 
-    /*If at least one media type is selected show confirmation button, otherwise hide confirmation
-     button*/
+    /*If at least one media type is selected show confirmation imageView, otherwise hide confirmation
+     imageView*/
     private void checkConfirm(int numberMediaSelected) {
 
 

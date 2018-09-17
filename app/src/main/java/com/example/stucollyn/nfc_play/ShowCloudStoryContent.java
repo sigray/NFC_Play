@@ -415,7 +415,7 @@ public class ShowCloudStoryContent extends AppCompatActivity {
         }
     }
 
-    //Start audio media player and start listening for stop button to be pressed
+    //Start audio media player and start listening for stop imageView to be pressed
     public void startPlaying(View view) {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

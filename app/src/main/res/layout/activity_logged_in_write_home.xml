@@ -76,7 +76,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="-80dp"
             android:clickable="true"
-            android:onClick="Record"
             android:src="@drawable/kids_ui_record_circle" />
     </RelativeLayout>
 
@@ -86,6 +85,8 @@
         android:layout_height="wrap_content"
         android:src="@drawable/kids_ui_archive"
         android:visibility="visible"
+        android:clickable="true"
+        android:onClick="Archive"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.1"

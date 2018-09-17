@@ -158,7 +158,7 @@ public class VideoStoryFragment extends Fragment {
 
     public void DiscardVideo() {
 
-        record_instruction.setText("Touch the yellow button to take video.");
+        record_instruction.setText("Touch the yellow imageView to take video.");
         captured_video.setVisibility(View.INVISIBLE);
         captured_video_background.setVisibility(View.INVISIBLE);
         save_video_button.setVisibility(View.INVISIBLE);

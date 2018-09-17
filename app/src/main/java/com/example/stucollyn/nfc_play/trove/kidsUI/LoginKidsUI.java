@@ -35,8 +35,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginDialogListener, LoginDialogFragmentKidsUI.NoticeLoginDialogListener,
-        SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener {
+public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener,
+        LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -147,7 +147,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
     public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
-        // User touched the dialog's positive button
+        // User touched the dialog's positive imageView
         Log.i("good", "success");
 
         FirebaseSignUp(username, password, firstName, lastName);
@@ -155,7 +155,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     @Override
     public void onDialogSignUpNegativeClick(DialogFragment dialog) {
-        // User touched the dialog's negative button
+        // User touched the dialog's negative imageView
     }
 
     // The dialog fragment receives a reference to this Activity through the
@@ -163,7 +163,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
     public void onLoginDialogPositiveClick(String username, String password) {
-        // User touched the dialog's positive button
+        // User touched the dialog's positive imageView
         Log.i("username: ", username);
         Log.i("password: ", password);
 
@@ -172,7 +172,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     @Override
     public void onLoginDialogNegativeClick(DialogFragment dialog) {
-        // User touched the dialog's negative button
+        // User touched the dialog's negative imageView
     }
 
     @Override
@@ -187,8 +187,8 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     public void onSignUpButton(){
 
-        DialogFragment dialog = new LoginOrSignUpDialogFragment();
-        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+//        DialogFragment dialog = new SignUpDialogFragmentKidsUI();
+//        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
     private boolean isNetworkConnected() {
@@ -428,6 +428,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     void Login() {
 
         Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
+        intent.putExtra("PreviousActivity", "LoginKidsUI");
         LoginKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 

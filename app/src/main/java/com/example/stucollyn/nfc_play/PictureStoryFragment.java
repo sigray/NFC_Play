@@ -142,7 +142,7 @@ public class PictureStoryFragment extends Fragment {
 
     public void DiscardPicture() {
 
-        record_instruction.setText("Touch the blue button to take picture.");
+        record_instruction.setText("Touch the blue imageView to take picture.");
         captured_image.setVisibility(View.INVISIBLE);
         save_picture_button.setVisibility(View.INVISIBLE);
         discard_picture_button.setVisibility(View.INVISIBLE);

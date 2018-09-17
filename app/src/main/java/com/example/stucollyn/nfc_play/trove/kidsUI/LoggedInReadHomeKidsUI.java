@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -53,6 +55,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
 
+    boolean record_button_on, video_record_button_on, recordingStatus = false,
+            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
+            permissionToRecordAccepted = false, isFullSizedVideo = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +139,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         paintViews();
         animateViews();
-//        delay();
+
+        String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
+        WelcomeMessage(previousActivity);
 
         nfcInteraction = new NFCInteraction(this, this);
         adapter = NfcAdapter.getDefaultAdapter(this);
@@ -142,6 +149,52 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         readTagFilters = new IntentFilter[] {tagDetected };
+    }
+
+    void WelcomeMessage(String previousActivity){
+
+        if(previousActivity.equals("LoginKidsUI")) {
+
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
+            onPlay(audioFileUri);
+        }
+    }
+
+    /*When audio playback buttons are selected for first time, setup new audio media player. When
+   user interacts with playback buttons after audio media player has already been setup, toggle
+   between media player pause and play*/
+    public void onPlay(Uri audioFileUri) {
+
+        setupAudioMediaPlayer(audioFileUri);
+        if (!playbackStatus) {
+            startPlaying();
+            playbackStatus = true;
+        }
+    }
+
+    //Setup new audio media player drawing from audio file location
+    protected void setupAudioMediaPlayer(Uri audioFileUri) {
+
+        try {
+            mPlayer.setDataSource(this, audioFileUri);
+            mPlayer.prepare();
+            mPlayerSetup = true;
+        } catch (IOException e) {
+            Log.e("Error", "prepare() failed");
+        }
+    }
+
+    //Start audio media player and start listening for stop imageView to be pressed
+    public void startPlaying() {
+        mPlayer.start();
+        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+
+                mPlayer.stop();
+                mPlayer.reset();
+                playbackStatus = false;
+            }
+        });
     }
 
     @Override

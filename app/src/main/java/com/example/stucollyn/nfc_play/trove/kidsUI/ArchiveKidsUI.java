@@ -1,4 +1,4 @@
-package com.example.stucollyn.nfc_play;
+package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,15 +11,16 @@ import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.widget.HorizontalGridView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
+import com.example.stucollyn.nfc_play.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -36,44 +37,36 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LocalStoryGallery extends AppCompatActivity {
+public class ArchiveKidsUI extends AppCompatActivity {
 
     ArrayList<File> folders;
     LinkedHashMap<File, List<File>> folderFiles;
     HashMap<File, File> folderImages;
     HashMap<File, Bitmap> imageFiles;
     File[] files;
-    ImageAdapter imageAdapter;
-    GridView gridview;
+    ImageAdapterKidsUI imageAdapter;
+    HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
     int[] colourCode;
     int numberOfThumbs;
     Context context;
     Activity activity;
-    int mode;
-    ProgressBar progressBar;
+//    ProgressBar progressBar;
     private StorageReference mStorageRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.trove_logo_action_bar);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        mStorageRef = FirebaseStorage.getInstance().getReference();
-        mode = (Integer) getIntent().getExtras().get("Orientation");
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setRequestedOrientation(mode);
-        getSupportActionBar().setTitle("Story Library");
-        setContentView(R.layout.activity_story_gallery);
-        gridview = (GridView) findViewById(R.id.gridview);
+        setContentView(R.layout.activity_archive_kids_ui);
+        gridview = (HorizontalGridView) findViewById(R.id.gridView);
+
+
         context = this;
         activity = this;
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
+//        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+//        progressBar.setVisibility(View.VISIBLE);
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
         File directory = new File(path);
@@ -115,7 +108,7 @@ public class LocalStoryGallery extends AppCompatActivity {
 
         new LoadImages().execute();
         numberOfThumbs = files.length;
-//        gridview.setAdapter(imageAdapter = new ImageAdapter(this, this, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
+
     }
 
     void downloadFromCloud() throws IOException {
@@ -170,15 +163,15 @@ public class LocalStoryGallery extends AppCompatActivity {
 
                 if (extension.equalsIgnoreCase("jpg")) {
 
-                   folderImages.put(key, element);
+                    folderImages.put(key, element);
                     loadNum++;
                     int progressUpdate = (loadNum*100)/value.size();
-                    progressBar.setProgress(progressUpdate);
+//                    progressBar.setProgress(progressUpdate);
 
-                   Bitmap test = ShowPicture(element);
+                    Bitmap test = ShowPicture(element);
 //                   Log.i("Test element", test.toString());
 
-                   imageFiles.put(key, ShowPicture(element));
+                    imageFiles.put(key, ShowPicture(element));
 
                 }
             }
@@ -196,12 +189,12 @@ public class LocalStoryGallery extends AppCompatActivity {
 
     File[] FilesForThumbnail(File file) {
 
-            String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+file.getName();
-            File directory = new File(path);
-            File[] files = directory.listFiles();
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+file.getName();
+        File directory = new File(path);
+        File[] files = directory.listFiles();
 
-            return files;
-        }
+        return files;
+    }
 
     File GetPicture(File[] files) {
 
@@ -216,7 +209,6 @@ public class LocalStoryGallery extends AppCompatActivity {
 
                 file = files[i];
             }
-
         }
 
         return file;
@@ -284,9 +276,8 @@ public class LocalStoryGallery extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(LocalStoryGallery.this, StoryGalleryMenu.class);
-        intent.putExtra("Orientation", mode);
-        LocalStoryGallery.this.startActivity(intent);
+        Intent intent = new Intent(ArchiveKidsUI.this, LoggedInWriteHomeKidsUI.class);
+        ArchiveKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
         finish();
     }
@@ -324,9 +315,12 @@ public class LocalStoryGallery extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
 
-            progressBar.setVisibility(View.INVISIBLE);
-            gridview.invalidateViews();
-            gridview.setAdapter(imageAdapter = new ImageAdapter(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles, mode));
+//            progressBar.setVisibility(View.INVISIBLE);
+            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+            gridview.invalidate();
+            gridview.setAdapter(imageAdapter);
+//            gridview.invalidateViews();
+//            gridview.setAdapter(imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
 
 //            for (Map.Entry<File,Bitmap> entry : imageFiles.entrySet()) {
 //            File key = entry.getKey();

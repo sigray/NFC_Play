@@ -87,13 +87,13 @@ public class AudioStoryFragment extends Fragment {
 
         if(recordingStatus) {
             record_button.setImageResource(R.drawable.button_on_min);
-            record_instruction.setText("Start speaking. Press button again to finish.");
+            record_instruction.setText("Start speaking. Press imageView again to finish.");
             skip_button.setVisibility(View.INVISIBLE);
         }
 
         else {
             record_button.setImageResource(R.drawable.button_off_min);
-            record_instruction.setText("Touch the red button to record a story.");
+            record_instruction.setText("Touch the red imageView to record a story.");
         }
 
     }
@@ -127,7 +127,7 @@ public class AudioStoryFragment extends Fragment {
 
     public void ResetView(View view) {
 
-        record_instruction.setText("Touch the red button to record a story.");
+        record_instruction.setText("Touch the red imageView to record a story.");
         pause_play_button.setVisibility(View.INVISIBLE);
         stop_button.setVisibility(View.INVISIBLE);
         save_audio_button.setVisibility(View.INVISIBLE);

@@ -42,7 +42,7 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener) activity;
+//            mListener = (SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -57,12 +57,12 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View prompt = inflater.inflate(R.layout.dialog_signup, null);
+        View prompt = inflater.inflate(R.layout.dialog_signup_kids_ui, null);
         builder.setView(prompt);
         final EditText user = (EditText) prompt.findViewById(R.id.username);
         final EditText pass = (EditText) prompt.findViewById(R.id.password);
-        final EditText fn = (EditText) prompt.findViewById(R.id.firstname);
-        final EditText ln = (EditText) prompt.findViewById(R.id.lastname);
+//        final EditText fn = (EditText) prompt.findViewById(R.id.firstname);
+//        final EditText ln = (EditText) prompt.findViewById(R.id.lastname);
 
 
 
@@ -71,8 +71,8 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // sign in the user ...
-                firstName = fn.getText().toString();
-                lastName = ln.getText().toString();
+//                firstName = fn.getText().toString();
+//                lastName = ln.getText().toString();
                 password = pass.getText().toString();
                 username = user.getText().toString();
                 mListener.onDialogSignUpPositiveClick(username, password, firstName, lastName);

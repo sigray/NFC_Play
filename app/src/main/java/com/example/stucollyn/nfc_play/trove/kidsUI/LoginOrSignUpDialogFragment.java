@@ -34,14 +34,14 @@ public class LoginOrSignUpDialogFragment extends DialogFragment {
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface LoginDialogListener {
+    public interface LoginOrSignUpDialogListener {
 
         public void onLoginButton();
         public void onSignUpButton();
     }
 
     // Use this instance of the interface to deliver action events
-    LoginOrSignUpDialogFragment.LoginDialogListener mListener;
+    LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener mListener;
 
     @Override
     public void onAttach(Activity activity) {
@@ -49,7 +49,7 @@ public class LoginOrSignUpDialogFragment extends DialogFragment {
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (LoginOrSignUpDialogFragment.LoginDialogListener) activity;
+            mListener = (LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -81,6 +81,15 @@ public class LoginOrSignUpDialogFragment extends DialogFragment {
 
                 Log.i("HELP HELP",  "HEY");
                 mListener.onLoginButton();
+                dismiss();
+            }
+        });
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Log.i("HELP HELP",  "HEY");
+                mListener.onSignUpButton();
                 dismiss();
             }
         });
