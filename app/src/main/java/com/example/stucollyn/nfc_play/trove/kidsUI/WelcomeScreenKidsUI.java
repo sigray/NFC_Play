@@ -301,75 +301,19 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         }
     }
 
+    public void Skip(View view) {
+
+        Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        WelcomeScreenKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
     public void Continue(View view) {
 
         idleTroveHandler.removeCallbacks(TroveRunnable);
         trove.clearAnimation();
         Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
         WelcomeScreenKidsUI.this.startActivity(intent);
-
-    /*    trove.startAnimation(fadeout);
-
-        fadeout.setAnimationListener(new AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                trove.setVisibility(View.INVISIBLE);
-                //Note, no transition required as trove logo is to remain constantly visible
-                Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
-                WelcomeScreenKidsUI.this.startActivity(intent);
-            }
-        });
-
-*/
-
-
-        /*Transition explode = new Explode();
-
-
-        explode.addListener(new Transition.TransitionListener() {
-            @Override
-            public void onTransitionStart(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionEnd(Transition transition) {
-
-                Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
-                WelcomeScreenKidsUI.this.startActivity(intent);
-            }
-
-            @Override
-            public void onTransitionCancel(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionPause(Transition transition) {
-
-            }
-
-            @Override
-            public void onTransitionResume(Transition transition) {
-
-            }
-        });
-
-
-        TransitionManager.beginDelayedTransition(mRootView, explode);
-        toggleVisibility(backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-                leaf, umbrella, tear, teddy, halfcircle, heart, trove, back);
-
-                */
     }
 
     private static void toggleVisibility(ImageView... views) {

@@ -325,8 +325,10 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     public void Continue(View view) {
 
         trove.clearAnimation();
+        Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
+        LoggedInReadHomeKidsUI.this.startActivity(intent);
 
-
+/*
         Transition explode = new Explode();
 
 
@@ -363,6 +365,8 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         TransitionManager.beginDelayedTransition(mRootView, explode);
         toggleVisibility(backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
                 leaf, umbrella, tear, teddy, halfcircle, heart, trove, back);
+
+                */
     }
 
     private static void toggleVisibility(ImageView... views) {

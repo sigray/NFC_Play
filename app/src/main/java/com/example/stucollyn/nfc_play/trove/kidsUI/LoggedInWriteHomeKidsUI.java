@@ -54,7 +54,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     AudioRecorderKidsUI audioRecorder;
     AnimatedVectorDrawable recordButtonAnim, backRetrace;
     Drawable recordButtonNonAnim;
-    Handler animationHandler;
+    Handler animationHandler, animationBackHandler;
     Runnable RecordButtonRunnable;
     private MediaPlayer mPlayer = null;
     String photoPath;
@@ -106,22 +106,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         cameraButton = (ImageView) findViewById(R.id.camera);
         archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
-        recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
-        recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
-        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
 
         //Prepare new story directory
         mPlayer = new MediaPlayer();
         nfcInteraction = new NFCInteraction(this, this);
-
-        Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
-        d = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d, Color.WHITE);
-        back.setImageDrawable(d);
-
-        slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
-        slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
-
+        AnimationSetup();
         recordButtonController();
 
         adapter = NfcAdapter.getDefaultAdapter(this);
@@ -131,6 +120,40 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] {
                 tagDetected
         };
+
+    }
+
+    void AnimationSetup() {
+
+        recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
+        recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+        slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
+        slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
+
+        animationBackHandler = new Handler();
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                back.setVisibility(View.VISIBLE);
+                Drawable d = back.getDrawable();
+                final AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
+                zigzaganim.start();
+            }
+        }, 1000);
+
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d, Color.WHITE);
+                back.setImageDrawable(d);
+
+            }
+        }, 2000);
 
     }
 
@@ -427,6 +450,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
 
@@ -437,7 +461,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
                 LoggedInWriteHomeKidsUI.this.startActivity(intent);
-                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+//                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         }, 1000);
 

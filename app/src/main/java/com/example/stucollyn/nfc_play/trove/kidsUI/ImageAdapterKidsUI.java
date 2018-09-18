@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.R;
+import com.example.stucollyn.nfc_play.StoryRecord;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +44,8 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
     HashMap<File, Bitmap> imageMap;
     HashMap<File, File> folderToImageRef;
     private List<String> elements;
+    LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
+    ArrayList<String> storyRecords;
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         public final ImageView imageView;
@@ -63,6 +67,42 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
     public void onBindViewHolder(SimpleViewHolder holder, final int position) {
 
         int currentColour = colourCode[position];
+
+        if(!imageMap.isEmpty()) {
+
+            File value = folderToImageRef.get(filesOnTag.get(position));
+
+
+            for (Map.Entry<File,File> entry : folderToImageRef.entrySet()) {
+                File key = entry.getKey();
+                File values = entry.getValue();
+
+//                Log.i("Folders with images: ", "Key: " + key + ", Value: " + values);
+//
+            }
+
+            for (Map.Entry<File,Bitmap> entry : imageMap.entrySet()) {
+                File key = entry.getKey();
+                Bitmap values = entry.getValue();
+
+//                    Log.i("Images Bitmaps: ", "Key: " + key + ", Value: " + values);
+
+            }
+
+
+            Bitmap bitmap = imageMap.get(filesOnTag.get(position));
+
+
+//            imageButtons[position].setImageBitmap(bitmap);
+            holder.imageView.setImageBitmap(bitmap);
+        }
+
+
+
+
+
+
+
         holder.imageView.setBackgroundColor(currentColour);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +123,9 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
     }
 
 
-    public ImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap) {
+    public ImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode,
+                              HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap,
+                              ArrayList<String> storyRecords, String queryType, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;

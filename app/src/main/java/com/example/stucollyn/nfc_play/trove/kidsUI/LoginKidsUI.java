@@ -12,6 +12,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -121,13 +124,8 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         otherItemArray[5] = halfcircle;
         otherItemArray[6] = trove;
 
-        Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
-        d = DrawableCompat.wrap(d);
-        DrawableCompat.setTint(d, Color.WHITE);
-        back.setImageDrawable(d);
-
     //Initialize animations
-        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
+        fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
         isNetworkConnected = isNetworkConnected();
         if(isNetworkConnected) {
 
@@ -303,9 +301,9 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
         for (int i=0; i<otherItemArray.length; i++) {
 
+            otherItemArray[i].setClickable(false);
             otherItemArray[i].startAnimation(fadeout);
             otherItemArray[i].setVisibility(View.INVISIBLE);
-
         }
 
         for (int i=0; i<largeItemArray.length; i++) {
@@ -427,13 +425,12 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     void Login() {
 
-        Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
-        intent.putExtra("PreviousActivity", "LoginKidsUI");
-        LoginKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+//        Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
+//        intent.putExtra("PreviousActivity", "LoginKidsUI");
+//        LoginKidsUI.this.startActivity(intent);
+//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
 
-        /*
         Transition explode = new Explode();
 
 
@@ -447,6 +444,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             public void onTransitionEnd(Transition transition) {
 
                 Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
+                intent.putExtra("PreviousActivity", "LoginKidsUI");
                 LoginKidsUI.this.startActivity(intent);
             }
 
@@ -470,9 +468,6 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         TransitionManager.beginDelayedTransition(mRootView, explode);
         toggleVisibility(star, moon, shell, book, key,
                 leaf, umbrella, tear, teddy, heart);
-
-                */
-
     }
 
     private static void toggleVisibility(ImageView... views) {

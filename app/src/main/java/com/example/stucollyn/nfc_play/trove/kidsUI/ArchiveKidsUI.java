@@ -7,22 +7,39 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v17.leanback.widget.HorizontalGridView;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.stucollyn.nfc_play.R;
+import com.example.stucollyn.nfc_play.StoryRecord;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -52,30 +69,70 @@ public class ArchiveKidsUI extends AppCompatActivity {
     int numberOfThumbs;
     Context context;
     Activity activity;
-//    ProgressBar progressBar;
+    ProgressBar progressBar;
     private StorageReference mStorageRef;
+    ImageView back;
+    AnimatedVectorDrawable backRetrace, backBegin;
+    LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    Handler animationBackHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-
-
+        boolean authenticated = false;
         context = this;
         activity = this;
-
-//        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-//        progressBar.setVisibility(View.VISIBLE);
-
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
-        File directory = new File(path);
-        files = directory.listFiles();
-
+        progressBar = (ProgressBar) findViewById(R.id.progressBar2);
+        progressBar.setVisibility(View.VISIBLE);
         folders = new ArrayList<File>();
         folderFiles = new LinkedHashMap<>();
         folderImages = new HashMap<File, File>();
         imageFiles = new HashMap<File, Bitmap>();
+        AnimationSetup();
+        CheckAuthentication(authenticated);
+    }
+
+
+    //Animation Setup
+    void AnimationSetup() {
+
+        back = (ImageView) findViewById(R.id.back);
+        backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+//                back.setImageDrawable(backRetrace);
+//                backRetrace.start();
+
+
+        animationBackHandler = new Handler();
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                back.setVisibility(View.VISIBLE);
+                Drawable d = back.getDrawable();
+                final AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
+                zigzaganim.start();
+            }
+        }, 2000);
+
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d, Color.WHITE);
+                back.setImageDrawable(d);
+
+            }
+        }, 3000);
+    }
+
+    void ThumbnailColours() {
 
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");;
@@ -105,30 +162,109 @@ public class ArchiveKidsUI extends AppCompatActivity {
             colourCode[i] = currentColour;
 
         }
-
-        new LoadImages().execute();
-        numberOfThumbs = files.length;
-
     }
 
-    void downloadFromCloud() throws IOException {
+    void CheckAuthentication(boolean authenticated) {
 
-        File localFile = File.createTempFile("images", "jpg");
-        StorageReference riversRef = null;
-        riversRef.getFile(localFile)
-                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+        if(authenticated) {
+
+            CloudSetup();
+        }
+
+        else {
+
+            LocalSetup();
+        }
+
+        new LoadImages().execute(authenticated);
+    }
+
+    void CloudSetup() {
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build();
+        firestore.setFirestoreSettings(settings);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    void LocalSetup() {
+
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
+        File directory = new File(path);
+        files = directory.listFiles();
+    }
+
+    void queryFireStoreDatabase() {
+
+        storyRecordMap = new LinkedHashMap<String, ArrayList<StoryRecord>>();
+
+        Log.i("Query: ", "Querying...");
+        String userID = mAuth.getCurrentUser().getEmail();
+        CollectionReference citiesRef = db.collection("Stories");
+        Query query = citiesRef.whereEqualTo("Username", userID).orderBy("Date", Query.Direction.DESCENDING);
+        query.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        // Successfully downloaded data to local file
-                        // ...
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Log.i("Successful Query", document.getId() + " => " + document.getData());
+
+//                                String StoryID = document.getId().toString();
+                                String StoryID = document.getData().get("Story ID").toString();
+                                String StoryName = document.getData().get("StoryName").toString();
+                                String StoryDate = document.getData().get("Date").toString();
+                                String URLlink = document.getData().get("URL").toString();
+                                String StoryType = document.getData().get("Type").toString();
+                                String linkedText = "<b>Story </b>" + StoryID + " = " +
+                                        String.format("<a href=\"%s\">Download Link</a> ", URLlink);
+
+                                StoryRecord storyRecord = new StoryRecord(StoryID, StoryName, StoryDate, URLlink, StoryType);
+
+                                if (storyRecordMap.containsKey(StoryName)) {
+
+                                    storyRecordMap.get(StoryName).add(storyRecord);
+                                } else {
+
+                                    ArrayList<StoryRecord> storyRecordList = new ArrayList<StoryRecord>();
+                                    storyRecordList.add(storyRecord);
+                                    storyRecordMap.put(StoryName, storyRecordList);
+                                    Log.i("Adding to Test Map: ", StoryName);
+                                }
+                            }
+
+
+                                showAllStories(storyRecordMap);
+
+                            for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
+
+                                String key = entry.getKey();
+                                ArrayList<StoryRecord> value = entry.getValue();
+                            }
+
+                        }
+
+                        else {
+                            Log.i("Failed", "error getting documents: ", task.getException());
+                        }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle failed download
-                // ...
-            }
-        });
+                });
+    }
+
+    void showAllStories(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+        ArrayList<String> mediaItems = new ArrayList<String>();
+//        fullList = mediaItems;
+
+        for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
+
+            String value = entry.getValue().get(0).getStoryName();
+            mediaItems.add(value);
+        }
+//        setupImageAdapter(storyRecordMap, mediaItems);
     }
 
     public void setupLists(File[] files) {
@@ -166,7 +302,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     folderImages.put(key, element);
                     loadNum++;
                     int progressUpdate = (loadNum*100)/value.size();
-//                    progressBar.setProgress(progressUpdate);
+                    progressBar.setProgress(progressUpdate);
 
                     Bitmap test = ShowPicture(element);
 //                   Log.i("Test element", test.toString());
@@ -272,14 +408,29 @@ public class ArchiveKidsUI extends AppCompatActivity {
         return 0;
     }
 
+    public void Back(View view) {
+
+        onBackPressed();
+    }
 
     @Override
     public void onBackPressed() {
 
-        Intent intent = new Intent(ArchiveKidsUI.this, LoggedInWriteHomeKidsUI.class);
-        ArchiveKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-        finish();
+        animationBackHandler.removeCallbacksAndMessages(null);
+        back.setImageDrawable(backRetrace);
+        backRetrace.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(ArchiveKidsUI.this, LoggedInWriteHomeKidsUI.class);
+                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                ArchiveKidsUI.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        }, 1000);
+
     }
 
     @Override
@@ -292,16 +443,25 @@ public class ArchiveKidsUI extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class LoadImages extends AsyncTask<Void, Void, Void> {
+    class LoadImages extends AsyncTask<Boolean, Void, Void> {
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(Boolean... params) {
 
-//            imageView = params[0];
+            boolean authenticated = params[0];
 
             try {
 
-                setupLists(files);
+                if(authenticated) {
 
+                    queryFireStoreDatabase();
+                }
+
+                else {
+
+                    setupLists(files);
+                }
+
+            ThumbnailColours();
 
             } catch (NullPointerException e) {
 
@@ -315,8 +475,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
 
-//            progressBar.setVisibility(View.INVISIBLE);
-            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+            progressBar.setVisibility(View.INVISIBLE);
+//            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
             gridview.invalidate();
             gridview.setAdapter(imageAdapter);
 //            gridview.invalidateViews();

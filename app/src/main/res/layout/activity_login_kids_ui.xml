@@ -97,7 +97,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:clickable="false"
-        android:onClick="Continue"
         android:src="@drawable/kids_ui_trove"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
