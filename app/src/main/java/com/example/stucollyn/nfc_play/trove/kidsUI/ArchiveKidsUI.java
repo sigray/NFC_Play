@@ -28,6 +28,8 @@ import android.widget.ProgressBar;
 import com.example.stucollyn.nfc_play.R;
 import com.example.stucollyn.nfc_play.StoryRecord;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -36,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -196,7 +199,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         objectRecordMap = new LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>();
 
-        Log.i("Query: ", "Querying...");
         String userID = mAuth.getCurrentUser().getEmail();
         CollectionReference citiesRef = db.collection("ObjectStory");
         Query query = citiesRef.whereEqualTo("Username", userID).orderBy("Date", Query.Direction.DESCENDING);
@@ -218,8 +220,14 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                 String linkedText = "<b>Story </b>" + ObjectName + " = " +
                                 String.format("<a href=\"%s\">Download Link</a> ", URLlink);
 
+                                //Create new ObjectStory Record. For a returned query record this creates an object with all its defining attributes
                                 ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(ObjectName, StoryName, StoryDate, URLlink, StoryType, CoverImage);
 
+                                /*In the following segment of code we create a linked list of all the ObjectStoryRecord objects, called objectRecordMap.
+                                objectRecordMap's keys are the UUID of each object in the database, the values are all the ObjectStoryRecords, relating to
+                                those keys. If a database query record's object UUID already exists within the objectRecordMap, the query record's ObjectStoryRecord
+                                object is added as a value for that key. If not, a new entry is made in objectRecordMap, with a new key (the UUID of the object) and
+                                the value to the ArrayList of stories pertaining to that key - the value (the ObjectStoryRecord object)*/
                                 if (objectRecordMap.containsKey(ObjectName)) {
 
                                     objectRecordMap.get(ObjectName).add(objectStoryRecord);
@@ -227,14 +235,16 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                                 else {
 
-                                    ArrayList<ObjectStoryRecordKidsUI> storyRecordList = new ArrayList<ObjectStoryRecordKidsUI>();
-                                    storyRecordList.add(objectStoryRecord);
-                                    objectRecordMap.put(StoryName, storyRecordList);
-                                    Log.i("Adding to Test Map: ", StoryName);
+                                    ArrayList<ObjectStoryRecordKidsUI> objectStoryRecordObjectList = new ArrayList<ObjectStoryRecordKidsUI>();
+                                    objectStoryRecordObjectList.add(objectStoryRecord);
+                                    objectRecordMap.put(ObjectName, objectStoryRecordObjectList);
+                                    Log.i("Adding to Test Map: ", ObjectName + " " + StoryName);
                                 }
 
                             }
 //                                showAllStories(objectRecordMap);
+                                getCoverImages(objectRecordMap);
+
 
                             for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
 
@@ -251,19 +261,70 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         }
                     }
                 });
-
     }
 
-    void showAllStories(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> storyRecordMap) {
+    void showAllStories(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap) {
         ArrayList<String> mediaItems = new ArrayList<String>();
 //        fullList = mediaItems;
 
-        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : storyRecordMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
 
             String value = entry.getValue().get(0).getStoryName();
             mediaItems.add(value);
         }
 //        setupImageAdapter(objectRecordMap, mediaItems);
+
+    }
+
+    void getCoverImages(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap) {
+
+            String newDirectory;
+            StorageReference gsReference;
+            FirebaseStorage storage;
+            String userID;
+            File story_directory;
+            newDirectory = ("/Cloud");
+            storage = FirebaseStorage.getInstance();
+            story_directory = getExternalFilesDir(newDirectory);
+            userID = mAuth.getCurrentUser().getUid();
+            final ArrayList<File> coverImages = new ArrayList<File>();
+
+
+            for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
+
+
+                for (int i = 0; i < objectRecordMap.size(); i++) {
+                    gsReference = storage.getReferenceFromUrl(entry.getValue().get(i).getStoryRef());
+
+                    try {
+
+                        final File pictureFile = File.createTempFile("images", ".jpg", story_directory);
+
+                        gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                                Log.i("Success: ", "Found you stuff");
+
+                                // Local temp file has been created
+
+                                coverImages.add(pictureFile);
+                                Log.i("Picture Name: ", pictureFile.toString());
+                                //ShowPicture();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle any errors
+                            }
+                        });
+                    }
+
+                    catch (IOException error) {
+
+                    }
+                }
+            }
     }
 
     public void setupLists(File[] files) {

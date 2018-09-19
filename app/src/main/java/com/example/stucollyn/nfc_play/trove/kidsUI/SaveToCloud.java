@@ -44,7 +44,6 @@ public class SaveToCloud {
     boolean isNetworkConnected;
     HashMap<String,String> selectedMedia;
     UUID objectName;
-    UUID storyName;
     String fileType;
     String coverImage;
 
@@ -52,7 +51,6 @@ public class SaveToCloud {
 
        this.fileDirectory = fileDirectory;
        this.objectName = objectName;
-       storyName = UUID.randomUUID();
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -75,7 +73,6 @@ public class SaveToCloud {
 
             for (int i = 0; i < files.length; i++) {
 
-                UUID storyUUID = UUID.randomUUID();
                 String extension = FilenameUtils.getExtension(files[i].toString());
                 String fileName = files[i].toString();
                 coverImage = "no";
@@ -108,8 +105,7 @@ public class SaveToCloud {
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
         String userID = mAuth.getCurrentUser().getUid();
-        String name = UUID.randomUUID().toString();
-        StorageReference reference = mStorageRef.child(userID).child(name);
+        StorageReference reference = mStorageRef.child(userID).child(objectName.toString());
         uploadToDatabase(reference);
         uploadTask = reference.putFile(file);
         // Register observers to listen for when the download is done or if it fails
@@ -135,6 +131,7 @@ public class SaveToCloud {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String name = user.getEmail();
         String storage = reference.toString();
+        String storyName = UUID.randomUUID().toString();
 
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("Username", name);
