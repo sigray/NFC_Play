@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.R;
-import com.example.stucollyn.nfc_play.StoryRecord;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +42,7 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
     HashMap<File, Bitmap> imageMap;
     HashMap<File, File> folderToImageRef;
     private List<String> elements;
-    LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
-    ArrayList<String> storyRecords;
+
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         public final ImageView imageView;
@@ -123,9 +120,7 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
     }
 
 
-    public ImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode,
-                              HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap,
-                              ArrayList<String> storyRecords, String queryType, LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+    public ImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, ArrayList<File> filesOnTag, int[] colourCode, HashMap<File, File> folderToImageRef, HashMap<File, Bitmap> imageMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;

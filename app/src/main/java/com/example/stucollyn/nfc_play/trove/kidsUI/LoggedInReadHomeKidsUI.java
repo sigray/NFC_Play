@@ -327,6 +327,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         trove.clearAnimation();
         Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
         LoggedInReadHomeKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
 /*
         Transition explode = new Explode();

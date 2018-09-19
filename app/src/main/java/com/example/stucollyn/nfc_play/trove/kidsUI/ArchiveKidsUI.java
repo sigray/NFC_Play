@@ -22,16 +22,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.stucollyn.nfc_play.R;
 import com.example.stucollyn.nfc_play.StoryRecord;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -40,7 +36,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -73,7 +68,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     private StorageReference mStorageRef;
     ImageView back;
     AnimatedVectorDrawable backRetrace, backBegin;
-    LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap;
+    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     Handler animationBackHandler;
@@ -83,7 +78,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = false;
+        boolean authenticated = true;
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -95,7 +90,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         AnimationSetup();
         CheckAuthentication(authenticated);
     }
-
 
     //Animation Setup
     void AnimationSetup() {
@@ -200,11 +194,11 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     void queryFireStoreDatabase() {
 
-        storyRecordMap = new LinkedHashMap<String, ArrayList<StoryRecord>>();
+        objectRecordMap = new LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>();
 
         Log.i("Query: ", "Querying...");
         String userID = mAuth.getCurrentUser().getEmail();
-        CollectionReference citiesRef = db.collection("Stories");
+        CollectionReference citiesRef = db.collection("ObjectStory");
         Query query = citiesRef.whereEqualTo("Username", userID).orderBy("Date", Query.Direction.DESCENDING);
         query.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -215,35 +209,39 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                 Log.i("Successful Query", document.getId() + " => " + document.getData());
 
 //                                String StoryID = document.getId().toString();
-                                String StoryID = document.getData().get("Story ID").toString();
+                                String ObjectName = document.getData().get("ObjectName").toString();
                                 String StoryName = document.getData().get("StoryName").toString();
                                 String StoryDate = document.getData().get("Date").toString();
                                 String URLlink = document.getData().get("URL").toString();
                                 String StoryType = document.getData().get("Type").toString();
-                                String linkedText = "<b>Story </b>" + StoryID + " = " +
-                                        String.format("<a href=\"%s\">Download Link</a> ", URLlink);
+                                String CoverImage = document.getData().get("Cover").toString();
+                                String linkedText = "<b>Story </b>" + ObjectName + " = " +
+                                String.format("<a href=\"%s\">Download Link</a> ", URLlink);
 
-                                StoryRecord storyRecord = new StoryRecord(StoryID, StoryName, StoryDate, URLlink, StoryType);
+                                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(ObjectName, StoryName, StoryDate, URLlink, StoryType, CoverImage);
 
-                                if (storyRecordMap.containsKey(StoryName)) {
+                                if (objectRecordMap.containsKey(ObjectName)) {
 
-                                    storyRecordMap.get(StoryName).add(storyRecord);
-                                } else {
+                                    objectRecordMap.get(ObjectName).add(objectStoryRecord);
+                                }
 
-                                    ArrayList<StoryRecord> storyRecordList = new ArrayList<StoryRecord>();
-                                    storyRecordList.add(storyRecord);
-                                    storyRecordMap.put(StoryName, storyRecordList);
+                                else {
+
+                                    ArrayList<ObjectStoryRecordKidsUI> storyRecordList = new ArrayList<ObjectStoryRecordKidsUI>();
+                                    storyRecordList.add(objectStoryRecord);
+                                    objectRecordMap.put(StoryName, storyRecordList);
                                     Log.i("Adding to Test Map: ", StoryName);
                                 }
+
                             }
+//                                showAllStories(objectRecordMap);
 
-
-                                showAllStories(storyRecordMap);
-
-                            for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
+                            for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
 
                                 String key = entry.getKey();
-                                ArrayList<StoryRecord> value = entry.getValue();
+                                ArrayList<ObjectStoryRecordKidsUI> value = entry.getValue();
+
+                                Log.i("Key: Value ", key + ": " + value);
                             }
 
                         }
@@ -253,18 +251,19 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         }
                     }
                 });
+
     }
 
-    void showAllStories(LinkedHashMap<String, ArrayList<StoryRecord>> storyRecordMap) {
+    void showAllStories(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> storyRecordMap) {
         ArrayList<String> mediaItems = new ArrayList<String>();
 //        fullList = mediaItems;
 
-        for (Map.Entry<String, ArrayList<StoryRecord>> entry : storyRecordMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : storyRecordMap.entrySet()) {
 
             String value = entry.getValue().get(0).getStoryName();
             mediaItems.add(value);
         }
-//        setupImageAdapter(storyRecordMap, mediaItems);
+//        setupImageAdapter(objectRecordMap, mediaItems);
     }
 
     public void setupLists(File[] files) {
@@ -473,21 +472,23 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         }
 
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Boolean authenticated) {
 
             progressBar.setVisibility(View.INVISIBLE);
-//            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+
+            if(authenticated) {
+
+            }
+
+            else {
+
+                imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+            }
+
+            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
             gridview.invalidate();
             gridview.setAdapter(imageAdapter);
-//            gridview.invalidateViews();
-//            gridview.setAdapter(imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles));
 
-//            for (Map.Entry<File,Bitmap> entry : imageFiles.entrySet()) {
-//            File key = entry.getKey();
-//            Bitmap value = entry.getValue();
-//
-//            Log.i("Folders with images: ", "Key: " + key + ", Value: " + value);
-//        }
         }
     }
 }

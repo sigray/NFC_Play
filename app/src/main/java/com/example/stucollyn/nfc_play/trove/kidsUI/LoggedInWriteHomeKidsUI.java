@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -24,6 +25,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -32,12 +34,27 @@ import android.widget.Toast;
 import com.example.stucollyn.nfc_play.NewStoryReview;
 import com.example.stucollyn.nfc_play.NewStorySaveMetadata;
 import com.example.stucollyn.nfc_play.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
@@ -77,12 +94,19 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     NFCInteraction nfcInteraction;
     Tag mytag;
     boolean newStoryReady = false;
-
     NfcAdapter adapter;
     PendingIntent pendingIntent;
     IntentFilter writeTagFilters[];
     //Classes
     CameraRecorder cameraRecorder;
+    boolean authenticated;
+    FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    Date FireStoreTime;
+    FirebaseStorage storage;
+    private StorageReference mStorageRef;
+    boolean recordingStatus = false;
+    boolean currentlyRecording = false;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -93,8 +117,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
         }
-        if (!permissionToRecordAccepted) finish();
 
+        if (!permissionToRecordAccepted) {
+
+            finish();
+        }
     }
 
     @Override
@@ -106,6 +133,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         cameraButton = (ImageView) findViewById(R.id.camera);
         archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
+
+        authenticated = false;
 
         //Prepare new story directory
         mPlayer = new MediaPlayer();
@@ -120,9 +149,10 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] {
                 tagDetected
         };
-
     }
 
+
+    //Animation Setup
     void AnimationSetup() {
 
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
@@ -141,7 +171,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 final AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
                 zigzaganim.start();
             }
-        }, 1000);
+        }, 2000);
 
         animationBackHandler.postDelayed(new Runnable() {
             @Override
@@ -153,8 +183,29 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 back.setImageDrawable(d);
 
             }
-        }, 2000);
+        }, 3000);
+    }
 
+    void slideOutViewAnimation(View view) {
+
+        int visibility = view.getVisibility();
+
+        if(visibility==View.VISIBLE){
+
+            view.startAnimation(slideout);
+            view.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    void slideInViewAnimation(View view) {
+
+        int visibility = view.getVisibility();
+
+        if(visibility==View.INVISIBLE){
+
+            view.startAnimation(slidein);
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
     void recordButtonController() {
@@ -163,12 +214,31 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
+//                final View view = v;
+//                final Handler handler;
+//                Runnable mLongPressed;
+//                handler = new Handler();
+//                mLongPressed = new Runnable() {
+//                    public void run() {
+//                        Log.i("", "Long press!");
+//                        recordingManager(view, false);
+//                    }
+//                };
+
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        recordingManager(v, false);
+//                        handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+                        currentlyRecording = true;
+                        recordingStatus = false;
+                        recordingManager(v);
+                        recordButtonAnimationController();
                         break;
                     case MotionEvent.ACTION_UP:
-                        recordingManager(v, true);
+//                        handler.removeCallbacks(mLongPressed);
+                        currentlyRecording = false;
+                        recordingStatus = true;
+                        recordingManager(v);
+                        recordButtonAnimationController();
                         break;
                 }
 
@@ -241,47 +311,61 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         audioFileName = audioRecorder.getAudioFileName();
     }
 
-    void recordingManager(View view, boolean recordingStatus) {
+    void recordButtonAnimationController() {
 
-        if (!recordingStatus) {
+        animationHandler = new Handler();
 
-            SetupStoryLocation();
-            archive.startAnimation(slideout);
-            archive.setVisibility(View.INVISIBLE);
-            recordButton.setImageDrawable(recordButtonAnim);
+        //Runnable to handle idle trove animation
+        RecordButtonRunnable = new Runnable() {
 
-            animationHandler = new Handler();
+            @Override
+            public void run() {
+                recordButtonAnim.start();
 
-            //Runnable to handle idle trove animation
-            RecordButtonRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    recordButtonAnim.start();
+                if(currentlyRecording) {
                     animationHandler.postDelayed(this, 1000);
                 }
-            };
 
-            animationHandler.post(RecordButtonRunnable);
-            recordAudio(view);
+                else {
+                    animationHandler.removeCallbacks(RecordButtonRunnable);
+                }
+            }
+        };
+
+        animationHandler.post(RecordButtonRunnable);
+
+    }
+
+    void recordingManager(View view) {
+
+        try {
+
+
+            if (!recordingStatus) {
+
+                Log.i("Start recording", "Started");
+                Log.i("Recording Status", String.valueOf(recordingStatus));
+                SetupStoryLocation();
+                slideOutViewAnimation(archive);
+                recordButton.setImageDrawable(recordButtonAnim);
+                recordAudio(view);
+            } else {
+
+                Log.i("Stop recording", "Stopped");
+                slideInViewAnimation(cameraButton);
+                audioRecorder.stopRecording();
+                animationHandler.removeCallbacks(RecordButtonRunnable);
+                recordButton.setImageDrawable(recordButtonNonAnim);
+                newStoryReady = true;
+            }
+
+            recordingStatus = !recordingStatus;
+
         }
 
-        else {
+        catch (RuntimeException r) {
 
-            cameraButton.setVisibility(View.VISIBLE);
-            cameraButton.startAnimation(slidein);
-            audioRecorder.stopRecording();
-            animationHandler.removeCallbacks(RecordButtonRunnable);
-            recordButton.setImageDrawable(recordButtonNonAnim);
-            newStoryReady = true;
-            //recordButton.setImageDrawable(recordButtonNonAnim);
-
-//            Uri audioFileUri = FileProvider.getUriForFile(this,
-//                    "com.example.android.fileprovider",
-//                    audioRecorder.getAudioFile());
         }
-
-        recordingStatus = !recordingStatus;
     }
 
     void AttachToNFCInstruction() {
@@ -385,11 +469,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
 
                 new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
-                cameraButton.startAnimation(slideout);
-                cameraButton.setVisibility(View.INVISIBLE);
-                archive.setVisibility(View.VISIBLE);
-                archive.startAnimation(slidein);
+                slideOutViewAnimation(cameraButton);
+                slideInViewAnimation(archive);
                 AttachToNFCInstruction();
+                UUID objectUUID = UUID.randomUUID();
+                SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                saveToCloud.CloudSave();
             }
         }
 
@@ -445,6 +530,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     public void Back(View view) {
 
         onBackPressed();
+    }
+
+    public void onDestroy() {
+
+        super.onDestroy();
+
     }
 
     @Override
