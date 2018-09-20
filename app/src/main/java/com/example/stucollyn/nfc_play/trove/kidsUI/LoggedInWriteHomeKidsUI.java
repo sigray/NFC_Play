@@ -155,7 +155,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Animation Setup
     void AnimationSetup() {
 
-        recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim);
+        recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim_alt);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
         backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
         slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
@@ -473,8 +473,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 slideInViewAnimation(archive);
                 AttachToNFCInstruction();
                 UUID objectUUID = UUID.randomUUID();
-                SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
-                saveToCloud.CloudSave();
+
+                if(authenticated) {
+                    SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                    saveToCloud.CloudSave();
+                }
             }
         }
 

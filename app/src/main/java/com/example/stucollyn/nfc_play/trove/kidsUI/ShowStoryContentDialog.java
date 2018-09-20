@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -133,7 +135,8 @@ public class ShowStoryContentDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
         Bundle bundle = this.getArguments();
         imageFile = (File) bundle.getSerializable("ImageFile");        // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -142,8 +145,18 @@ public class ShowStoryContentDialog extends DialogFragment {
 //        builder.setView(inflater.inflate(R.layout.dialog_signin, null));
         View prompt = inflater.inflate(R.layout.dialog_show_story_kids_ui, null);
         imageView = (ImageView) prompt.findViewById(R.id.imageView);
-        builder.setView(prompt);
+
+        final AlertDialog alertDio = new AlertDialog.Builder(getActivity())
+                .setView(prompt)
+                .show();
+
+        alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomDialog);
+//        builder.setView(prompt);
         displayImage();
-        return builder.create();
+//        return builder.create();
+
+        return alertDio;
     }
 }
