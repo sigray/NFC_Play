@@ -75,13 +75,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     Handler animationBackHandler;
+    ArrayList<File> coverImages;
+    HashMap<String, Bitmap> coverImageMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = true;
+        boolean authenticated = false;
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -193,6 +195,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
         File directory = new File(path);
         files = directory.listFiles();
+        Log.i("Files List: ", String.valueOf(files));
     }
 
     void queryFireStoreDatabase() {
@@ -210,7 +213,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.i("Successful Query", document.getId() + " => " + document.getData());
 
-//                                String StoryID = document.getId().toString();
+//                                String ObjectName = document.getId().toString();
                                 String ObjectName = document.getData().get("ObjectName").toString();
                                 String StoryName = document.getData().get("StoryName").toString();
                                 String StoryDate = document.getData().get("Date").toString();
@@ -221,7 +224,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                 String.format("<a href=\"%s\">Download Link</a> ", URLlink);
 
                                 //Create new ObjectStory Record. For a returned query record this creates an object with all its defining attributes
-                                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(ObjectName, StoryName, StoryDate, URLlink, StoryType, CoverImage);
+                                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(ObjectName, StoryName, StoryDate, URLlink, StoryType, CoverImage, "Cloud");
 
                                 /*In the following segment of code we create a linked list of all the ObjectStoryRecord objects, called objectRecordMap.
                                 objectRecordMap's keys are the UUID of each object in the database, the values are all the ObjectStoryRecords, relating to
@@ -238,7 +241,13 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                     ArrayList<ObjectStoryRecordKidsUI> objectStoryRecordObjectList = new ArrayList<ObjectStoryRecordKidsUI>();
                                     objectStoryRecordObjectList.add(objectStoryRecord);
                                     objectRecordMap.put(ObjectName, objectStoryRecordObjectList);
-                                    Log.i("Adding to Test Map: ", ObjectName + " " + StoryName);
+//                                    Log.i("Adding to Test Map: ", ObjectName + " " + StoryName);
+                                }
+
+                                if(CoverImage.equals("yes")) {
+
+                                    getCoverImage(URLlink);
+
                                 }
 
                             }
@@ -251,7 +260,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                 String key = entry.getKey();
                                 ArrayList<ObjectStoryRecordKidsUI> value = entry.getValue();
 
-                                Log.i("Key: Value ", key + ": " + value);
+//                                Log.i("Key: Value ", key + ": " + value);
                             }
 
                         }
@@ -276,8 +285,57 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     }
 
+    void getCoverImage(String URLlink) {
+
+        String newDirectory;
+        StorageReference gsReference;
+        FirebaseStorage storage;
+        String userID;
+        File story_directory;
+        newDirectory = ("/Cloud");
+        storage = FirebaseStorage.getInstance();
+        story_directory = getExternalFilesDir(newDirectory);
+        userID = mAuth.getCurrentUser().getUid();
+        final Bitmap adjustedBitmap;
+
+
+        gsReference = storage.getReferenceFromUrl(URLlink);
+
+            try {
+
+                final File pictureFile = File.createTempFile("images", ".jpg", story_directory);
+                final String URL = URLlink;
+                Log.i("URLLink: ", URLlink);
+
+
+                gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                        //Log.i("Success: ", "Found you stuff");
+
+                        // Local temp file has been created
+
+//                        Bitmap adjustedBitmap = ShowPicture(pictureFile);
+//                        coverImageMap.put(ObjectName, URLlink);
+                    }
+
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+            }
+
+            catch (IOException error) {
+
+            }
+    }
+
     void getCoverImages(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap) {
 
+        /*
             String newDirectory;
             StorageReference gsReference;
             FirebaseStorage storage;
@@ -287,30 +345,49 @@ public class ArchiveKidsUI extends AppCompatActivity {
             storage = FirebaseStorage.getInstance();
             story_directory = getExternalFilesDir(newDirectory);
             userID = mAuth.getCurrentUser().getUid();
-            final ArrayList<File> coverImages = new ArrayList<File>();
+            coverImages = new ArrayList<File>();
+            coverImageMap = new HashMap<String, Bitmap>();
+
+        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
 
 
-            for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
+                Log.i("Key: Value", entry + ": " + entry.getValue());
+                Log.i("Map", String.valueOf(objectRecordMap.size()));
 
 
-                for (int i = 0; i < objectRecordMap.size(); i++) {
+
+            for (int i = 0; i < objectRecordMap.size(); i++) {
+
+
                     gsReference = storage.getReferenceFromUrl(entry.getValue().get(i).getStoryRef());
+
+                    final String objectName = entry.getValue().get(i).getObjectName();
+                    Log.i("Final Object Name", objectName);
+
+
 
                     try {
 
                         final File pictureFile = File.createTempFile("images", ".jpg", story_directory);
 
+
                         gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                                Log.i("Success: ", "Found you stuff");
+                                //Log.i("Success: ", "Found you stuff");
 
                                 // Local temp file has been created
 
                                 coverImages.add(pictureFile);
-                                Log.i("Picture Name: ", pictureFile.toString());
-                                //ShowPicture();
+                                Bitmap adjustedBitmap = ShowPicture(pictureFile);
+                                coverImageMap.put(objectName, adjustedBitmap);
+
+                                for (Map.Entry<String, Bitmap> entry2 : coverImageMap.entrySet()) {
+
+                                    //Log.i("Key: Value", entry2 + ": " + entry2.getValue());
+                                }
+
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -323,8 +400,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     catch (IOException error) {
 
                     }
+
                 }
             }
+            */
     }
 
     public void setupLists(File[] files) {
@@ -334,13 +413,13 @@ public class ArchiveKidsUI extends AppCompatActivity {
             folders.add(files[i]);
             File[] subFiles = FilesForThumbnail(files[i]);
 
-//            Log.i("Reached 1: File: ", files[i].getName());
+           Log.i("Reached 1: File: ", files[i].getName());
 
             for (int j = 0; j < subFiles.length; j++) {
 
                 put(folderFiles, files[i], subFiles[j]);
 
-//                Log.i("Reached 2: File: Sub", files[i].getName() + ": " + subFiles[j].getName());
+                Log.i("Reached 2: File: Sub", files[i].getName() + ": " + subFiles[j].getName());
             }
         }
 
@@ -348,7 +427,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
             File key = entry.getKey();
             List<File> value = entry.getValue();
 
-//            Log.i("Reached 3: File: Sub", key.getName() + ": " + value.toString());
+            Log.i("Reached 3: File: Sub", key.getName() + ": " + value.toString());
 
             int loadNum = 0;
 
@@ -365,7 +444,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     progressBar.setProgress(progressUpdate);
 
                     Bitmap test = ShowPicture(element);
-//                   Log.i("Test element", test.toString());
+                    Log.i("Test element", test.toString());
 
                     imageFiles.put(key, ShowPicture(element));
 
@@ -503,9 +582,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class LoadImages extends AsyncTask<Boolean, Void, Void> {
+    class LoadImages extends AsyncTask<Boolean, Void, Boolean> {
         @Override
-        protected Void doInBackground(Boolean... params) {
+        protected Boolean doInBackground(Boolean... params) {
 
             boolean authenticated = params[0];
 
@@ -518,6 +597,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                 else {
 
+                    Log.i("Confirmation: ", "LoadImages Local Reached");
                     setupLists(files);
                 }
 
@@ -529,8 +609,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             }
 
-            return null;
-
+            return authenticated;
         }
 
         protected void onPostExecute(Boolean authenticated) {
@@ -543,12 +622,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             else {
 
+                Log.i("Confirmation: ", "End Reached");
+
                 imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+                gridview.invalidate();
+                gridview.setAdapter(imageAdapter);
             }
 
-            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
-            gridview.invalidate();
-            gridview.setAdapter(imageAdapter);
+//            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+
 
         }
     }

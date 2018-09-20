@@ -8,23 +8,25 @@ import java.io.Serializable;
 
 public class ObjectStoryRecordKidsUI implements Serializable {
 
-    String StoryID;
+    String ObjectName;
     String StoryName;
     String StoryDate;
     String StoryRef;
     String StoryType;
     String CoverImage;
     String linkedText;
+    String ObjectContext;
 
 
-    public ObjectStoryRecordKidsUI(String StoryID, String StoryName, String StoryDate, String StoryRef, String StoryType, String CoverImage) {
+    public ObjectStoryRecordKidsUI(String ObjectName, String StoryName, String StoryDate, String StoryRef, String StoryType, String CoverImage, String ObjectContext) {
 
-        this.StoryID = StoryID;
+        this.ObjectName = ObjectName;
         this.StoryName = StoryName;
         this.StoryDate = StoryDate;
         this.StoryRef = StoryRef;
         this.StoryType = StoryType;
         this.CoverImage = CoverImage;
+        this.ObjectContext = ObjectContext;
     }
 
     public String isCoverImage() {
@@ -32,9 +34,9 @@ public class ObjectStoryRecordKidsUI implements Serializable {
         return CoverImage;
     }
 
-    public String getStoryID() {
+    public String getObjectName() {
 
-        return  StoryID;
+        return ObjectName;
     }
 
     public String getStoryName() {
@@ -55,5 +57,10 @@ public class ObjectStoryRecordKidsUI implements Serializable {
     public String getStoryType() {
 
         return  StoryType;
+    }
+
+    public String getObjectContext() {
+
+        return  ObjectContext;
     }
 }
