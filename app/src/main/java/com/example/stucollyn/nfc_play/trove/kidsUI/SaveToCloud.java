@@ -79,20 +79,20 @@ public class SaveToCloud {
 
                 if (extension.equalsIgnoreCase("jpg")) {
 
-                    Log.i("Uploading Picture", " true");
+//                    Log.i("Uploading Picture", " true");
                     fileType = "PictureFile";
                     coverImage = "yes";
                 } else if (extension.equalsIgnoreCase("mp3")) {
 
-                    Log.i("Uploading Audio", " true");
+//                    Log.i("Uploading Audio", " true");
                     fileType = "AudioFile";
                 } else if (extension.equalsIgnoreCase("mp4")) {
 
-                    Log.i("Uploading Video", " true");
+//                    Log.i("Uploading Video", " true");
                     fileType = "AudioFile";
                 } else if (extension.equalsIgnoreCase("txt")) {
 
-                    Log.i("Uploading Text", " true");
+//                    Log.i("Uploading Text", " true");
                     fileType = "WrittenFile";
                 }
 
@@ -108,10 +108,16 @@ public class SaveToCloud {
         StorageReference reference = mStorageRef.child(userID).child(objectName.toString());
         uploadToDatabase(reference);
         uploadTask = reference.putFile(file);
+        final String fileName = file.toString();
+        final File fileToDelete = fileToUpload;
+
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
+
+                Log.i("File:", fileName.toString());
+                Log.i("Mission Failed", "Failed ");
                 // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -120,7 +126,7 @@ public class SaveToCloud {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
                 Log.i("Mission Accomplished", "Completed ");
-                DeleteLocalFiles();
+                DeleteLocalFiles(fileToDelete);
 
             }
         });
@@ -148,20 +154,22 @@ public class SaveToCloud {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.i("Success", "DocumentSnapshot written with ID: " + documentReference.getId());
+//                        Log.i("Success", "DocumentSnapshot written with ID: " + documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i("Failure", "Error adding document", e);
+//                        Log.i("Failure", "Error adding document", e);
                     }
                 });
     }
 
-    void DeleteLocalFiles() {
+    void DeleteLocalFiles(File fileToDelete) {
 
-        Log.i("File Directory", fileDirectory.toString());
+//        Log.i("File Directory", fileDirectory.toString());
+
+        /*
 
         if (fileDirectory.isDirectory())
         {
@@ -172,7 +180,9 @@ public class SaveToCloud {
             }
         }
 
-        boolean deletedFile = fileDirectory.delete();
+        */
+
+        boolean deletedFile = fileToDelete.delete();
     }
 
 }

@@ -26,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.stucollyn.nfc_play.R;
-import com.example.stucollyn.nfc_play.StoryRecord;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,6 +59,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     HashMap<File, Bitmap> imageFiles;
     File[] files;
     ImageAdapterKidsUI imageAdapter;
+    CloudImageAdapterKidsUI cloudImageAdapter;
     HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
@@ -83,7 +83,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = false;
+        boolean authenticated = true;
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -92,6 +92,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         folderFiles = new LinkedHashMap<>();
         folderImages = new HashMap<File, File>();
         imageFiles = new HashMap<File, Bitmap>();
+        coverImageMap = new HashMap<String, Bitmap>();
         AnimationSetup();
         CheckAuthentication(authenticated);
     }
@@ -131,7 +132,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         }, 3000);
     }
 
-    void ThumbnailColours() {
+    void LocalThumbnailColours() {
 
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");;
@@ -163,19 +164,51 @@ public class ArchiveKidsUI extends AppCompatActivity {
         }
     }
 
+    void CloudThumbnailColours() {
+
+        colourCounter = 0;
+        currentColour = Color.parseColor("#756bc7");;
+        colourCode = new int[coverImageMap.size()];
+
+
+        for (int i = 0; i < coverImageMap.size(); i++) {
+
+            if(colourCounter==0) {
+
+                currentColour = Color.parseColor("#756bc7");
+                colourCounter++;
+            }
+
+            else if(colourCounter==1) {
+
+                currentColour = Color.parseColor("#ffb491");
+                colourCounter++;
+            }
+
+            else if (colourCounter>1) {
+
+                currentColour = Color.parseColor("#54b8a9");
+                colourCounter = 0;
+            }
+
+            colourCode[i] = currentColour;
+
+        }
+    }
+
     void CheckAuthentication(boolean authenticated) {
 
         if(authenticated) {
 
             CloudSetup();
+            queryFireStoreDatabase();
         }
 
         else {
 
             LocalSetup();
+            new LoadLocalImages().execute(authenticated);
         }
-
-        new LoadImages().execute(authenticated);
     }
 
     void CloudSetup() {
@@ -246,23 +279,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                                 if(CoverImage.equals("yes")) {
 
-                                    getCoverImage(URLlink);
+                                    getCoverImage(ObjectName, URLlink);
 
                                 }
-
                             }
-//                                showAllStories(objectRecordMap);
-                                getCoverImages(objectRecordMap);
-
-
-                            for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
-
-                                String key = entry.getKey();
-                                ArrayList<ObjectStoryRecordKidsUI> value = entry.getValue();
-
-//                                Log.i("Key: Value ", key + ": " + value);
-                            }
-
                         }
 
                         else {
@@ -272,20 +292,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                 });
     }
 
-    void showAllStories(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap) {
-        ArrayList<String> mediaItems = new ArrayList<String>();
-//        fullList = mediaItems;
-
-        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
-
-            String value = entry.getValue().get(0).getStoryName();
-            mediaItems.add(value);
-        }
-//        setupImageAdapter(objectRecordMap, mediaItems);
-
-    }
-
-    void getCoverImage(String URLlink) {
+    void getCoverImage(String ObjectName, String URLlink) {
 
         String newDirectory;
         StorageReference gsReference;
@@ -297,27 +304,31 @@ public class ArchiveKidsUI extends AppCompatActivity {
         story_directory = getExternalFilesDir(newDirectory);
         userID = mAuth.getCurrentUser().getUid();
         final Bitmap adjustedBitmap;
-
-
         gsReference = storage.getReferenceFromUrl(URLlink);
 
             try {
 
                 final File pictureFile = File.createTempFile("images", ".jpg", story_directory);
                 final String URL = URLlink;
-                Log.i("URLLink: ", URLlink);
+                final String theObjectName = ObjectName;
+//                Log.i("CoverImage yes: ", ObjectName + " " + URLlink);
 
 
                 gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                        //Log.i("Success: ", "Found you stuff");
+                        Log.i("Success: ", "Found you stuff");
 
                         // Local temp file has been created
 
-//                        Bitmap adjustedBitmap = ShowPicture(pictureFile);
-//                        coverImageMap.put(ObjectName, URLlink);
+                        Bitmap adjustedBitmap = ShowPicture(pictureFile);
+                        coverImageMap.put(theObjectName, adjustedBitmap);
+                        CloudThumbnailColours();
+                        progressBar.setVisibility(View.INVISIBLE);
+                        cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, objectRecordMap, coverImageMap);
+                        gridview.invalidate();
+                        gridview.setAdapter(cloudImageAdapter);
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -331,79 +342,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
             catch (IOException error) {
 
             }
-    }
-
-    void getCoverImages(LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap) {
-
-        /*
-            String newDirectory;
-            StorageReference gsReference;
-            FirebaseStorage storage;
-            String userID;
-            File story_directory;
-            newDirectory = ("/Cloud");
-            storage = FirebaseStorage.getInstance();
-            story_directory = getExternalFilesDir(newDirectory);
-            userID = mAuth.getCurrentUser().getUid();
-            coverImages = new ArrayList<File>();
-            coverImageMap = new HashMap<String, Bitmap>();
-
-        for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
-
-
-                Log.i("Key: Value", entry + ": " + entry.getValue());
-                Log.i("Map", String.valueOf(objectRecordMap.size()));
-
-
-
-            for (int i = 0; i < objectRecordMap.size(); i++) {
-
-
-                    gsReference = storage.getReferenceFromUrl(entry.getValue().get(i).getStoryRef());
-
-                    final String objectName = entry.getValue().get(i).getObjectName();
-                    Log.i("Final Object Name", objectName);
-
-
-
-                    try {
-
-                        final File pictureFile = File.createTempFile("images", ".jpg", story_directory);
-
-
-                        gsReference.getFile(pictureFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
-                                //Log.i("Success: ", "Found you stuff");
-
-                                // Local temp file has been created
-
-                                coverImages.add(pictureFile);
-                                Bitmap adjustedBitmap = ShowPicture(pictureFile);
-                                coverImageMap.put(objectName, adjustedBitmap);
-
-                                for (Map.Entry<String, Bitmap> entry2 : coverImageMap.entrySet()) {
-
-                                    //Log.i("Key: Value", entry2 + ": " + entry2.getValue());
-                                }
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Handle any errors
-                            }
-                        });
-                    }
-
-                    catch (IOException error) {
-
-                    }
-
-                }
-            }
-            */
     }
 
     public void setupLists(File[] files) {
@@ -447,12 +385,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     Log.i("Test element", test.toString());
 
                     imageFiles.put(key, ShowPicture(element));
-
                 }
             }
-
         }
-
     }
 
     public static void put(Map<File, List<File>> map, File key, File value) {
@@ -582,32 +517,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class LoadImages extends AsyncTask<Boolean, Void, Boolean> {
+    class LoadLocalImages extends AsyncTask<Boolean, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Boolean... params) {
 
             boolean authenticated = params[0];
 
-            try {
+            setupLists(files);
 
-                if(authenticated) {
-
-                    queryFireStoreDatabase();
-                }
-
-                else {
-
-                    Log.i("Confirmation: ", "LoadImages Local Reached");
-                    setupLists(files);
-                }
-
-            ThumbnailColours();
-
-            } catch (NullPointerException e) {
-
-            } catch (IllegalArgumentException e) {
-
-            }
+            LocalThumbnailColours();
 
             return authenticated;
         }
@@ -616,22 +534,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             progressBar.setVisibility(View.INVISIBLE);
 
-            if(authenticated) {
-
-            }
-
-            else {
-
-                Log.i("Confirmation: ", "End Reached");
 
                 imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
                 gridview.invalidate();
                 gridview.setAdapter(imageAdapter);
-            }
-
-//            imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
-
-
         }
     }
 }
