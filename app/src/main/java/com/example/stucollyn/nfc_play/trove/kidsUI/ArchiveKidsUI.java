@@ -45,6 +45,9 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -83,7 +86,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = true;
+        boolean authenticated = false;
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -279,7 +282,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                                 if(CoverImage.equals("yes")) {
 
-                                    getCoverImage(ObjectName, URLlink);
+                                    getCoverImageCloud(ObjectName, URLlink);
 
                                 }
                             }
@@ -292,7 +295,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                 });
     }
 
-    void getCoverImage(String ObjectName, String URLlink) {
+    void getCoverImageCloud(String ObjectName, String URLlink) {
 
         String newDirectory;
         StorageReference gsReference;
@@ -342,6 +345,58 @@ public class ArchiveKidsUI extends AppCompatActivity {
             catch (IOException error) {
 
             }
+    }
+
+    void setupListsLocal(File[] files) {
+
+        for (int i = 0; i < files.length; i++) {
+
+            File[] subFiles = FilesForThumbnail(files[i]);
+            boolean setCoverImage = false;
+
+            Log.i("Reached 1: File: ", files[i].getName());
+
+            for (int j = 0; j < subFiles.length; j++) {
+
+                String CoverImage = "no";
+                String FileContext = "local";
+                String FileType = "";
+                String extension = FilenameUtils.getExtension(subFiles[j].toString());
+
+                    if (extension.equalsIgnoreCase("jpg")&&!setCoverImage) {
+
+                        CoverImage = "yes";
+                    }
+
+                    if(extension.equalsIgnoreCase("jpg")) {
+
+                        FileType = "Picture";
+                    }
+
+                    else if(extension.equalsIgnoreCase("mp4")) {
+
+                        FileType = "Audio";
+                    }
+
+                ObjectStoryRecordKidsUI objectStoryRecordKidsUI = new ObjectStoryRecordKidsUI(files[i].getName(), subFiles[j].getName(), "", subFiles[j].getAbsolutePath(), FileType, CoverImage, FileContext);
+
+
+                if(CoverImage.equals("yes")) {
+
+                    getCoverImageLocal(subFiles[j].getName(), subFiles[j]);
+                }
+
+            }
+        }
+    }
+
+
+    void getCoverImageLocal(String ObjectName, File file) {
+
+            final String theObjectName = ObjectName;
+            Bitmap adjustedBitmap = ShowPicture(file);
+            coverImageMap.put(theObjectName, adjustedBitmap);
+            CloudThumbnailColours();
     }
 
     public void setupLists(File[] files) {
@@ -523,9 +578,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             boolean authenticated = params[0];
 
-            setupLists(files);
+            setupListsLocal(files);
 
-            LocalThumbnailColours();
+            CloudThumbnailColours();
 
             return authenticated;
         }
@@ -535,9 +590,13 @@ public class ArchiveKidsUI extends AppCompatActivity {
             progressBar.setVisibility(View.INVISIBLE);
 
 
-                imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
-                gridview.invalidate();
-                gridview.setAdapter(imageAdapter);
+//                imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
+//                gridview.invalidate();
+//                gridview.setAdapter(imageAdapter);
+
+            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, objectRecordMap, coverImageMap);
+            gridview.invalidate();
+            gridview.setAdapter(cloudImageAdapter);
         }
     }
 }

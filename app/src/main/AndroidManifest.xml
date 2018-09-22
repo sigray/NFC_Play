@@ -140,7 +140,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="trove"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".trove.kidsUI.LoggedInReadHomeKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -153,11 +153,13 @@
             android:label="trove"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".trove.kidsUI.ArchiveKidsUI"
+        <activity
+            android:name=".trove.kidsUI.ArchiveKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".trove.kidsUI.ExploreArchiveItem"></activity>
     </application>
 
 </manifest>

@@ -169,20 +169,16 @@ public class SaveToCloud {
 
 //        Log.i("File Directory", fileDirectory.toString());
 
-        /*
 
-        if (fileDirectory.isDirectory())
-        {
+        if (fileDirectory.isDirectory()) {
             String[] children = fileDirectory.list();
-            for (int i = 0; i < children.length; i++)
-            {
-                new File(fileDirectory, children[i]).delete();
+
+            if (children.length == 0) {
+
+                fileDirectory.delete();
             }
+
+            fileToDelete.delete();
         }
-
-        */
-
-        boolean deletedFile = fileToDelete.delete();
     }
-
 }
