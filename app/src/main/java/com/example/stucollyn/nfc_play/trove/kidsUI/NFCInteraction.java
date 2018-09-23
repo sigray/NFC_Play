@@ -69,7 +69,7 @@ public class NFCInteraction {
         }
     }
 
-    File[] read(Tag tag, PackageManager m, String packageName) throws IOException, FormatException, IndexOutOfBoundsException, NullPointerException {
+    File[] read(Tag tag, PackageManager pacMan, String packageName) throws IOException, FormatException, IndexOutOfBoundsException, NullPointerException {
 
         String s = null;
         // Get an instance of Ndef for the tag.
@@ -96,7 +96,7 @@ public class NFCInteraction {
         s = s.substring(3);
 
         try {
-            PackageInfo p = m.getPackageInfo(packageName, 0);
+            PackageInfo p = pacMan.getPackageInfo(packageName, 0);
             packageName = p.applicationInfo.dataDir;
         } catch (PackageManager.NameNotFoundException e) {
             Log.w("yourtag", "Error Package name not found ", e);
@@ -106,11 +106,14 @@ public class NFCInteraction {
 
 //        String path = packageName.toString()+"/files";
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
+        Log.i("NFC_Tag_Files_Path", path);
         File directory = new File(path);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++)
         {
-            Log.d("Files", "FileName:" + files[i].getName());
+
+            Log.i("NFC_Tag_Files_Format", files[i].getName());
+
         }
 
         filesOnTag = files;

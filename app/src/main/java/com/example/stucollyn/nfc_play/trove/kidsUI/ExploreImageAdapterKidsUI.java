@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,6 +72,11 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         File[] filesOnTag;
         filesOnTag = new File[1];
         filesOnTag[0] = storyFile.get(position);
+
+        Uri story_directory_uri = FileProvider.getUriForFile(mContext,
+                "com.example.android.fileprovider",
+                filesOnTag[0].getAbsoluteFile());
+
         ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, mContext, storyGallery, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }

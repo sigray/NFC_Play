@@ -15,6 +15,7 @@ import android.nfc.Tag;
 import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.FileProvider;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.os.Bundle;
 import android.transition.Explode;
@@ -217,7 +218,14 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 PackageManager m = getPackageManager();
                 String packageName = getPackageName();
                 File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
+                Log.d("NFC_Tag_Files_Format B", "FileName:" + filesOnTag[0].getName());
                 Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
+
+                Uri story_directory_uri = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        filesOnTag[0].getAbsoluteFile());
+
+//                Log.i("NFC URI: ", String.valueOf(story_directory_uri));
 
                 if(filesOnTag!=null){
 

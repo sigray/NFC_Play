@@ -79,44 +79,36 @@ public class SaveToCloud {
 
                 if (extension.equalsIgnoreCase("jpg")) {
 
-//                    Log.i("Uploading Picture", " true");
+                    Log.i("Uploading Audio", files[i].toString());
                     fileType = "PictureFile";
                     coverImage = "yes";
-                } else if (extension.equalsIgnoreCase("mp3")) {
-
-//                    Log.i("Uploading Audio", " true");
-                    fileType = "AudioFile";
-                } else if (extension.equalsIgnoreCase("mp4")) {
-
-//                    Log.i("Uploading Video", " true");
-                    fileType = "AudioFile";
-                } else if (extension.equalsIgnoreCase("txt")) {
-
-//                    Log.i("Uploading Text", " true");
-                    fileType = "WrittenFile";
                 }
 
-                uploadToCloud(files[i]);
+                else if (extension.equalsIgnoreCase("mp3")) {
+
+                    Log.i("Uploading Audio", files[i].toString());
+                    fileType = "AudioFile";
+                }
+
+                uploadToCloud(files[i], i);
             }
     }
 
-    void uploadToCloud(File fileToUpload) {
+    void uploadToCloud(File fileToUpload, int i) {
 
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
+        String number = String.valueOf(i);
         String userID = mAuth.getCurrentUser().getUid();
-        StorageReference reference = mStorageRef.child(userID).child(objectName.toString());
+        StorageReference reference = mStorageRef.child(userID).child(objectName.toString()).child(number);
         uploadToDatabase(reference);
         uploadTask = reference.putFile(file);
-        final String fileName = file.toString();
-        final File fileToDelete = fileToUpload;
 
         // Register observers to listen for when the download is done or if it fails
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
 
-                Log.i("File:", fileName.toString());
                 Log.i("Mission Failed", "Failed ");
                 // Handle unsuccessful uploads
             }
@@ -126,7 +118,7 @@ public class SaveToCloud {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
                 Log.i("Mission Accomplished", "Completed ");
-                DeleteLocalFiles(fileToDelete);
+                //DeleteLocalFiles(fileToDelete);
 
             }
         });

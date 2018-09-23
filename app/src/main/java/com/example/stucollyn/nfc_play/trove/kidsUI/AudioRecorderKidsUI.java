@@ -79,7 +79,11 @@ public class AudioRecorderKidsUI extends Application {
 
         try {
 
-            audioFile = File.createTempFile(imageFileName, ".mp4", storageDir);
+            audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
+
+//            Log.i("Files on Tag (Z)", storageDir.toString());
+
+
             audioFileName = audioFile.getAbsolutePath();
 
         }

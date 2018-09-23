@@ -2,9 +2,11 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -44,6 +46,48 @@ public class ShowStoryContent {
         this.filesOnTag = filesOnTag;
     }
 
+    void checkFilesOnArchive(){
+
+        for(int i=0; i<filesOnTag.length; i++) {
+
+
+            String extension = FilenameUtils.getExtension(filesOnTag[i].toString());
+            String fileName = filesOnTag[i].toString();
+
+            if(extension.equalsIgnoreCase("mp4")) {
+
+                String substring=fileName.substring(fileName.lastIndexOf("/")+1);
+
+                Uri story_directory_uri = FileProvider.getUriForFile(context,
+                        "com.example.android.fileprovider",
+                        filesOnTag[i]);
+
+//                Uri audioFileUri = Uri.parse("android.resource://" + activity.getPackageName() + "/" + R.raw.welcome_app);
+
+
+//                Log.i("Files on Tag (C)", story_directory_uri.toString());
+
+
+                mPlayer = new MediaPlayer();
+                try {
+                    mPlayer.setDataSource(context, story_directory_uri);
+                    mPlayer.prepare();
+                    mPlayer.start();
+                }
+
+                catch (IOException e) {
+                    Log.e("Error", "prepare() failed");
+                }
+
+            }
+
+            if(extension.equalsIgnoreCase("jpg")) {
+
+                showStoryContentDialog(filesOnTag[i]);
+            }
+        }
+    }
+
     void checkFilesOnTag(){
 
         for(int i=0; i<filesOnTag.length; i++) {
@@ -53,7 +97,7 @@ public class ShowStoryContent {
             String extension = FilenameUtils.getExtension(filesOnTag[i].toString());
             String fileName = filesOnTag[i].toString();
 
-            if(extension.equalsIgnoreCase("mp4")) {
+            if(extension.equalsIgnoreCase("mp3")) {
 
                 Uri story_directory_uri = FileProvider.getUriForFile(context,
                         "com.example.android.fileprovider",
@@ -78,6 +122,7 @@ public class ShowStoryContent {
             }
         }
     }
+
 
     public void showStoryContentDialog(File imageFile) {
         // Create an instance of the dialog fragment and show it

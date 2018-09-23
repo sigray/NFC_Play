@@ -296,6 +296,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         //       "com.example.android.fileprovider",
         //     story_directory);
         story_directory_path = story_directory.getAbsolutePath();
+
     }
 
     void recordAudio(View view) {

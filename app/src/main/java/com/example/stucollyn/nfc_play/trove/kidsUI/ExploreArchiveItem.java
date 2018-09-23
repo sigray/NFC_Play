@@ -7,9 +7,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.HorizontalGridView;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,9 +30,13 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.UUID;
 
 public class ExploreArchiveItem extends AppCompatActivity {
 
@@ -51,6 +58,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     Activity activity;
     Context context;
     boolean authenticated;
+    File story_directory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +78,16 @@ public class ExploreArchiveItem extends AppCompatActivity {
         LoadFiles();
     }
 
+    File setupStoryDirectory(String ObjectName) {
+
+        String packageLocation = ("/Cloud");
+        String newDirectory = packageLocation + "/" + ObjectName;
+        story_directory = getExternalFilesDir(newDirectory);
+
+        return story_directory;
+    }
+
     void getStoryCover(String StoryName, String StoryType, File file) {
-
-        Log.i("BREAAACH", StoryName + ", " + StoryType + ", " + file);
-
 
         if(StoryType.equalsIgnoreCase("AudioFile")) {
 
@@ -98,7 +112,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         }
     }
 
-    File TempFile(String StoryType, File story_directory) {
+    File TempFile(String StoryName, String StoryType, File story_directory) {
 
         File file = null;
         String type = "";
@@ -107,7 +121,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         if(StoryType.equalsIgnoreCase("AudioFile")) {
 
             type = "audio";
-            ext = ".mp4";
+            ext = ".mp3";
         }
 
         else if(StoryType.equalsIgnoreCase("PictureFile")) {
@@ -127,7 +141,13 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         try {
 
-            file = File.createTempFile(type, ext, story_directory);
+
+
+            file = File.createTempFile(StoryName, ext, story_directory);
+
+            Uri story_directory_uri = FileProvider.getUriForFile(context,
+                    "com.example.android.fileprovider",
+                    file.getAbsoluteFile());
         }
 
         catch (IOException e) {
@@ -137,21 +157,17 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return file;
     }
 
-    void DownloadFromCloud(String StoryName, String URLLink, String StoryType) {
+    void DownloadFromCloud(String StoryName, String URLLink, String StoryType, File story_directory) {
 
 
+        final String theStoryType = StoryType;
+        final String theStoryName = StoryName;
         StorageReference gsReference;
         FirebaseStorage storage;
         storage = FirebaseStorage.getInstance();
         gsReference = storage.getReferenceFromUrl(URLLink);
-        File story_directory;
-        String newDirectory = ("/Cloud");
-        story_directory = getExternalFilesDir(newDirectory);
-        final String theStoryType = StoryType;
-        final String theStoryName = StoryName;
 
-        Log.i("Story Type", theStoryType);
-        final File file = TempFile(theStoryType, story_directory);
+        final File file = TempFile(theStoryName, theStoryType, story_directory);
 
             gsReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
@@ -179,13 +195,13 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         objectFiles = new ArrayList<ObjectStoryRecordKidsUI>();
         objectFiles = objectRecordMap.get(objectName);
-
+        File story_directory = setupStoryDirectory(objectName);
 
         for(int i=0; i<objectFiles.size(); i++) {
 
             if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
 
-                DownloadFromCloud(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryRef(), objectFiles.get(i).getStoryType());
+                DownloadFromCloud(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryRef(), objectFiles.get(i).getStoryType(), story_directory);
             }
 
             else if(objectFiles.get(i).getObjectContext().equals("Local")) {
@@ -231,7 +247,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
     }
 
     Bitmap ShowPicture(File pictureFile) {
-
 
         ExifInterface exif = null;
         Bitmap adjustedBitmap;
