@@ -3,7 +3,10 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.HorizontalGridView;
@@ -30,9 +33,10 @@ import java.util.LinkedHashMap;
 
 public class ExploreArchiveItem extends AppCompatActivity {
 
-    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
+    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
     LinkedHashMap<String, File> fileMap;
     LinkedHashMap<String, Bitmap> storyCoverMap;
+    ArrayList<ObjectStoryRecordKidsUI> objectFiles;
     ProgressBar progressBar;
     ExploreImageAdapterKidsUI cloudImageAdapter;
     HorizontalGridView gridview;
@@ -54,14 +58,45 @@ public class ExploreArchiveItem extends AppCompatActivity {
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         storyCoverMap = new LinkedHashMap<String, Bitmap>();
-        objectRecordMap = (LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectRecordMap");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectStoryRecord");
         objectName = (String) getIntent().getExtras().get("ObjectName");
         activity = this;
         context = this;
-        authenticated = false;
+        authenticated = true;
+        fileMap = new LinkedHashMap<String, File>();
+
+        LoadFiles();
     }
 
-    void DownloadFromCloud(final String StoryName, String URLLink) {
+    void getStoryCover(String StoryName, String StoryType, File file) {
+
+        Log.i("BREAAACH", StoryName + ", " + StoryType + ", " + file);
+
+
+        if(StoryType.equalsIgnoreCase("AudioFile")) {
+
+            Log.i("BREAAACH", "YES");
+            Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.audio_icon);
+            storyCoverMap.put(StoryName, icon);
+        }
+
+        else if(StoryType.equalsIgnoreCase("PictureFile")) {
+
+            storyCoverMap.put(StoryName, ShowPicture(file));
+            Log.i("BREAAACH", "YES");
+        }
+
+        else if (StoryType.equalsIgnoreCase("WrittenFile")) {
+
+        }
+
+        else if(StoryType.equalsIgnoreCase("VideoFile")) {
+
+        }
+    }
+
+    void DownloadFromCloud(String StoryName, String URLLink, String StoryType) {
 
         try {
 
@@ -73,20 +108,26 @@ public class ExploreArchiveItem extends AppCompatActivity {
             String newDirectory = ("/Cloud");
             story_directory = getExternalFilesDir(newDirectory);
             final File file = File.createTempFile("text", ".txt", story_directory);
+            final String theStoryType = StoryType;
+            final String theStoryName = StoryName;
 
             gsReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                    Log.i("Success: ", "Found you stuff");
+                    Log.i("Story Name", theStoryName);
+                    Log.i("Story Type", theStoryType);
 
-                    fileMap.put(StoryName, file);
+                    fileMap.put(theStoryName, file);
+                    getStoryCover(theStoryName, theStoryType, file);
+                    CloudThumbnailColours();
+                    progressBar.setVisibility(View.INVISIBLE);
 
-//                    CloudThumbnailColours();
-//                    progressBar.setVisibility(View.INVISIBLE);
-//                    cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap);
-//                    gridview.invalidate();
-//                    gridview.setAdapter(cloudImageAdapter);
+                    Log.i("Sending: ", fileMap.toString() + ", " + storyCoverMap.toString());
+
+                    cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap);
+                    gridview.invalidate();
+                    gridview.setAdapter(cloudImageAdapter);
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -103,14 +144,18 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
     void LoadFiles() {
 
-        ArrayList<ObjectStoryRecordKidsUI> objectFiles = new ArrayList<ObjectStoryRecordKidsUI>();
-        objectFiles = objectRecordMap.get("objectName");
+        objectFiles = new ArrayList<ObjectStoryRecordKidsUI>();
+        objectFiles = objectRecordMap.get(objectName);
+
 
         for(int i=0; i<objectFiles.size(); i++) {
 
+            Log.i("Object Attributes", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryRef() + ", " + objectFiles.get(i).getStoryType() + ", " + objectFiles.get(i).getObjectContext());
+
+
             if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
 
-                DownloadFromCloud(objectFiles.get(i).getStoryRef());
+                DownloadFromCloud(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryRef(), objectFiles.get(i).getStoryType());
             }
 
             else if(objectFiles.get(i).getObjectContext().equals("Local")) {
@@ -154,6 +199,65 @@ public class ExploreArchiveItem extends AppCompatActivity {
             colourCode[i] = currentColour;
         }
     }
+
+    Bitmap ShowPicture(File pictureFile) {
+
+
+        ExifInterface exif = null;
+        Bitmap adjustedBitmap;
+        try {
+            exif = new ExifInterface(pictureFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int rotationInDegrees = exifToDegrees(rotation);
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int smallSizeScaleFactor = Math.min(photoW / 800, photoH / 800);
+
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = smallSizeScaleFactor;
+        bmOptions.inPurgeable = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
+        Matrix matrix = new Matrix();
+        if (rotation != 0f) {
+            matrix.preRotate(rotationInDegrees);
+        }
+
+        if (rotationInDegrees == 90 || rotationInDegrees == 270) {
+            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } else if (rotationInDegrees == 180) {
+            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } else {
+            // adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            adjustedBitmap = bitmap;
+        }
+
+
+        return adjustedBitmap;
+    }
+
+    private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (
+                exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
 
     class LocalFiles extends AsyncTask<Void, Void, Void> {
         @Override

@@ -74,7 +74,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
             @Override
             public void onClick(View view) {
 //                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveKidsUI.class);
+                Intent intent = new Intent(storyGallery.getApplicationContext(), ExploreArchiveItem.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("ObjectName", objectName.get(position));
                 intent.putExtra("ObjectStoryRecord", folderToImageRef);
@@ -93,7 +93,6 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     public int getItemCount() {
         return this.elements.size();
     }
-
 
     public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap) {
 

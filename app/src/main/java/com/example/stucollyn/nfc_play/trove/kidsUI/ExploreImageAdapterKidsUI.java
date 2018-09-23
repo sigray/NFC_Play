@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,11 +32,11 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
     Activity storyGallery;
-    LinkedHashMap<String, ArrayList<File>> filesOnTag;
+    LinkedHashMap<String, File> filesOnTag;
     ArrayList<Bitmap> coverImages;
     int[] colourCode;
     HashMap<String, Bitmap> imageMap;
-    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
+    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
     private List<String> elements;
 
 
@@ -59,39 +60,9 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
         int currentColour = colourCode[position];
 
-        if(extension.equalsIgnoreCase("mp3")) {
-
-            valueButton.setImageResource(R.drawable.audio_media);
-            callActivityName = "ReviewAudioStory";
-        }
-
-        else if(extension.equalsIgnoreCase("mp4")) {
-
-            valueButton.setImageResource(R.drawable.video_media);
-            callActivityName = "ReviewVideoStory";
-        }
-
-        else if (extension.equalsIgnoreCase("txt")) {
-
-            valueButton.setImageResource(R.drawable.written_media);
-            callActivityName = "ReviewWrittenStory";
-        }
-
-        else if(extension.equalsIgnoreCase("jpg")) {
-
-            valueButton.setImageResource(R.drawable.camera_media);
-            callActivityName = "ReviewPictureStory";
-        }
-
-
-
-
-
         if(!coverImages.isEmpty()) {
 
-//            File value = folderToImageRef.get(filesOnTag.get(position));
             Bitmap bitmap = coverImages.get(position);
-//            imageButtons[position].setImageBitmap(bitmap);
             holder.imageView.setImageBitmap(bitmap);
         }
 
@@ -120,7 +91,8 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     }
 
 
-    public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap) {
+    public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode,
+                                     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -140,11 +112,14 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         }
 
         coverImages = new ArrayList<Bitmap>();
-        
+
         for (Map.Entry<String, Bitmap> entry : imageMap.entrySet()) {
             String key = entry.getKey();
             Bitmap value = entry.getValue();
             coverImages.add(value);
         }
+        Log.i("Image Map", imageMap.toString());
+        Log.i("Cover Images", coverImages.toString());
+
     }
 }

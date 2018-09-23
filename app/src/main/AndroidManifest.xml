@@ -159,7 +159,11 @@
             android:label="trove"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".trove.kidsUI.ExploreArchiveItem"></activity>
+        <activity android:name=".trove.kidsUI.ExploreArchiveItem"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="trove"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
