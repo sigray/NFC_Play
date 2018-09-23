@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,7 @@ import java.util.Map;
  * Created by StuCollyn on 07/06/2018.
  */
 
-public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAdapterKidsUI.SimpleViewHolder> {
+public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImageAdapterKidsUI.SimpleViewHolder> {
     private Context mContext;
     ImageView[] imageButtons;
     TextView[] imageDesc;
@@ -34,7 +33,6 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     Activity storyGallery;
     LinkedHashMap<String, ArrayList<File>> filesOnTag;
     ArrayList<Bitmap> coverImages;
-    ArrayList<String> objectName;
     int[] colourCode;
     HashMap<String, Bitmap> imageMap;
     LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
@@ -61,6 +59,34 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
 
         int currentColour = colourCode[position];
 
+        if(extension.equalsIgnoreCase("mp3")) {
+
+            valueButton.setImageResource(R.drawable.audio_media);
+            callActivityName = "ReviewAudioStory";
+        }
+
+        else if(extension.equalsIgnoreCase("mp4")) {
+
+            valueButton.setImageResource(R.drawable.video_media);
+            callActivityName = "ReviewVideoStory";
+        }
+
+        else if (extension.equalsIgnoreCase("txt")) {
+
+            valueButton.setImageResource(R.drawable.written_media);
+            callActivityName = "ReviewWrittenStory";
+        }
+
+        else if(extension.equalsIgnoreCase("jpg")) {
+
+            valueButton.setImageResource(R.drawable.camera_media);
+            callActivityName = "ReviewPictureStory";
+        }
+
+
+
+
+
         if(!coverImages.isEmpty()) {
 
 //            File value = folderToImageRef.get(filesOnTag.get(position));
@@ -76,7 +102,6 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
 //                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveKidsUI.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("ObjectName", objectName.get(position));
                 intent.putExtra("ObjectStoryRecord", folderToImageRef);
                 storyGallery.getApplicationContext().startActivity(intent);
                 storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -95,7 +120,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     }
 
 
-    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap) {
+    public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -115,13 +140,11 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         }
 
         coverImages = new ArrayList<Bitmap>();
-        objectName = new ArrayList<String>();
-
+        
         for (Map.Entry<String, Bitmap> entry : imageMap.entrySet()) {
             String key = entry.getKey();
             Bitmap value = entry.getValue();
             coverImages.add(value);
-            objectName.add(key);
         }
     }
 }

@@ -45,9 +45,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -56,8 +53,7 @@ import java.util.Map;
 
 public class ArchiveKidsUI extends AppCompatActivity {
 
-    ArrayList<File> folders;
-    LinkedHashMap<File, List<File>> folderFiles;
+    LinkedHashMap<String, ArrayList<File>> folderFiles;
     HashMap<File, File> folderImages;
     HashMap<File, Bitmap> imageFiles;
     File[] files;
@@ -71,10 +67,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
     Context context;
     Activity activity;
     ProgressBar progressBar;
-    private StorageReference mStorageRef;
     ImageView back;
     AnimatedVectorDrawable backRetrace, backBegin;
     LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
+    private StorageReference mStorageRef;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     Handler animationBackHandler;
@@ -91,8 +87,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         progressBar.setVisibility(View.VISIBLE);
-        folders = new ArrayList<File>();
-        folderFiles = new LinkedHashMap<>();
+        folderFiles = new LinkedHashMap<String, ArrayList<File>>();
         folderImages = new HashMap<File, File>();
         imageFiles = new HashMap<File, Bitmap>();
         coverImageMap = new HashMap<String, Bitmap>();
@@ -277,7 +272,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                     ArrayList<ObjectStoryRecordKidsUI> objectStoryRecordObjectList = new ArrayList<ObjectStoryRecordKidsUI>();
                                     objectStoryRecordObjectList.add(objectStoryRecord);
                                     objectRecordMap.put(ObjectName, objectStoryRecordObjectList);
-//                                    Log.i("Adding to Test Map: ", ObjectName + " " + StoryName);
                                 }
 
                                 if(CoverImage.equals("yes")) {
@@ -329,7 +323,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         coverImageMap.put(theObjectName, adjustedBitmap);
                         CloudThumbnailColours();
                         progressBar.setVisibility(View.INVISIBLE);
-                        cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, objectRecordMap, coverImageMap);
+                        cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
                         gridview.invalidate();
                         gridview.setAdapter(cloudImageAdapter);
                     }
@@ -390,7 +384,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         }
     }
 
-
     void getCoverImageLocal(String ObjectName, File file) {
 
             final String theObjectName = ObjectName;
@@ -399,6 +392,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
             CloudThumbnailColours();
     }
 
+    /*
     public void setupLists(File[] files) {
 
         for (int i = 0; i < files.length; i++) {
@@ -444,6 +438,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
             }
         }
     }
+
+    */
 
     public static void put(Map<File, List<File>> map, File key, File value) {
         if(map.get(key) == null){
@@ -594,7 +590,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 //                gridview.invalidate();
 //                gridview.setAdapter(imageAdapter);
 
-            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, objectRecordMap, coverImageMap);
+            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }
