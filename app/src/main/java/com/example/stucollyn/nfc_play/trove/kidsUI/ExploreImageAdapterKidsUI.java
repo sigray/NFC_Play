@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,10 +35,19 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     Activity storyGallery;
     LinkedHashMap<String, File> filesOnTag;
     ArrayList<Bitmap> coverImages;
+    ArrayList<String> storyType;
+    ArrayList<File> storyFile;
     int[] colourCode;
     HashMap<String, Bitmap> imageMap;
     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
+    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> storyTypeMap;
     private List<String> elements;
+    private MediaPlayer mPlayer = null;
+    ShowStoryContent showStoryContent;
+
+    boolean record_button_on, video_record_button_on, recordingStatus = false,
+            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
+            permissionToRecordAccepted = false, isFullSizedVideo = false;
 
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
@@ -55,6 +65,15 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         return new SimpleViewHolder(view);
     }
 
+    void PlayFile(int position) {
+
+        File[] filesOnTag;
+        filesOnTag = new File[1];
+        filesOnTag[0] = storyFile.get(position);
+        ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, mContext, storyGallery, filesOnTag);
+        showStoryContent.checkFilesOnTag();
+    }
+
     @Override
     public void onBindViewHolder(SimpleViewHolder holder, final int position) {
 
@@ -70,12 +89,13 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveKidsUI.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("ObjectStoryRecord", folderToImageRef);
-                storyGallery.getApplicationContext().startActivity(intent);
-                storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+////                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveKidsUI.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                intent.putExtra("ObjectStoryRecord", folderToImageRef);
+//                storyGallery.getApplicationContext().startActivity(intent);
+//                storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+        PlayFile(position);
             }
         });
     }
@@ -92,7 +112,8 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
 
     public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode,
-                                     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap) {
+                                     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
+                                     LinkedHashMap<String, String> storyTypeMap) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -106,20 +127,27 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
         this.elements = new ArrayList<String>();
 
+        mPlayer = new MediaPlayer();
+
+
         // Fill dummy list
         for(int i = 0; i < imageMap.size(); i++) {
             this.elements.add(i, "Position : " + i);
         }
 
         coverImages = new ArrayList<Bitmap>();
+        storyType = new ArrayList<String>();
+        storyFile = new ArrayList<File>();
+
+
+        /*For each object name add save cover image, file, and type */
 
         for (Map.Entry<String, Bitmap> entry : imageMap.entrySet()) {
             String key = entry.getKey();
             Bitmap value = entry.getValue();
             coverImages.add(value);
+            storyFile.add(filesOnTag.get(key));
+            storyType.add(storyTypeMap.get(key));
         }
-        Log.i("Image Map", imageMap.toString());
-        Log.i("Cover Images", coverImages.toString());
-
     }
 }

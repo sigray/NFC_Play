@@ -36,6 +36,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
     LinkedHashMap<String, File> fileMap;
     LinkedHashMap<String, Bitmap> storyCoverMap;
+    LinkedHashMap<String, String> storyTypeMap;
     ArrayList<ObjectStoryRecordKidsUI> objectFiles;
     ProgressBar progressBar;
     ExploreImageAdapterKidsUI cloudImageAdapter;
@@ -58,6 +59,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         storyCoverMap = new LinkedHashMap<String, Bitmap>();
+        storyTypeMap = new LinkedHashMap<String, String>();
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectStoryRecord");
         objectName = (String) getIntent().getExtras().get("ObjectName");
         activity = this;
@@ -75,16 +77,16 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         if(StoryType.equalsIgnoreCase("AudioFile")) {
 
-            Log.i("BREAAACH", "YES");
             Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
                     R.drawable.audio_icon);
             storyCoverMap.put(StoryName, icon);
+            storyTypeMap.put(StoryName, StoryType);
         }
 
         else if(StoryType.equalsIgnoreCase("PictureFile")) {
 
             storyCoverMap.put(StoryName, ShowPicture(file));
-            Log.i("BREAAACH", "YES");
+            storyTypeMap.put(StoryName, StoryType);
         }
 
         else if (StoryType.equalsIgnoreCase("WrittenFile")) {
@@ -96,36 +98,71 @@ public class ExploreArchiveItem extends AppCompatActivity {
         }
     }
 
-    void DownloadFromCloud(String StoryName, String URLLink, String StoryType) {
+    File TempFile(String StoryType, File story_directory) {
+
+        File file = null;
+        String type = "";
+        String ext = "";
+
+        if(StoryType.equalsIgnoreCase("AudioFile")) {
+
+            type = "audio";
+            ext = ".mp4";
+        }
+
+        else if(StoryType.equalsIgnoreCase("PictureFile")) {
+
+            type = "images";
+            ext = ".jpg";        }
+
+        else if (StoryType.equalsIgnoreCase("WrittenFile")) {
+
+            type = "text";
+            ext = ".txt";        }
+
+        else if(StoryType.equalsIgnoreCase("VideoFile")) {
+
+            type = "video";
+            ext = ".mp4";        }
 
         try {
 
-            StorageReference gsReference;
-            FirebaseStorage storage;
-            storage = FirebaseStorage.getInstance();
-            gsReference = storage.getReferenceFromUrl(URLLink);
-            File story_directory;
-            String newDirectory = ("/Cloud");
-            story_directory = getExternalFilesDir(newDirectory);
-            final File file = File.createTempFile("text", ".txt", story_directory);
-            final String theStoryType = StoryType;
-            final String theStoryName = StoryName;
+            file = File.createTempFile(type, ext, story_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+        return file;
+    }
+
+    void DownloadFromCloud(String StoryName, String URLLink, String StoryType) {
+
+
+        StorageReference gsReference;
+        FirebaseStorage storage;
+        storage = FirebaseStorage.getInstance();
+        gsReference = storage.getReferenceFromUrl(URLLink);
+        File story_directory;
+        String newDirectory = ("/Cloud");
+        story_directory = getExternalFilesDir(newDirectory);
+        final String theStoryType = StoryType;
+        final String theStoryName = StoryName;
+
+        Log.i("Story Type", theStoryType);
+        final File file = TempFile(theStoryType, story_directory);
 
             gsReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
-                    Log.i("Story Name", theStoryName);
-                    Log.i("Story Type", theStoryType);
 
                     fileMap.put(theStoryName, file);
                     getStoryCover(theStoryName, theStoryType, file);
                     CloudThumbnailColours();
                     progressBar.setVisibility(View.INVISIBLE);
 
-                    Log.i("Sending: ", fileMap.toString() + ", " + storyCoverMap.toString());
-
-                    cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap);
+                    cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap);
                     gridview.invalidate();
                     gridview.setAdapter(cloudImageAdapter);
 
@@ -136,10 +173,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
                     // Handle any errors
                 }
             });
-
-        } catch (IOException error) {
-
-        }
     }
 
     void LoadFiles() {
@@ -149,9 +182,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
 
         for(int i=0; i<objectFiles.size(); i++) {
-
-            Log.i("Object Attributes", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryRef() + ", " + objectFiles.get(i).getStoryType() + ", " + objectFiles.get(i).getObjectContext());
-
 
             if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
 
@@ -272,7 +302,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         protected void onPostExecute() {
 
             progressBar.setVisibility(View.INVISIBLE);
-            cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap);
+            cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }

@@ -199,7 +199,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
         if(authenticated) {
 
             CloudSetup();
-            queryFireStoreDatabase();
+
+
+           queryFireStoreDatabase();
         }
 
         else {
@@ -244,10 +246,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Log.i("Successful Query", document.getId() + " => " + document.getData());
 
-//                                String ObjectName = document.getId().toString();
+                                String StoryDate = ""; // Error with server data currently
                                 String ObjectName = document.getData().get("ObjectName").toString();
                                 String StoryName = document.getData().get("StoryName").toString();
-                                String StoryDate = document.getData().get("Date").toString();
+//                                String StoryDate = document.getData().get("Date").toString();
                                 String URLlink = document.getData().get("URL").toString();
                                 String StoryType = document.getData().get("Type").toString();
                                 String CoverImage = document.getData().get("Cover").toString();
@@ -283,7 +285,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         }
 
                         else {
-                            Log.i("Failed", "error getting documents: ", task.getException());
+
+                            Log.i("Oops", "Oh No!");
                         }
                     }
                 });
