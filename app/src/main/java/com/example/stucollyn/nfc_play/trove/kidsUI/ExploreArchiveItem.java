@@ -72,7 +72,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         objectName = (String) getIntent().getExtras().get("ObjectName");
         activity = this;
         context = this;
-        authenticated = true;
+        authenticated = false;
         fileMap = new LinkedHashMap<String, File>();
 
         LoadFiles();
@@ -197,23 +197,44 @@ public class ExploreArchiveItem extends AppCompatActivity {
         objectFiles = objectRecordMap.get(objectName);
         File story_directory = setupStoryDirectory(objectName);
 
-        for(int i=0; i<objectFiles.size(); i++) {
+        if(authenticated) {
 
-            if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
+            for (int i = 0; i < objectFiles.size(); i++) {
+
+//            if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
+
 
                 DownloadFromCloud(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryRef(), objectFiles.get(i).getStoryType(), story_directory);
             }
 
-            else if(objectFiles.get(i).getObjectContext().equals("Local")) {
+        }
+//            else if(objectFiles.get(i).getObjectContext().equals("Local")) {
 
-                new LocalFiles().execute();
-            }
+        else {
+            new LocalFiles().execute();
         }
     }
 
     void LoadLocalFiles(){
 
+        Log.i("objectFiles: ", objectFiles.toString());
+        Log.i("objectFiles Size: ", String.valueOf(objectFiles.size()));
+
+        for(int i=0; i<objectFiles.size(); i++) {
+
+            String path = objectFiles.get(i).getStoryRef();
+            File file = new File(path);
+            fileMap.put(objectFiles.get(i).getStoryName(), file);
+
+            Log.i("FileMap: ", fileMap.toString());
+            Log.i("getStoryCover: ", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryType() + ", " + file.getName());
+
+            getStoryCover(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryType(), file);
+            CloudThumbnailColours();
+        }
     }
+
+
 
     void CloudThumbnailColours() {
 
@@ -309,12 +330,11 @@ public class ExploreArchiveItem extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             LoadLocalFiles();
-            CloudThumbnailColours();
 
             return null;
         }
 
-        protected void onPostExecute() {
+        protected void onPostExecute(Void result) {
 
             progressBar.setVisibility(View.INVISIBLE);
             cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap);

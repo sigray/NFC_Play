@@ -134,7 +134,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
 
-        authenticated = true;
+        authenticated = false;
 
         //Prepare new story directory
         mPlayer = new MediaPlayer();

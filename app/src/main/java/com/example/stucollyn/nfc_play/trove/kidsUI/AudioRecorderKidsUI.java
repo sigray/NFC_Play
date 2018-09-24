@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by StuCollyn on 06/06/2018.
@@ -62,9 +63,10 @@ public class AudioRecorderKidsUI extends Application {
     }
 
     protected void createAudioFile() {
-
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
+        UUID storyName = UUID.randomUUID();;
+        String imageFileName = storyName.toString();
         File storageDir;
 
         if (Build.VERSION.SDK_INT >= 19) {

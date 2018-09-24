@@ -82,6 +82,8 @@ public class SaveToCloud {
                     Log.i("Uploading Audio", files[i].toString());
                     fileType = "PictureFile";
                     coverImage = "yes";
+                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName(),".jpg");
+                    files[i].renameTo(to);
                 }
 
                 else if (extension.equalsIgnoreCase("mp3")) {

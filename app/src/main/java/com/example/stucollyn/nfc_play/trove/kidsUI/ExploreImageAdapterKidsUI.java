@@ -88,8 +88,18 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
         if(!coverImages.isEmpty()) {
 
-            Bitmap bitmap = coverImages.get(position);
-            holder.imageView.setImageBitmap(bitmap);
+
+            if(storyType.get(position).equals("PictureFile")) {
+
+                Bitmap bitmap = coverImages.get(position);
+                holder.imageView.setImageBitmap(bitmap);
+            }
+
+            else if(storyType.get(position).equals("AudioFile")) {
+
+                holder.imageView.setImageResource(R.drawable.audio_media);
+            }
+
         }
 
         holder.imageView.setBackgroundColor(currentColour);

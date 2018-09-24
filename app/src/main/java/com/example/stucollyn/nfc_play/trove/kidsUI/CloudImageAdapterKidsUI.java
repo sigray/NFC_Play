@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,6 +97,8 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
 
     public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap) {
 
+       Log.i("Object Record Map1", folderToImageRef.toString());
+
         this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
@@ -121,6 +124,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
             Bitmap value = entry.getValue();
             coverImages.add(value);
             objectName.add(key);
+            Log.i("Object Namea", key);
         }
     }
 }

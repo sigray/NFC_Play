@@ -76,13 +76,14 @@ public class ArchiveKidsUI extends AppCompatActivity {
     Handler animationBackHandler;
     ArrayList<File> coverImages;
     HashMap<String, Bitmap> coverImageMap;
+    int numberOfDownloads = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = true;
+        boolean authenticated = false;
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -228,7 +229,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
         File directory = new File(path);
         files = directory.listFiles();
-        Log.i("Files List: ", String.valueOf(files));
     }
 
     void queryFireStoreDatabase() {
@@ -238,8 +238,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         String userID = mAuth.getCurrentUser().getEmail();
         CollectionReference citiesRef = db.collection("ObjectStory");
         Query query = citiesRef.whereEqualTo("Username", userID).orderBy("Date", Query.Direction.DESCENDING);
-        query.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
@@ -276,11 +275,11 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                     objectRecordMap.put(ObjectName, objectStoryRecordObjectList);
                                 }
 
-                                if(CoverImage.equals("yes")) {
-
-                                    getCoverImageCloud(ObjectName, URLlink);
-
-                                }
+//                                if(CoverImage.equals("yes")) {
+//
+//                                    getCoverImageCloud(ObjectName, URLlink);
+//
+//                                }
                             }
                         }
 
@@ -290,9 +289,38 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         }
                     }
                 });
+
+        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot documentSnapshots) {
+
+                int listSize = objectRecordMap.size();
+
+                for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
+
+                    String key = entry.getKey();
+                    ArrayList<ObjectStoryRecordKidsUI> value = entry.getValue();
+
+                    for(int i=0; i<value.size(); i++) {
+
+                        if(value.get(i).isCoverImage().equals("yes")) {
+
+                            getCoverImageCloud(key, value.get(i).getStoryRef(), listSize);
+                        }
+                    }
+                }
+            }
+    });
+
+//            // Get the last visible document
+//            DocumentSnapshot lastVisible = documentSnapshots.getDocuments()
+//                    .get(documentSnapshots.size() -1);
+
+
+
     }
 
-    void getCoverImageCloud(String ObjectName, String URLlink) {
+    void getCoverImageCloud(String ObjectName, String URLlink, final int listSize) {
 
         String newDirectory;
         StorageReference gsReference;
@@ -318,17 +346,20 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     @Override
                     public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
-                        Log.i("Success: ", "Found you stuff");
-
                         // Local temp file has been created
-
                         Bitmap adjustedBitmap = ShowPicture(pictureFile);
                         coverImageMap.put(theObjectName, adjustedBitmap);
-                        CloudThumbnailColours();
-                        progressBar.setVisibility(View.INVISIBLE);
-                        cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
-                        gridview.invalidate();
-                        gridview.setAdapter(cloudImageAdapter);
+                        numberOfDownloads++;
+
+                        /*Set the image adapter only after the last query has been executed and cover image loaded */
+                        if(numberOfDownloads==listSize) {
+
+                            CloudThumbnailColours();
+                            progressBar.setVisibility(View.INVISIBLE);
+                            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
+                            gridview.invalidate();
+                            gridview.setAdapter(cloudImageAdapter);
+                        }
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -346,12 +377,12 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     void setupListsLocal(File[] files) {
 
+        objectRecordMap = new LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>();
+
         for (int i = 0; i < files.length; i++) {
 
             File[] subFiles = FilesForThumbnail(files[i]);
             boolean setCoverImage = false;
-
-            Log.i("Reached 1: File: ", files[i].getName());
 
             for (int j = 0; j < subFiles.length; j++) {
 
@@ -363,24 +394,36 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     if (extension.equalsIgnoreCase("jpg")&&!setCoverImage) {
 
                         CoverImage = "yes";
+                        FileType = "PictureFile";
                     }
 
                     if(extension.equalsIgnoreCase("jpg")) {
 
-                        FileType = "Picture";
+                        FileType = "PictureFile";
                     }
 
-                    else if(extension.equalsIgnoreCase("mp4")) {
+                    else if(extension.equalsIgnoreCase("mp3")) {
 
-                        FileType = "Audio";
+                        FileType = "AudioFile";
                     }
 
-                ObjectStoryRecordKidsUI objectStoryRecordKidsUI = new ObjectStoryRecordKidsUI(files[i].getName(), subFiles[j].getName(), "", subFiles[j].getAbsolutePath(), FileType, CoverImage, FileContext);
+                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(files[i].getName(), subFiles[j].getName(), "", subFiles[j].getAbsolutePath(), FileType, CoverImage, FileContext);
 
+                if (objectRecordMap.containsKey(files[i].getName())) {
+
+                    objectRecordMap.get(files[i].getName()).add(objectStoryRecord);
+                }
+
+                else {
+
+                    ArrayList<ObjectStoryRecordKidsUI> objectStoryRecordObjectList = new ArrayList<ObjectStoryRecordKidsUI>();
+                    objectStoryRecordObjectList.add(objectStoryRecord);
+                    objectRecordMap.put(files[i].getName(), objectStoryRecordObjectList);
+                }
 
                 if(CoverImage.equals("yes")) {
 
-                    getCoverImageLocal(subFiles[j].getName(), subFiles[j]);
+                    getCoverImageLocal(files[i].getName(), subFiles[j]);
                 }
 
             }
@@ -587,11 +630,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         protected void onPostExecute(Boolean authenticated) {
 
             progressBar.setVisibility(View.INVISIBLE);
-
-
-//                imageAdapter = new ImageAdapterKidsUI(activity, context, numberOfThumbs, folders, colourCode, folderImages, imageFiles);
-//                gridview.invalidate();
-//                gridview.setAdapter(imageAdapter);
 
             cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
             gridview.invalidate();
