@@ -2,6 +2,7 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -10,12 +11,14 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.HorizontalGridView;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -63,7 +66,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_archive_kids_ui);
+        setContentView(R.layout.activity_explore_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         storyCoverMap = new LinkedHashMap<String, Bitmap>();
@@ -72,7 +75,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         objectName = (String) getIntent().getExtras().get("ObjectName");
         activity = this;
         context = this;
-        authenticated = false;
+        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         fileMap = new LinkedHashMap<String, File>();
 
         LoadFiles();
@@ -324,6 +327,41 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return 0;
     }
 
+    public void Back(View view) {
+
+        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+//        animationBackHandler.removeCallbacksAndMessages(null);
+//        back.setImageDrawable(backRetrace);
+//        backRetrace.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(ExploreArchiveItem.this, ArchiveKidsUI.class);
+                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                intent.putExtra("Authenticated", authenticated);
+                ExploreArchiveItem.this.startActivity(intent);
+                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        }, 1000);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class LocalFiles extends AsyncTask<Void, Void, Void> {
         @Override

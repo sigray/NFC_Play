@@ -99,7 +99,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     IntentFilter writeTagFilters[];
     //Classes
     CameraRecorder cameraRecorder;
-    boolean authenticated;
+    boolean authenticated = false;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     Date FireStoreTime;
@@ -133,10 +133,10 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         cameraButton = (ImageView) findViewById(R.id.camera);
         archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
-
-        authenticated = false;
-
+        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         //Prepare new story directory
+//        authenticated = false;
+
         mPlayer = new MediaPlayer();
         nfcInteraction = new NFCInteraction(this, this);
         AnimationSetup();
@@ -494,7 +494,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     public void Archive(View view) {
 
         Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
+        intent.putExtra("Authenticated", authenticated);
         LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        Log.i("Authenicated", String.valueOf(authenticated));
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
@@ -555,6 +557,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             public void run() {
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                intent.putExtra("Authenticated", authenticated);
                 LoggedInWriteHomeKidsUI.this.startActivity(intent);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }

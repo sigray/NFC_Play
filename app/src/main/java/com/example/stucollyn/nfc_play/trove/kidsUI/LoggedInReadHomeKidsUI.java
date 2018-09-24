@@ -55,7 +55,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     IntentFilter readTagFilters[];
     private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
-
+    boolean authenticated = false;
     boolean record_button_on, video_record_button_on, recordingStatus = false,
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
             permissionToRecordAccepted = false, isFullSizedVideo = false;
@@ -142,6 +142,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         animateViews();
 
         String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
+        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         WelcomeMessage(previousActivity);
 
         nfcInteraction = new NFCInteraction(this, this);
@@ -334,6 +335,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         trove.clearAnimation();
         Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
+        intent.putExtra("Authenticated", authenticated);
         LoggedInReadHomeKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 

@@ -77,13 +77,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
     ArrayList<File> coverImages;
     HashMap<String, Bitmap> coverImageMap;
     int numberOfDownloads = 0;
+    int listSize=0;
+    boolean authenticated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
-        boolean authenticated = false;
+        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         context = this;
         activity = this;
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
@@ -275,11 +277,11 @@ public class ArchiveKidsUI extends AppCompatActivity {
                                     objectRecordMap.put(ObjectName, objectStoryRecordObjectList);
                                 }
 
-//                                if(CoverImage.equals("yes")) {
-//
-//                                    getCoverImageCloud(ObjectName, URLlink);
-//
-//                                }
+                                if(CoverImage.equals("yes")) {
+
+                                    getCoverImageCloud(ObjectName, URLlink);
+
+                                }
                             }
                         }
 
@@ -290,27 +292,34 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     }
                 });
 
-        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot documentSnapshots) {
+//        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            @Override
+//            public void onSuccess(QuerySnapshot documentSnapshots) {
+//
+//                Log.i("Triggered", "Hello!" + String.valueOf(documentSnapshots.size()));
+//                Log.i("ObjectRecordMap", objectRecordMap.toString());
+//                Log.i("numberOfDownloads",  String.valueOf(numberOfDownloads));
+//
+//                listSize = documentSnapshots.size();
 
-                int listSize = objectRecordMap.size();
-
-                for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
+                /*for (Map.Entry<String, ArrayList<ObjectStoryRecordKidsUI>> entry : objectRecordMap.entrySet()) {
 
                     String key = entry.getKey();
                     ArrayList<ObjectStoryRecordKidsUI> value = entry.getValue();
 
                     for(int i=0; i<value.size(); i++) {
 
+                        Log.i("Let's Go", String.valueOf(i));
+
                         if(value.get(i).isCoverImage().equals("yes")) {
 
                             getCoverImageCloud(key, value.get(i).getStoryRef(), listSize);
-                        }
-                    }
-                }
-            }
-    });
+//                        }
+//                    }
+//                }
+//                */
+//            }
+//    });
 
 //            // Get the last visible document
 //            DocumentSnapshot lastVisible = documentSnapshots.getDocuments()
@@ -320,7 +329,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     }
 
-    void getCoverImageCloud(String ObjectName, String URLlink, final int listSize) {
+    void getCoverImageCloud(String ObjectName, String URLlink) {
 
         String newDirectory;
         StorageReference gsReference;
@@ -351,15 +360,19 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         coverImageMap.put(theObjectName, adjustedBitmap);
                         numberOfDownloads++;
 
+                        Log.i("numberOfDownloads B",  String.valueOf(numberOfDownloads));
+                        Log.i("listSize B",  String.valueOf(listSize));
+
                         /*Set the image adapter only after the last query has been executed and cover image loaded */
-                        if(numberOfDownloads==listSize) {
+                      //  if(numberOfDownloads==listSize) {
 
                             CloudThumbnailColours();
                             progressBar.setVisibility(View.INVISIBLE);
-                            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
+                            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated);
                             gridview.invalidate();
                             gridview.setAdapter(cloudImageAdapter);
-                        }
+                       // }
+
                     }
 
                 }).addOnFailureListener(new OnFailureListener() {
@@ -597,6 +610,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
             public void run() {
                 Intent intent = new Intent(ArchiveKidsUI.this, LoggedInWriteHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                intent.putExtra("Authenticated", authenticated);
                 ArchiveKidsUI.this.startActivity(intent);
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
@@ -631,7 +645,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             progressBar.setVisibility(View.INVISIBLE);
 
-            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap);
+            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }

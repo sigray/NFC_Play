@@ -59,6 +59,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
     boolean isNetworkConnected;
+    boolean authenticated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +213,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             Toast.makeText(LoginKidsUI.this,
                     "Logged in as " + user.getEmail(),
                     Toast.LENGTH_LONG).show();
+            authenticated = true;
             PasscodePhase();
         }
 
@@ -445,6 +447,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
                 Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoginKidsUI");
+                intent.putExtra("Authenticated", authenticated);
                 LoginKidsUI.this.startActivity(intent);
             }
 

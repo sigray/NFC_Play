@@ -40,6 +40,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     HashMap<String, Bitmap> imageMap;
     LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
     private List<String> elements;
+    boolean authenticated = false;
 
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
@@ -79,6 +80,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("ObjectName", objectName.get(position));
                 intent.putExtra("ObjectStoryRecord", folderToImageRef);
+                intent.putExtra("Authenticated", authenticated);
                 storyGallery.getApplicationContext().startActivity(intent);
                 storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
@@ -95,7 +97,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         return this.elements.size();
     }
 
-    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap) {
+    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated) {
 
        Log.i("Object Record Map1", folderToImageRef.toString());
 
@@ -108,6 +110,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         this.colourCode = colourCode;
         this.imageMap = imageMap;
         this.folderToImageRef = folderToImageRef;
+        this.authenticated = authenticated;
 
         this.elements = new ArrayList<String>();
 
