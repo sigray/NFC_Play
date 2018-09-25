@@ -160,7 +160,7 @@ public class NFCInteraction {
     }
 
 
-    public void doWrite(Tag mytag, String tag_data){
+    public boolean doWrite(Tag mytag, String tag_data){
 
         this.mytag = mytag;
         this.tag_data = tag_data;
@@ -173,7 +173,7 @@ public class NFCInteraction {
             }else{
                 //write(message.getText().toString(),mytag);
                 write(mytag);
-                Toast.makeText(context, "Okay Writing", Toast.LENGTH_LONG ).show();
+                Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
             }
         } catch (IOException e) {
             Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG ).show();
@@ -188,13 +188,15 @@ public class NFCInteraction {
         if(success) {
 
             Toast.makeText(context, "NFC write successful", Toast.LENGTH_LONG ).show();
-
+            success = true;
         }
 
         else {
 
 //            writeinstruction.setText("Error writing object. Please rescan.");
         }
+
+        return success;
     }
 
     void WriteModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter writeTagFilters[]){

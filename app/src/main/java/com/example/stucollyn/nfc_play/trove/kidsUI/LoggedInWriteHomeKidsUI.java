@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -107,6 +108,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     private StorageReference mStorageRef;
     boolean recordingStatus = false;
     boolean currentlyRecording = false;
+    CommentaryInstruction commentaryInstruction;
+    Handler archiveStoryHandler;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -128,6 +131,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in_write_home);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         recordButton = (ImageView) findViewById(R.id.record);
         cameraButton = (ImageView) findViewById(R.id.camera);
@@ -137,8 +141,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         //Prepare new story directory
 //        authenticated = false;
 
-        mPlayer = new MediaPlayer();
         nfcInteraction = new NFCInteraction(this, this);
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
         AnimationSetup();
         recordButtonController();
 
@@ -152,7 +156,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     }
 
 
-    //Animation Setup
+    //Animation and Layout Setup
     void AnimationSetup() {
 
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim_alt);
@@ -257,30 +261,28 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             back.setImageDrawable(d);
         }
 
+
+
+    //Handle NFC Interactions
+
             @Override
     protected void onNewIntent(Intent intent){
         if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
-            Log.i("Hello", "Found it");
+            Toast.makeText(this, "Object Found.", Toast.LENGTH_LONG ).show();
         }
 
         if(newStoryReady) {
-            nfcInteraction.doWrite(mytag, tag_data);
+            boolean success = nfcInteraction.doWrite(mytag, tag_data);
+
+            if(success) {
+
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.tusbrestore), true, LoggedInReadHomeKidsUI.class);
+            }
         }
     }
 
-    @Override
-    public void onPause(){
-        super.onPause();
-        nfcInteraction.WriteModeOff(adapter);
-    }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
-    }
 
     //Setup new storage folder
     private void SetupStoryLocation() {
@@ -299,7 +301,16 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     }
 
+
+
+    //Recording Audio Management
     void recordAudio(View view) {
+
+        //Delete Any Previous Recordings
+
+
+        //Remove Previous Audio Commentary Callbacks
+        archiveStoryHandler.removeCallbacksAndMessages(null);
 
         //Request permission to record audio (required for some newer Android devices)
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
@@ -325,10 +336,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
                 if(currentlyRecording) {
                     animationHandler.postDelayed(this, 1000);
+                    Log.i("Tag", "I'm a barbie girl");
                 }
 
                 else {
+                    Log.i("Tag", "In a barbie world");
                     animationHandler.removeCallbacks(RecordButtonRunnable);
+                    recordButton.setImageDrawable(recordButtonNonAnim);
                 }
             }
         };
@@ -344,15 +358,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             if (!recordingStatus) {
 
-                Log.i("Start recording", "Started");
-                Log.i("Recording Status", String.valueOf(recordingStatus));
                 SetupStoryLocation();
                 slideOutViewAnimation(archive);
                 recordButton.setImageDrawable(recordButtonAnim);
                 recordAudio(view);
             } else {
 
-                Log.i("Stop recording", "Stopped");
                 slideInViewAnimation(cameraButton);
                 audioRecorder.stopRecording();
                 animationHandler.removeCallbacks(RecordButtonRunnable);
@@ -369,71 +380,36 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
-    void AttachToNFCInstruction() {
 
-        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app);
-        onPlay(audioFileUri);
+    //Archive Communication
+    public void Archive(View view) {
+
+        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
+        intent.putExtra("Authenticated", authenticated);
+        LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
-    /*When audio playback buttons are selected for first time, setup new audio media player. When
-    user interacts with playback buttons after audio media player has already been setup, toggle
-    between media player pause and play*/
-    public void onPlay(Uri audioFileUri) {
+    void NewStoryArchiveHandlerTimer() {
 
-        setupAudioMediaPlayer(audioFileUri);
-        if (!playbackStatus) {
-            startPlaying();
-            playbackStatus = true;
-        }
-    }
+        archiveStoryHandler = new Handler();
+        archiveStoryHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
-    //Setup new audio media player drawing from audio file location
-    protected void setupAudioMediaPlayer(Uri audioFileUri) {
-        Log.i("audio file", audioFileName);
-
-        try {
-            mPlayer.setDataSource(this, audioFileUri);
-            mPlayer.prepare();
-            mPlayerSetup = true;
-        } catch (IOException e) {
-            Log.e("Error", "prepare() failed");
-        }
-    }
-
-    //Start audio media player and start listening for stop imageView to be pressed
-    public void startPlaying() {
-        mPlayer.start();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer mp) {
-
-                mPlayer.stop();
-                mPlayer.reset();
-                playbackStatus = false;
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), true, ArchiveKidsUI.class);
             }
-        });
+        }, 120000);
     }
 
-/*
-            new Thread(new Runnable() {
-                public void run() {
-                    while (recordButton != null) {
-                        try {
-                            recordButton.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    recordButtonAnim.start();
-                                }
-                            });
-                            Thread.sleep(500);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
+    void CancelStoryArchiveHandlerTimer() {
 
-            */
+        archiveStoryHandler.removeCallbacksAndMessages(null);
+    }
 
+
+
+    //Camera Management
     public void Camera(View view) {
 
         try {
@@ -472,7 +448,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
                 slideOutViewAnimation(cameraButton);
                 slideInViewAnimation(archive);
-                AttachToNFCInstruction();
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
                 UUID objectUUID = UUID.randomUUID();
 
                 if(authenticated) {
@@ -491,14 +467,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
-    public void Archive(View view) {
-
-        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
-        intent.putExtra("Authenticated", authenticated);
-        LoggedInWriteHomeKidsUI.this.startActivity(intent);
-        Log.i("Authenicated", String.valueOf(authenticated));
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-    }
 
     class ProcessPicture extends AsyncTask<View, Void, Void> {
 
@@ -530,7 +498,24 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         protected void onPostExecute(Void result) {
 
             newStoryReady = true;
+            NewStoryArchiveHandlerTimer();
         }
+    }
+
+
+
+    //Activity Governance
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        nfcInteraction.WriteModeOff(adapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
     }
 
     public void Back(View view) {
@@ -565,3 +550,73 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     }
 }
+
+
+//
+//
+//    void AttachToNFCInstruction() {
+//
+//        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app);
+//        onPlay(audioFileUri);
+//    }
+//
+//    /*When audio playback buttons are selected for first time, setup new audio media player. When
+//    user interacts with playback buttons after audio media player has already been setup, toggle
+//    between media player pause and play*/
+//    public void onPlay(Uri audioFileUri) {
+//
+//        setupAudioMediaPlayer(audioFileUri);
+//        if (!playbackStatus) {
+//            startPlaying();
+//            playbackStatus = true;
+//        }
+//    }
+//
+//    //Setup new audio media player drawing from audio file location
+//    protected void setupAudioMediaPlayer(Uri audioFileUri) {
+//        Log.i("audio file", audioFileName);
+//
+//        try {
+//            mPlayer.setDataSource(this, audioFileUri);
+//            mPlayer.prepare();
+//            mPlayerSetup = true;
+//        } catch (IOException e) {
+//            Log.e("Error", "prepare() failed");
+//        }
+//    }
+//
+//    //Start audio media player and start listening for stop imageView to be pressed
+//    public void startPlaying() {
+//        mPlayer.start();
+//        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            public void onCompletion(MediaPlayer mp) {
+//
+//                mPlayer.stop();
+//                mPlayer.reset();
+//                playbackStatus = false;
+//            }
+//        });
+//    }
+//
+//
+
+/*
+            new Thread(new Runnable() {
+                public void run() {
+                    while (recordButton != null) {
+                        try {
+                            recordButton.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    recordButtonAnim.start();
+                                }
+                            });
+                            Thread.sleep(500);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+
+            */

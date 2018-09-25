@@ -18,6 +18,7 @@ import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -65,6 +66,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_kids_ui);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mRootView = (ViewGroup) findViewById(R.id.login_kids_ui);
 
         passcodeAppend = new StringBuilder("");
