@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+
+import static com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsUI.REQUEST_IMAGE_CAPTURE;
 
 /**
  * Created by StuCollyn on 07/06/2018.
@@ -41,10 +44,22 @@ class CameraRecorder extends Application {
         this.activity = activity;
     }
 
-    void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    public static Camera getCameraInstance() {
 
-        if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
+            Camera c = null;
+            try {
+                c = Camera.open(); // attempt to get a Camera instance
+            }
+            catch (Exception e){
+                // Camera is not available (in use or does not exist)
+            }
+            return c; // returns null if camera is unavailable
+        }
+/*
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
 
             // Create the File where the photo should go
             File photoFile = null;
@@ -60,12 +75,15 @@ class CameraRecorder extends Application {
                   //      "com.example.android.fileprovider",
                     //    photoFile);
                 photoURI = FileProvider.getUriForFile(context, "com.example.android.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                //new ProcessPicture().execute();
-                activity.startActivityForResult(takePictureIntent, 100);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                  intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+//        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
+//        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+                activity.startActivityForResult(intent, 100);
             }
         }
-    }
+
+        */
 
     private File createImageFile() throws IOException {
         // Create an image file name

@@ -52,8 +52,8 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     NfcAdapter adapter;
     PendingIntent pendingIntent;
     IntentFilter readTagFilters[];
-    private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
+    CommentaryInstruction commentaryInstruction;
     boolean authenticated = false;
     boolean record_button_on, video_record_button_on, recordingStatus = false,
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
@@ -64,10 +64,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in_read_home);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         mRootView = (ViewGroup) findViewById(R.id.activity_logged_in_read_home);
 
-        mPlayer = new MediaPlayer();
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
 
         paintColourArray = new Integer[4];
         paintColourArray[0] = android.graphics.Color.rgb(255, 157, 0);
@@ -136,7 +135,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         alpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
-        bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
+        bounce = AnimationUtils.loadAnimation(this, R.anim.bounce_infinite);
         String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         paintViews();
@@ -156,7 +155,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         if(previousActivity.equals("LoginKidsUI")) {
 
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
-            onPlay(audioFileUri);
+            commentaryInstruction.onPlay(audioFileUri, false, null);
         }
 
         else if(previousActivity.equals("LoggedInWriteHomeKidsUI")) {
@@ -178,48 +177,11 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         }
     }
 
-    /*When audio playback buttons are selected for first time, setup new audio media player. When
-   user interacts with playback buttons after audio media player has already been setup, toggle
-   between media player pause and play*/
-    public void onPlay(Uri audioFileUri) {
-
-        setupAudioMediaPlayer(audioFileUri);
-        if (!playbackStatus) {
-            startPlaying();
-            playbackStatus = true;
-        }
-    }
-
-    //Setup new audio media player drawing from audio file location
-    protected void setupAudioMediaPlayer(Uri audioFileUri) {
-
-        try {
-            mPlayer.setDataSource(this, audioFileUri);
-            mPlayer.prepare();
-            mPlayerSetup = true;
-        } catch (IOException e) {
-            Log.e("Error", "prepare() failed");
-        }
-    }
-
-    //Start audio media player and start listening for stop imageView to be pressed
-    public void startPlaying() {
-        mPlayer.start();
-        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer mp) {
-
-                mPlayer.stop();
-                mPlayer.reset();
-                playbackStatus = false;
-            }
-        });
-    }
-
     void PlayStory(File[] filesOnTag) {
 
 
         Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
-        ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this, filesOnTag);
+        ShowStoryContent showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }
 

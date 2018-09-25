@@ -94,6 +94,10 @@ public class CommentaryInstruction {
 
                         ArchiveKidsUI();
                     }
+
+                    else {
+
+                    }
                 }
             }
         });
@@ -131,6 +135,11 @@ public class CommentaryInstruction {
     void setInputHandler(Handler input){
 
         inputHandler = input;
+    }
+
+    MediaPlayer getmPlayer(){
+
+        return mPlayer;
     }
 
 }

@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.DialogFragment;
@@ -45,7 +49,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
     Handler startupZigZagHandler, startupLargeObjectsHandler;
-    Animation spin, shrink, blink, draw, bounce, fadeout;
+    Animation spin, shrink, blink, draw, bounce, fadeout, shake;
     int largeObjectsInt = 0;
     boolean startupLargeObjectsAnimationComplete = false, passcodeReady = false;
     ImageView largeItemArray[], otherItemArray[];
@@ -61,6 +65,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     FirebaseFirestore db;
     boolean isNetworkConnected;
     boolean authenticated = false;
+    CommentaryInstruction commentaryInstruction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +73,9 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         setContentView(R.layout.activity_login_kids_ui);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mRootView = (ViewGroup) findViewById(R.id.login_kids_ui);
+
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null);
 
         passcodeAppend = new StringBuilder("");
         paintColourArray = new Integer[3];
@@ -129,6 +137,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
+        shake = AnimationUtils.loadAnimation(this, R.anim.shake_left);
         isNetworkConnected = isNetworkConnected();
         if(isNetworkConnected) {
 
@@ -417,13 +426,22 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     void ResetAttempt(){
 
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+        }else{
+            //deprecated in API 26
+            v.vibrate(500);
+        }
+
         for(int i=0; i<largeItemArray.length; i++) {
 
+            largeItemArray[i].startAnimation(shake);
             Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(largeItemArray[i]), null);
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d, android.graphics.Color.rgb(111, 133, 226));
             largeItemArray[i].setImageDrawable(d);
-
         }
     }
 
@@ -434,6 +452,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 //        LoginKidsUI.this.startActivity(intent);
 //        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null);
 
         Transition explode = new Explode();
 
