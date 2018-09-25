@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 
 import com.example.stucollyn.nfc_play.R;
@@ -23,6 +24,9 @@ public class CommentaryInstruction {
     Uri audioFileUri;
     boolean playbackStatus = false;
     boolean authenticated = false;
+    Handler inputHandler;
+    String tag_data;
+
 
     public CommentaryInstruction(Activity activity, Context context, boolean playbackStatus, boolean authenticated) {
 
@@ -50,6 +54,11 @@ public class CommentaryInstruction {
     protected void setupAudioMediaPlayer(Uri audioFileUri) {
 
         try {
+
+            if(mPlayer.isPlaying()) {
+                mPlayer.stop();
+                mPlayer.reset();
+            }
             Log.i("audioFile", audioFileUri.toString());
             mPlayer.setDataSource(context, audioFileUri);
             mPlayer.prepare();
@@ -69,21 +78,59 @@ public class CommentaryInstruction {
                 mPlayer.reset();
                 playbackStatus = false;
 
+//                if(inputHandler!=null) {
+//
+//                    inputHandler.removeCallbacksAndMessages(null);
+//                }
+
                 if(onCompleteChangeActivitiy) {
 
-                    Intent intent = new Intent(context, activityName);
-                    intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
-                    intent.putExtra("Authenticated", authenticated);
-                    context.startActivity(intent);
+                    if(activityName==LoggedInReadHomeKidsUI.class) {
+
+                        LoggedInReadHomeKidsUI();
+                    }
+
+                    else if(activityName==ArchiveKidsUI.class) {
+
+                        ArchiveKidsUI();
+                    }
                 }
             }
         });
+    }
+
+    void ArchiveKidsUI() {
+
+        Intent intent = new Intent(context, ArchiveKidsUI.class);
+        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        context.startActivity(intent);
+    }
+
+    void LoggedInReadHomeKidsUI() {
+
+        Intent intent = new Intent(context, LoggedInReadHomeKidsUI.class);
+        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        intent.putExtra("NewStory", true);
+        intent.putExtra("StoryRef", tag_data);
+        context.startActivity(intent);
+    }
+
+    void setTagData(String data) {
+
+        tag_data = data;
     }
 
     public void stopPlaying() {
         mPlayer.stop();
         mPlayer.reset();
         playbackStatus = false;
+    }
+
+    void setInputHandler(Handler input){
+
+        inputHandler = input;
     }
 
 }

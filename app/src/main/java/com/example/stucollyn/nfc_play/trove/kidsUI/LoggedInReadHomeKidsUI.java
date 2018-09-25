@@ -12,15 +12,13 @@ import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.FileProvider;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,13 +137,11 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         alpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
-
-        paintViews();
-        animateViews();
-
         String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-        WelcomeMessage(previousActivity);
+        paintViews();
+        animateViews();
+        Autoplay(previousActivity);
 
         nfcInteraction = new NFCInteraction(this, this);
         adapter = NfcAdapter.getDefaultAdapter(this);
@@ -155,12 +151,30 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         readTagFilters = new IntentFilter[] {tagDetected };
     }
 
-    void WelcomeMessage(String previousActivity){
+    void Autoplay(String previousActivity){
 
         if(previousActivity.equals("LoginKidsUI")) {
 
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
             onPlay(audioFileUri);
+        }
+
+        else if(previousActivity.equals("LoggedInWriteHomeKidsUI")) {
+
+            boolean newStory = (Boolean) getIntent().getExtras().get("NewStory");
+
+            if(newStory) {
+
+                String storyRef = (String) getIntent().getExtras().get("StoryRef");
+                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/" + storyRef;
+                File directory = new File(path);
+                File[] filesOnTag = directory.listFiles();
+                PlayStory(filesOnTag);
+            }
+        }
+
+        else {
+
         }
     }
 
@@ -201,6 +215,14 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         });
     }
 
+    void PlayStory(File[] filesOnTag) {
+
+
+        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
+        ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this, filesOnTag);
+        showStoryContent.checkFilesOnTag();
+    }
+
     @Override
     protected void onNewIntent(Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
@@ -224,18 +246,15 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 Log.d("NFC_Tag_Files_Format B", "FileName:" + filesOnTag[0].getName());
                 Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
 
-                Uri story_directory_uri = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        filesOnTag[0].getAbsoluteFile());
+//                Uri story_directory_uri = FileProvider.getUriForFile(this,
+//                        "com.example.android.fileprovider",
+//                        filesOnTag[0].getAbsoluteFile());
 
 //                Log.i("NFC URI: ", String.valueOf(story_directory_uri));
 
                 if(filesOnTag!=null){
 
-                    Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
-                    ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, this, this, filesOnTag);
-                    showStoryContent.checkFilesOnTag();
-
+                    PlayStory(filesOnTag);
                 }
             }
 

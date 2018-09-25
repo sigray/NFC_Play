@@ -138,9 +138,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-        //Prepare new story directory
-//        authenticated = false;
-
+        archiveStoryHandler = new Handler();
         nfcInteraction = new NFCInteraction(this, this);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
         AnimationSetup();
@@ -277,7 +275,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             if(success) {
 
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.tusbrestore), true, LoggedInReadHomeKidsUI.class);
+                CancelStoryArchiveHandlerTimer();
+                commentaryInstruction.setTagData(tag_data);
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class);
             }
         }
     }
@@ -294,23 +294,19 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         tag_data = name;
         String newDirectory = packageLocation + "/" + name;
         story_directory = getExternalFilesDir(newDirectory);
-        // story_directory_uri = FileProvider.getUriForFile(this,
-        //       "com.example.android.fileprovider",
-        //     story_directory);
-        story_directory_path = story_directory.getAbsolutePath();
-
     }
 
-
-
-    //Recording Audio Management
-    void recordAudio(View view) {
+    void StoryReset() {
 
         //Delete Any Previous Recordings
 
 
         //Remove Previous Audio Commentary Callbacks
-        archiveStoryHandler.removeCallbacksAndMessages(null);
+        CancelStoryArchiveHandlerTimer();
+    }
+
+    //Recording Audio Management
+    void recordAudio(View view) {
 
         //Request permission to record audio (required for some newer Android devices)
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
@@ -358,12 +354,14 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             if (!recordingStatus) {
 
+                StoryReset();
                 SetupStoryLocation();
                 slideOutViewAnimation(archive);
                 recordButton.setImageDrawable(recordButtonAnim);
                 recordAudio(view);
+                Log.i("Tag", "Starting Recording");
             } else {
-
+                Log.i("Tag", "Stopping Recording");
                 slideInViewAnimation(cameraButton);
                 audioRecorder.stopRecording();
                 animationHandler.removeCallbacks(RecordButtonRunnable);
@@ -392,14 +390,15 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void NewStoryArchiveHandlerTimer() {
 
-        archiveStoryHandler = new Handler();
         archiveStoryHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), true, ArchiveKidsUI.class);
+                Log.i("Annoying Handler", "Ach");
+                commentaryInstruction.setInputHandler(archiveStoryHandler);
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveKidsUI.class);
             }
-        }, 120000);
+        }, 10000);
     }
 
     void CancelStoryArchiveHandlerTimer() {
@@ -532,6 +531,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
@@ -543,6 +543,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
                 intent.putExtra("Authenticated", authenticated);
+                intent.putExtra("NewStory", false);
                 LoggedInWriteHomeKidsUI.this.startActivity(intent);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
