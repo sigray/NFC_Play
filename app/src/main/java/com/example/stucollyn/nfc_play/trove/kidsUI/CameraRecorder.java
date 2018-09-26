@@ -1,9 +1,11 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -11,11 +13,25 @@ import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+
+import com.example.stucollyn.nfc_play.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,24 +53,115 @@ class CameraRecorder extends Application {
     int rotationInDegrees;
     Bitmap adjustedBitmap;
     Uri photoURI;
+    ImageButton captureButton;
+    FrameLayout preview;
+    LinearLayout camera_linear;
+    Animation fadein, fadeout;
+    Camera mCamera;
+    CameraPreview mPreview;
+    public static final int MEDIA_TYPE_IMAGE = 1;
+    boolean pictureSave = false;
 
-    public CameraRecorder(Activity activity, Context context, File story_directory) {
+
+
+    public CameraRecorder(Activity activity, Context context, File story_directory, Camera mCamera, CameraPreview mPreview) {
         this.context = context;
         this.story_directory = story_directory;
         this.activity = activity;
+        this.mCamera = mCamera;
+        this.mPreview = mPreview;
+
+        captureButton = (ImageButton) activity.findViewById(R.id.button_capture);
+        preview = (FrameLayout) activity.findViewById(R.id.camera_preview);
+        camera_linear = (LinearLayout) activity.findViewById(R.id.camera_linear);
+        fadein = AnimationUtils.loadAnimation(context, R.anim.fadein);
+        fadeout = AnimationUtils.loadAnimation(context, R.anim.fadeout);
+
+        Log.i("Test", "This far D");
     }
+
+
 
     public static Camera getCameraInstance() {
 
             Camera c = null;
             try {
-                c = Camera.open(); // attempt to get a Camera instance
+                c = Camera.open(1); // attempt to get a Camera instance
             }
             catch (Exception e){
                 // Camera is not available (in use or does not exist)
+                Log.i("Tag", "No Camera here mate");
             }
             return c; // returns null if camera is unavailable
         }
+
+    /** Create a file Uri for saving an image or video */
+    Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /** Create a File for saving an image or video */
+    File getOutputMediaFile(int type){
+
+
+        File mediaStorageDir = story_directory;
+
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE){
+//            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//                    "IMG_"+ timeStamp + ".jpg");
+            UUID storyName = UUID.randomUUID();
+            String imageFileName = storyName.toString();
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    imageFileName + ".jpg");
+            photoPath = mediaFile.getAbsolutePath();
+
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+
+
+        /*
+
+        try {
+
+
+            UUID storyName = UUID.randomUUID();
+            String imageFileName = storyName.toString();
+            File storageDir;
+
+            if (Build.VERSION.SDK_INT >= 19) {
+                //storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                storageDir = story_directory;
+            } else {
+                //storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
+                storageDir = story_directory;
+            }
+
+            File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+
+            // Save a file: path for use with ACTION_VIEW intents
+            photoPath = image.getAbsolutePath();
+
+        }
+
+        catch (IOException e) {
+
+        }
+
+        return image;
+
+        */
+
+    }
+
+
+
 /*
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

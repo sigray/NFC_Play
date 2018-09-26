@@ -36,6 +36,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.NewStoryReview;
@@ -127,6 +128,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     Handler archiveStoryHandler;
     ImageButton captureButton;
     FrameLayout preview;
+    LinearLayout camera_linear;
+    Animation fadein, fadeout;
 
 
     //Grant permission to record audio (required for some newer Android devices)
@@ -164,7 +167,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         back = (ImageView) findViewById(R.id.back);
         captureButton = (ImageButton) findViewById(R.id.button_capture);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
+        camera_linear = (LinearLayout) findViewById(R.id.camera_linear);
+        fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
+        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
+        mCamera = cameraRecorder.getCameraInstance();
+        mPreview = new CameraPreview(getApplicationContext(), mCamera);
+        preview.addView(mPreview);
         archiveStoryHandler = new Handler();
         nfcInteraction = new NFCInteraction(this, this);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
@@ -303,6 +312,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             if(success) {
 
                 CancelStoryArchiveHandlerTimer();
+                ReleaseCamera();
                 commentaryInstruction.setTagData(tag_data);
                 commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class);
             }
@@ -409,6 +419,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Archive Communication
     public void Archive(View view) {
 
+        ReleaseCamera();
         Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
         LoggedInWriteHomeKidsUI.this.startActivity(intent);
@@ -443,68 +454,64 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
-    public static Camera getCameraInstance() {
-
-        Camera c = null;
-        try {
-            c = Camera.open(1); // attempt to get a Camera instance
-        }
-        catch (Exception e){
-            // Camera is not available (in use or does not exist)
-            Log.i("Tag", "No Camera here mate");
-        }
-        return c; // returns null if camera is unavailable
-    }
-
     //Camera Management
     public void Camera(View view) {
 
-        try {
-
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, CAMERA_REQUEST);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
             }
 
-            cameraRecorder = new CameraRecorder(this, this, story_directory);
+        try {
+            Log.i("Tag", "This far A");
 
-            boolean hasCam = checkCameraHardware(this);
-
+            cameraRecorder = new CameraRecorder(this, this, story_directory, mCamera, mPreview);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-                mCamera = getCameraInstance();
-                mPreview = new CameraPreview(getApplicationContext(), mCamera);
-                mPreview.setVisibility(View.VISIBLE);
-                cameraButton.setVisibility(View.VISIBLE);
-                preview.addView(mPreview);
-                captureButton.setOnClickListener(
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // get an image from the camera
-                                mCamera.takePicture(null, null, mPicture);
+                @Override
+                public void run() {
+                    // Do something after 5s = 5000ms
+                    Log.i("Tag", "This far C");
+
+                    camera_linear.startAnimation(fadein);
+                    captureButton.startAnimation(fadein);
+                    preview.startAnimation(fadein);
+                    preview.setVisibility(View.VISIBLE);
+                    captureButton.setVisibility(View.VISIBLE);
+                    camera_linear.setVisibility(View.VISIBLE);
+                    captureButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // get an image from the camera
+                                    captureButton.setImageResource(R.drawable.kids_ui_record_anim_alt_mini);
+                                    mCamera.takePicture(null, null, mPicture);
+                                }
                             }
-                        }
-                );
+                    );
+
+                }
+            }, 500);
+        }
+
+        catch (NullPointerException e) {
 
             }
-        }, 500);
-    } catch (NullPointerException e) {
-
-        }
     }
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+
+    Camera.PictureCallback mPicture = new Camera.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 
-            cameraButton.setVisibility(View.GONE);
+            camera_linear.startAnimation(fadeout);
+            captureButton.startAnimation(fadeout);
+            //preview.startAnimation(fadeout);
+            captureButton.setVisibility(View.GONE);
             preview.setVisibility(View.GONE);
-            File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
+            camera_linear.setVisibility(View.GONE);
+            File pictureFile = cameraRecorder.getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null){
                 Log.d("Tag", "Error creating media file, check storage permissions");
                 return;
@@ -519,87 +526,32 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             } catch (IOException e) {
                 Log.d("Tag", "Error accessing file: " + e.getMessage());
             }
+
+            ResetCamera();
+            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+            slideOutViewAnimation(cameraButton);
+            slideInViewAnimation(archive);
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
+            UUID objectUUID = UUID.randomUUID();
+
+            if(authenticated) {
+                SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                saveToCloud.CloudSave();
+            }
         }
     };
 
+    void ResetCamera() {
 
-    /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile(type));
+        mCamera.stopPreview();
+        captureButton.setImageResource(R.drawable.kids_ui_record_circle_mini);
+        mCamera.startPreview();
     }
 
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
+    void ReleaseCamera() {
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else if(type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "VID_"+ timeStamp + ".mp4");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
-    }
-
-
-
-    public void CompletePictureRecording(View view) {
-
-        pictureFileName = photoPath;
-//        recordedMediaHashMap.put("Picture", pictureFileName);
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Picture Processing
-        if (requestCode == 100) {
-            if (resultCode == RESULT_OK) {
-
-                new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
-                slideOutViewAnimation(cameraButton);
-                slideInViewAnimation(archive);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
-                UUID objectUUID = UUID.randomUUID();
-
-                if(authenticated) {
-                    SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
-                    saveToCloud.CloudSave();
-                }
-            }
-        }
-
-        if (requestCode == 200) {
-            if (resultCode == RESULT_OK) {
-
-//                new LoggedInWriteHomeKidsUI.ProcessVideo().execute();
-
-            }
-        }
+        mCamera.stopPreview();
+        mCamera.release();
     }
 
 
@@ -667,6 +619,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        ResetCamera();
         CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
@@ -676,6 +629,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                preview.addView(mPreview);
+                ReleaseCamera();
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
                 intent.putExtra("Authenticated", authenticated);
@@ -753,6 +708,82 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                }
+            }).start();
+
+
+
+
+
+
+
+
+
+
+
+    public void CompletePictureRecording(View view) {
+
+        pictureFileName = photoPath;
+//        recordedMediaHashMap.put("Picture", pictureFileName);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Picture Processing
+        if (requestCode == 100) {
+            if (resultCode == RESULT_OK) {
+
+                new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+                slideOutViewAnimation(cameraButton);
+                slideInViewAnimation(archive);
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
+                UUID objectUUID = UUID.randomUUID();
+
+                if(authenticated) {
+                    SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                    saveToCloud.CloudSave();
+                }
+            }
+        }
+
+        if (requestCode == 200) {
+            if (resultCode == RESULT_OK) {
+
+//                new LoggedInWriteHomeKidsUI.ProcessVideo().execute();
+
+            }
+        }
+    }
+
+
+   /*
+            new Thread(new Runnable() {
+                public void run() {
+                    while (!cameraRecorder.getPictureSave()) {
+                        try {
+                            Thread.sleep(200);
+                            Log.i("Woo", "Checking");
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+
+                    Log.i("Woo", "Let's Party");
+                    Thread.interrupted();
+                    new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+                    slideOutViewAnimation(cameraButton);
+                    slideInViewAnimation(archive);
+                    commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
+                    UUID objectUUID = UUID.randomUUID();
+
+                    if(authenticated) {
+                        SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                        saveToCloud.CloudSave();
+                    }
+                    //do something
                 }
             }).start();
 
