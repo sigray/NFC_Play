@@ -177,6 +177,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         archiveStoryHandler = new Handler();
         nfcInteraction = new NFCInteraction(this, this);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class);
         AnimationSetup();
         recordButtonController();
 
@@ -247,6 +248,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     }
 
     void recordButtonController() {
+
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, LoggedInReadHomeKidsUI.class);
 
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
@@ -533,7 +536,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             NewStoryArchiveHandlerTimer();
             slideOutViewAnimation(cameraButton);
             slideInViewAnimation(archive);
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.tagnfc), false, null);
             UUID objectUUID = UUID.randomUUID();
 
             if(authenticated) {

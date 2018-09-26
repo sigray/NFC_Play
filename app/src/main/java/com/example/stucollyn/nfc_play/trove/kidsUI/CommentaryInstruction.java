@@ -11,6 +11,8 @@ import android.util.Log;
 import com.example.stucollyn.nfc_play.R;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by StuCollyn on 25/09/2018.
@@ -27,6 +29,7 @@ public class CommentaryInstruction {
     Handler inputHandler;
     String tag_data;
 
+    float volume = 0;
 
     public CommentaryInstruction(Activity activity, Context context, boolean playbackStatus, boolean authenticated) {
 
@@ -43,6 +46,7 @@ public class CommentaryInstruction {
     between media player pause and play*/
     public void onPlay(Uri audioFileUri, final boolean onCompleteChangeActivitiy, final Class activityName) {
 
+        volume = 1;
         setupAudioMediaPlayer(audioFileUri);
         if (!playbackStatus) {
             startPlaying(onCompleteChangeActivitiy, activityName);
@@ -58,6 +62,7 @@ public class CommentaryInstruction {
             if(mPlayer.isPlaying()) {
                 mPlayer.stop();
                 mPlayer.reset();
+                playbackStatus = false;
             }
             Log.i("audioFile", audioFileUri.toString());
             mPlayer.setDataSource(context, audioFileUri);
@@ -140,6 +145,42 @@ public class CommentaryInstruction {
     MediaPlayer getmPlayer(){
 
         return mPlayer;
+    }
+
+
+
+    void startFadeOut(){
+
+        if(mPlayer.isPlaying()) {
+            final int FADE_DURATION = 500; //The duration of the fade
+            //The amount of time between volume changes. The smaller this is, the smoother the fade
+            final int FADE_INTERVAL = 250;
+            final int MIN_VOLUME = -1; //The volume will increase from 0 to 1
+            int numberOfSteps = FADE_DURATION / FADE_INTERVAL; //Calculate the number of fade steps
+            //Calculate by how much the volume changes each step
+            final float deltaVolume = MIN_VOLUME / (float) numberOfSteps;
+
+            //Create a new Timer and Timer task to run the fading outside the main UI thread
+            final Timer timer = new Timer(true);
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    fadeOutStep(deltaVolume); //Do a fade step
+                    //Cancel and Purge the Timer if the desired volume has been reached
+                    if (volume <= 0) {
+                        timer.cancel();
+                        timer.purge();
+                    }
+                }
+            };
+
+            timer.schedule(timerTask, FADE_INTERVAL, FADE_INTERVAL);
+        }
+    }
+
+    private void fadeOutStep(float deltaVolume){
+        mPlayer.setVolume(volume, volume);
+        volume += deltaVolume;
     }
 
 }

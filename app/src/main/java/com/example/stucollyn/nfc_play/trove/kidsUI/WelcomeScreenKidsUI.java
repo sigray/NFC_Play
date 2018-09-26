@@ -3,6 +3,7 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     boolean startupZigZagAnimationComplete = false, startupLargeObjectsAnimationComplete = false;
     ViewGroup mRootView;
     Runnable TroveRunnable;
+    String previousActivity = "Empty";
 
 
     @Override
@@ -108,7 +110,6 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
 
-        //Introduce object animation
         animationStartSequence();
 
         //Animations once setup
@@ -306,6 +307,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     public void Skip(View view) {
 
         Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
         WelcomeScreenKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
@@ -315,6 +317,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         idleTroveHandler.removeCallbacks(TroveRunnable);
         trove.clearAnimation();
         Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
         WelcomeScreenKidsUI.this.startActivity(intent);
     }
 

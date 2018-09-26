@@ -197,7 +197,8 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         try {
             if (mytag == null) {
 
-                Toast.makeText(this, "Tag Null", Toast.LENGTH_LONG ).show();
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null);
+                Toast.makeText(this, "This tag is empty.", Toast.LENGTH_LONG ).show();
             }
 
             else {
@@ -206,7 +207,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 String packageName = getPackageName();
                 File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
                 Log.d("NFC_Tag_Files_Format B", "FileName:" + filesOnTag[0].getName());
-                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
+//                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
 
 //                Uri story_directory_uri = FileProvider.getUriForFile(this,
 //                        "com.example.android.fileprovider",
@@ -317,6 +318,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     public void Continue(View view) {
 
         trove.clearAnimation();
+        commentaryInstruction.stopPlaying();
         Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
         LoggedInReadHomeKidsUI.this.startActivity(intent);
@@ -380,13 +382,13 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoginKidsUI.class);
+                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, WelcomeScreenKidsUI.class);
                 LoggedInReadHomeKidsUI.this.startActivity(intent);
             }
         }, 1000);

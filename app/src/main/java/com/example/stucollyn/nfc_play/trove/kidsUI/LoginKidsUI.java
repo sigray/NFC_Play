@@ -74,9 +74,6 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mRootView = (ViewGroup) findViewById(R.id.login_kids_ui);
 
-        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null);
-
         passcodeAppend = new StringBuilder("");
         paintColourArray = new Integer[3];
         paintColourArray[0] = android.graphics.Color.rgb(255, 157, 0);
@@ -138,7 +135,11 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
         shake = AnimationUtils.loadAnimation(this, R.anim.shake_left);
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        CheckPreviousActivity();
+
         isNetworkConnected = isNetworkConnected();
+
         if(isNetworkConnected) {
 
            AuthenticatedLogin();
@@ -150,6 +151,22 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             back.setVisibility(View.INVISIBLE);
             PasscodePhase();
         }
+    }
+
+    void CheckPreviousActivity() {
+
+        String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
+
+        if(previousActivity.equals("WelcomeScreenKidsUI")) {
+
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null);
+        }
+
+        else {
+
+
+        }
+
     }
 
     // The dialog fragment receives a reference to this Activity through the

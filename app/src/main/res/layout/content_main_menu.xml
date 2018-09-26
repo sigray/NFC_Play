@@ -21,7 +21,6 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/welcome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +37,6 @@
             android:scaleType="fitCenter"
             android:paddingBottom="50sp"
             android:background="#7d7d7d"
-            app:layout_constraintBottom_toTopOf="@+id/welcome"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
