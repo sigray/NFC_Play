@@ -5,6 +5,7 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
  */
 
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -36,6 +37,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
+            Camera.Parameters parameters = mCamera.getParameters();
+            parameters.set("jpeg-quality", 70);
+            parameters.setPictureFormat(PixelFormat.JPEG);
+            parameters.setPictureSize(getSuggestedMinimumWidth(), getSuggestedMinimumHeight());
+            mCamera.setParameters(parameters);
             mCamera.setPreviewDisplay(holder);
             mCamera.startPreview();
         } catch (IOException e) {

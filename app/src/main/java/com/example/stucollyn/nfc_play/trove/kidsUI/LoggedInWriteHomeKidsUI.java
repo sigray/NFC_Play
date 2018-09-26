@@ -528,7 +528,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             }
 
             ResetCamera();
-            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+//            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+            newStoryReady = true;
+            NewStoryArchiveHandlerTimer();
             slideOutViewAnimation(cameraButton);
             slideInViewAnimation(archive);
             commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
@@ -566,11 +568,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             try {
 
-                cameraRecorder.PictureProcessing();
-                photoPath = cameraRecorder.getPhotoPath();
-                photoUri = cameraRecorder.getPhotoURI();
-//                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
-                processedBitmap = cameraRecorder.getAdjustedBitmap();
+//                cameraRecorder.PictureProcessing();
+//                photoPath = cameraRecorder.getPhotoPath();
+//                photoUri = cameraRecorder.getPhotoURI();
+////                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
+//                processedBitmap = cameraRecorder.getAdjustedBitmap();
 
             } catch (NullPointerException e) {
 
@@ -629,7 +631,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                preview.addView(mPreview);
                 ReleaseCamera();
                 Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");

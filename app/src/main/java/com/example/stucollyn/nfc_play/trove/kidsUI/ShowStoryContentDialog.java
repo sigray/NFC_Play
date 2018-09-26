@@ -19,6 +19,8 @@ import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -69,19 +71,20 @@ public class ShowStoryContentDialog extends DialogFragment {
         int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
         rotationInDegrees = exifToDegrees(rotation);
 
-        // Get the dimensions of the bitmap
+//        // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 500, photoH / 500);
-
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = smallSizeScaleFactor;
-        bmOptions.inPurgeable = true;
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
+//        int photoW = bmOptions.outWidth;
+//        int photoH = bmOptions.outHeight;
+//         int smallSizeScaleFactor = Math.min(photoW/500, photoH/500);
+//
+//
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = smallSizeScaleFactor;
+//        bmOptions.inPurgeable = true;
         Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), bmOptions);
         Matrix matrix = new Matrix();
         if (rotation != 0f) {
@@ -145,12 +148,14 @@ public class ShowStoryContentDialog extends DialogFragment {
 //        builder.setView(inflater.inflate(R.layout.dialog_signin, null));
         View prompt = inflater.inflate(R.layout.dialog_show_story_kids_ui, null);
         imageView = (ImageView) prompt.findViewById(R.id.imageView);
-
         final AlertDialog alertDio = new AlertDialog.Builder(getActivity())
                 .setView(prompt)
                 .show();
 
-        alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        alertDio.getWindow().setLayout(width, height);
+        alertDio.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
 
 //        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomDialog);
 //        builder.setView(prompt);
