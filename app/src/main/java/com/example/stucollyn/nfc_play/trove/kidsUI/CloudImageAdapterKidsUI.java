@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.view.ViewGroup.LayoutParams;
 
 import com.example.stucollyn.nfc_play.R;
 
@@ -28,7 +33,7 @@ import java.util.Map;
 
 public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAdapterKidsUI.SimpleViewHolder> {
     private Context mContext;
-    ImageView[] imageButtons;
+    CustomImageView[] imageButtons;
     TextView[] imageDesc;
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
@@ -41,16 +46,23 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
     private List<String> elements;
     boolean authenticated = false;
-
+    int[] shapeResource = new int[]{R.raw.archive_shape_1, R.raw.archive_shape_2, R.raw.archive_shape_1};
+    int[] shapeResourceBackground = new int[]{R.drawable.kids_ui_archive_shape_1, R.drawable.kids_ui_archive_shape_2, R.drawable.kids_ui_archive_shape_1};
+    int shapeResourceCounter=0;
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView imageView;
+        public final CustomImageView imageView;
+        public final ImageView imageViewBackground;
+
 
         public SimpleViewHolder(View view) {
             super(view);
-            imageView = (ImageView) view.findViewById(R.id.grid_item_background_kids_ui);
+            imageView = (CustomImageView) view.findViewById(R.id.grid_item_kids_ui);
+            imageViewBackground = (ImageView) view.findViewById(R.id.grid_item_background_kids_ui);
         }
     }
+
+
 
     @Override
     public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -68,10 +80,14 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
 //            File value = folderToImageRef.get(filesOnTag.get(position));
             Bitmap bitmap = coverImages.get(position);
 //            imageButtons[position].setImageBitmap(bitmap);
+            holder.imageViewBackground.setBackgroundResource(shapeResourceBackground[shapeResourceCounter]);
+//            holder.imageViewBackground.getLayoutParams().width = holder.imageView.getWidth()+100;
+//            holder.imageViewBackground.getLayoutParams().height = holder.imageView.getHeight()+100;
+            holder.imageView.setCustomImageResource(shapeResource[shapeResourceCounter]);
             holder.imageView.setImageBitmap(bitmap);
         }
 
-        holder.imageView.setBackgroundColor(currentColour);
+//        holder.imageView.setBackgroundColor(currentColour);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,6 +101,15 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
                 storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         });
+
+
+        if(shapeResourceCounter<3) {
+            shapeResourceCounter++;
+        }
+
+        else {
+            shapeResourceCounter=0;
+        }
     }
 
     @Override
@@ -99,12 +124,10 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
 
     public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated) {
 
-       Log.i("Object Record Map1", folderToImageRef.toString());
-
         this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
-        imageButtons = new ImageView[numberOfThumbs];
+        imageButtons = new CustomImageView[numberOfThumbs];
         imageDesc = new TextView[numberOfThumbs];
         this.filesOnTag = filesOnTag;
         this.colourCode = colourCode;
@@ -127,7 +150,6 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
             Bitmap value = entry.getValue();
             coverImages.add(value);
             objectName.add(key);
-            Log.i("Object Namea", key);
         }
     }
 }

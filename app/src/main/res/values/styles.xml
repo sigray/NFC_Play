@@ -26,13 +26,24 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="Shapes" parent="AppTheme.NoActionBar">
+
+    <item name="CustomShape1">@raw/archive_shape_1</item>
+    <item name="CustomShape2">@raw/archive_shape_2</item>
+
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="CustomDialog" parent="android:Theme.Dialog">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
-
 </resources>

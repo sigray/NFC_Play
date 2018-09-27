@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImageAdapterKidsUI.SimpleViewHolder> {
     private Context mContext;
-    ImageView[] imageButtons;
+    com.meg7.widget.SvgImageView[] imageButtons;
     TextView[] imageDesc;
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
@@ -53,11 +53,11 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView imageView;
+        public final com.meg7.widget.SvgImageView imageView;
 
         public SimpleViewHolder(View view) {
             super(view);
-            imageView = (ImageView) view.findViewById(R.id.grid_item_background_kids_ui);
+            imageView = (com.meg7.widget.SvgImageView) view.findViewById(R.id.grid_item_background_kids_ui);
         }
     }
 
@@ -102,7 +102,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
         }
 
-        holder.imageView.setBackgroundColor(currentColour);
+//        holder.imageView.setBackgroundColor(currentColour);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,7 +135,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
-        imageButtons = new ImageView[numberOfThumbs];
+        imageButtons = new com.meg7.widget.SvgImageView[numberOfThumbs];
         imageDesc = new TextView[numberOfThumbs];
         this.filesOnTag = filesOnTag;
         this.colourCode = colourCode;

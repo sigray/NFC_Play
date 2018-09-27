@@ -49,7 +49,7 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
 
         public SimpleViewHolder(View view) {
             super(view);
-            imageView = (ImageView) view.findViewById(R.id.grid_item_background_kids_ui);
+            imageView = (ImageView) view.findViewById(R.id.grid_item_kids_ui);
 
         }
     }

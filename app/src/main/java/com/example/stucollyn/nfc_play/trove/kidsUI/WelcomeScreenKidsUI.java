@@ -33,6 +33,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     ViewGroup mRootView;
     Runnable TroveRunnable;
     String previousActivity = "Empty";
+    public static boolean AppStarted = false;
 
 
     @Override
@@ -110,7 +111,12 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
 
-        animationStartSequence();
+        if(!AppStarted) {
+
+            AppStarted = true;
+            animationStartSequence();
+
+        }
 
         //Animations once setup
         //animationIdleSequence();

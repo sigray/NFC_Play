@@ -180,7 +180,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     void PlayStory(File[] filesOnTag) {
 
 
-        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
+//        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
         ShowStoryContent showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }

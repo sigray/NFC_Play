@@ -148,14 +148,13 @@ public class ShowStoryContentDialog extends DialogFragment {
 //        builder.setView(inflater.inflate(R.layout.dialog_signin, null));
         View prompt = inflater.inflate(R.layout.dialog_show_story_kids_ui, null);
         imageView = (ImageView) prompt.findViewById(R.id.imageView);
-        final AlertDialog alertDio = new AlertDialog.Builder(getActivity())
+        final AlertDialog alertDio = new AlertDialog.Builder(getActivity(), R.style.CustomDialog)
                 .setView(prompt)
                 .show();
 
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 //        alertDio.getWindow().setLayout(width, height);
         alertDio.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
 
 //        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomDialog);
 //        builder.setView(prompt);
