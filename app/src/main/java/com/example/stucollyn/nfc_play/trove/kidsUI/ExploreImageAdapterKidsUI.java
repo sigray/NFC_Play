@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImageAdapterKidsUI.SimpleViewHolder> {
     private Context mContext;
-    com.meg7.widget.SvgImageView[] imageButtons;
+    CustomImageView[] imageButtons;
     TextView[] imageDesc;
     int numberOfThumbs = 0;
     boolean imageButtonSelected = false;
@@ -46,6 +46,10 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     private List<String> elements;
     private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
+    int[] shapeResource = new int[]{R.raw.archive_shape_1, R.raw.archive_shape_2, R.raw.archive_shape_1};
+    int[] shapeResourceBackground = new int[]{R.drawable.kids_ui_archive_shape_1, R.drawable.kids_ui_archive_shape_2, R.drawable.kids_ui_archive_shape_1};
+    int shapeResourceCounter=0;
+
 
     boolean record_button_on, video_record_button_on, recordingStatus = false,
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
@@ -53,11 +57,13 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        public final com.meg7.widget.SvgImageView imageView;
+        public final CustomImageView imageView;
+        public final ImageView imageViewBackground;
 
         public SimpleViewHolder(View view) {
             super(view);
-            imageView = (com.meg7.widget.SvgImageView) view.findViewById(R.id.grid_item_background_kids_ui);
+            imageView = (CustomImageView) view.findViewById(R.id.grid_item_kids_ui);
+            imageViewBackground = (ImageView) view.findViewById(R.id.grid_item_background_kids_ui);
         }
     }
 
@@ -88,6 +94,9 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
         if(!coverImages.isEmpty()) {
 
+            holder.imageViewBackground.setBackgroundResource(shapeResourceBackground[shapeResourceCounter]);
+            holder.imageView.setCustomImageResource(shapeResource[shapeResourceCounter]);
+
 
             if(storyType.get(position).equals("PictureFile")) {
 
@@ -115,6 +124,14 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         PlayFile(position);
             }
         });
+
+        if(shapeResourceCounter<3) {
+            shapeResourceCounter++;
+        }
+
+        else {
+            shapeResourceCounter=0;
+        }
     }
 
     @Override
@@ -135,7 +152,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         this.storyGallery = storyGallery;
         mContext = c;
         this.numberOfThumbs = numberOfThumbs;
-        imageButtons = new com.meg7.widget.SvgImageView[numberOfThumbs];
+        imageButtons = new CustomImageView[numberOfThumbs];
         imageDesc = new TextView[numberOfThumbs];
         this.filesOnTag = filesOnTag;
         this.colourCode = colourCode;

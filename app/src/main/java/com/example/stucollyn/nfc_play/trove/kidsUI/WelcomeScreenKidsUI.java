@@ -118,6 +118,18 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         }
 
+        else {
+
+            for(int i=0; i<allViews.length; i++) {
+
+                allViews[i].setVisibility(View.VISIBLE);
+            }
+
+            trove.setVisibility(View.VISIBLE);
+            startupTroveLogoAnimation();
+            animationIdleSequence();
+        }
+
         //Animations once setup
         //animationIdleSequence();
         /*

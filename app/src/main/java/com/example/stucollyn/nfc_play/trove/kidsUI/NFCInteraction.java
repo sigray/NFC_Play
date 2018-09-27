@@ -28,8 +28,11 @@ import com.example.stucollyn.nfc_play.R;
 import com.example.stucollyn.nfc_play.SavedStoryConfirmation;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.channels.FileChannel;
 
 public class NFCInteraction {
 
@@ -105,7 +108,7 @@ public class NFCInteraction {
         ndef.close();
 
 //        String path = packageName.toString()+"/files";
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+s;
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/"+s;
         Log.i("NFC_Tag_Files_Path", path);
         File directory = new File(path);
         File[] files = directory.listFiles();

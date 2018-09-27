@@ -165,7 +165,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             if(newStory) {
 
                 String storyRef = (String) getIntent().getExtras().get("StoryRef");
-                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/" + storyRef;
+                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/" + storyRef;
                 File directory = new File(path);
                 File[] filesOnTag = directory.listFiles();
                 PlayStory(filesOnTag);

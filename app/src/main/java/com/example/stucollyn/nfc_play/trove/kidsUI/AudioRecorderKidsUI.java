@@ -12,7 +12,12 @@ import android.util.Log;
 import com.example.stucollyn.nfc_play.NFCRecord;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -28,14 +33,15 @@ public class AudioRecorderKidsUI extends Application {
     private MediaRecorder mRecorder = null;
 
     //File Save Variables
-    private static String audioFileName = null;
-    File story_directory;
+    private static String audioFileName = null, tagFileName = null;
+    File story_directory, tag_directory;
     private Context context;
-    File audioFile;
+    File audioFile, tagFile;
 
-    public AudioRecorderKidsUI(Context context, File story_directory) {
+    public AudioRecorderKidsUI(Context context, File story_directory, File tag_directory) {
             this.context=context;
             this.story_directory = story_directory;
+            this.tag_directory = tag_directory;
 
     }
 
@@ -82,12 +88,9 @@ public class AudioRecorderKidsUI extends Application {
         try {
 
             audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
-
-//            Log.i("Files on Tag (Z)", storageDir.toString());
-
-
+            tagFile = File.createTempFile(imageFileName, ".mp3", tag_directory);
             audioFileName = audioFile.getAbsolutePath();
-
+            tagFileName = tagFile.getAbsolutePath();
         }
 
         catch (IOException e) {
@@ -95,6 +98,33 @@ public class AudioRecorderKidsUI extends Application {
             Log.i("Error", "Audio file creation failed");
         }
 
+    }
+
+    public static void copyFileToTag(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        }
+
+        finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
     }
 
     public File getAudioFile() {
@@ -122,6 +152,14 @@ public class AudioRecorderKidsUI extends Application {
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
+
+        try {
+
+            copyFileToTag(audioFile, tagFile);
+        }
+        catch (IOException e) {
+
+        }
     }
 
     protected void DiscardAudio() {
@@ -133,6 +171,11 @@ public class AudioRecorderKidsUI extends Application {
     protected String getAudioFileName() {
 
         return audioFileName;
+    }
+
+    protected String getTagFileName() {
+
+        return tagFileName;
     }
 
 

@@ -105,6 +105,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     File image, video;
     Uri videoURI, photoUri;
     File story_directory;
+    File tag_directory;
     String story_directory_path;
     Uri story_directory_uri;
     String tag_data = null;
@@ -312,6 +313,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         if(newStoryReady) {
             boolean success = nfcInteraction.doWrite(mytag, tag_data);
 
+//            for(int i=0; i<)
+
+
             if(success) {
 
                 CancelStoryArchiveHandlerTimer();
@@ -327,13 +331,16 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Setup new storage folder
     private void SetupStoryLocation() {
 
-        String packageLocation = ("/Stories");
+        String LocalStoryFolder = ("/Stories");
+        String TagFolder = ("/Tag");
         String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
         String name = UUID.randomUUID().toString();
 
         tag_data = name;
-        String newDirectory = packageLocation + "/" + name;
+        String newDirectory = LocalStoryFolder + "/" + name;
+        String newDirectory2 = TagFolder + "/" + name;
         story_directory = getExternalFilesDir(newDirectory);
+        tag_directory = getExternalFilesDir(newDirectory2);
     }
 
     void StoryReset() {
@@ -351,7 +358,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         //Request permission to record audio (required for some newer Android devices)
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         try {
-            audioRecorder = new AudioRecorderKidsUI(this, story_directory);
+            audioRecorder = new AudioRecorderKidsUI(this, story_directory, tag_directory);
             audioRecorder.startRecording();
         } catch (IOException ex) {
             // Error occurred while creating the File
@@ -468,7 +475,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         try {
             Log.i("Tag", "This far A");
 
-            cameraRecorder = new CameraRecorder(this, this, story_directory, mCamera, mPreview);
+            cameraRecorder = new CameraRecorder(this, this, story_directory, tag_directory, mCamera, mPreview);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
@@ -524,6 +531,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
+                cameraRecorder.copyFileToTag(pictureFile, cameraRecorder.getTagFile());
             } catch (FileNotFoundException e) {
                 Log.d("Tag", "File not found: " + e.getMessage());
             } catch (IOException e) {

@@ -30,9 +30,11 @@ import android.widget.LinearLayout;
 import com.example.stucollyn.nfc_play.R;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -46,7 +48,7 @@ import static com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsU
 class CameraRecorder extends Application {
 
     //File Save Variables
-    File story_directory, image;
+    File story_directory, tag_directory, image, tagFile;
     private Context context;
     String videoPath, photoPath;
     Activity activity;
@@ -64,9 +66,10 @@ class CameraRecorder extends Application {
 
 
 
-    public CameraRecorder(Activity activity, Context context, File story_directory, Camera mCamera, CameraPreview mPreview) {
+    public CameraRecorder(Activity activity, Context context, File story_directory, File tag_directory, Camera mCamera, CameraPreview mPreview) {
         this.context = context;
         this.story_directory = story_directory;
+        this.tag_directory = tag_directory;
         this.activity = activity;
         this.mCamera = mCamera;
         this.mPreview = mPreview;
@@ -119,45 +122,19 @@ class CameraRecorder extends Application {
                     imageFileName + ".jpg");
             photoPath = mediaFile.getAbsolutePath();
 
+            tagFile = new File(tag_directory.getPath() + File.separator +
+                    imageFileName + ".jpg");
+
         } else {
             return null;
         }
 
         return mediaFile;
+    }
 
+    File getTagFile(){
 
-        /*
-
-        try {
-
-
-            UUID storyName = UUID.randomUUID();
-            String imageFileName = storyName.toString();
-            File storageDir;
-
-            if (Build.VERSION.SDK_INT >= 19) {
-                //storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-                storageDir = story_directory;
-            } else {
-                //storageDir = getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
-                storageDir = story_directory;
-            }
-
-            File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
-            // Save a file: path for use with ACTION_VIEW intents
-            photoPath = image.getAbsolutePath();
-
-        }
-
-        catch (IOException e) {
-
-        }
-
-        return image;
-
-        */
-
+        return tagFile;
     }
 
 
@@ -211,6 +188,7 @@ class CameraRecorder extends Application {
         }
 
         image = File.createTempFile(imageFileName, ".jpg", storageDir);
+//        tagImage = File.createTempFile(imageFileName, ".jpg", storageDir, tag_directory);
 
         // Save a file: path for use with ACTION_VIEW intents
         photoPath = image.getAbsolutePath();
@@ -271,21 +249,31 @@ class CameraRecorder extends Application {
         }
     }
 
-    void fullScreenPicture() {
-          /* if(!fullSizedPicture) {
-            Bitmap fullSizedBitmap = BitmapFactory.decodeFile(photoPath);
-            Matrix matrix = new Matrix();
-            matrix.postRotate(90);
-            adjustedFullSizedBitmap = Bitmap.createBitmap(fullSizedBitmap, 0, 0, fullSizedBitmap.getWidth(), fullSizedBitmap.getHeight(), matrix, true);
+    public void copyFileToTag(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
+
+        if (!destFile.exists()) {
+            destFile.createNewFile();
         }
 
-        fullSizedPicture = !fullSizedPicture;
-        picture_story_fragment.ShowFullSizedPicture(fullSizedPicture, adjustedFullSizedBitmap);
-        */
+        FileChannel source = null;
+        FileChannel destination = null;
 
-        //        Intent openFullSize = new Intent(Intent.ACTION_VIEW);
-//        openFullSize.setDataAndType(Uri.fromFile(file), "image/");
-//        openFullSize.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        }
+
+        finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
     }
 
     Bitmap getAdjustedBitmap() {
