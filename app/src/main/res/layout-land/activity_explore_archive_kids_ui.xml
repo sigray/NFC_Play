@@ -48,7 +48,7 @@
         android:layout_marginTop="8dp"
         android:onClick="Back"
         android:src="@drawable/kids_ui_back_anim"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -70,5 +70,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
+        android:id="@+id/new_background"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/kids_ui_archive_shape_1"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
+        android:id="@+id/new_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:src="@drawable/add"
+        android:onClick="AddStory"
+        app:layout_constraintBottom_toBottomOf="@+id/new_background"
+        app:layout_constraintEnd_toEndOf="@+id/new_background"
+        app:layout_constraintStart_toStartOf="@+id/new_background"
+        app:layout_constraintTop_toTopOf="@+id/new_background"
+        app:svg_raw_resource="@raw/archive_shape_1" />
 
 </android.support.constraint.ConstraintLayout>

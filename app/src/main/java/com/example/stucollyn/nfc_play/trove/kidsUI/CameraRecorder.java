@@ -48,7 +48,7 @@ import static com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsU
 class CameraRecorder extends Application {
 
     //File Save Variables
-    File story_directory, tag_directory, image, tagFile;
+    File story_directory, tag_directory = null, cover_directory = null, image, tagFile, coverFile;
     private Context context;
     String videoPath, photoPath;
     Activity activity;
@@ -66,10 +66,11 @@ class CameraRecorder extends Application {
 
 
 
-    public CameraRecorder(Activity activity, Context context, File story_directory, File tag_directory, Camera mCamera, CameraPreview mPreview) {
+    public CameraRecorder(Activity activity, Context context, File story_directory, File tag_directory, File cover_directory, Camera mCamera, CameraPreview mPreview) {
         this.context = context;
         this.story_directory = story_directory;
         this.tag_directory = tag_directory;
+        this.cover_directory = cover_directory;
         this.activity = activity;
         this.mCamera = mCamera;
         this.mPreview = mPreview;
@@ -79,8 +80,6 @@ class CameraRecorder extends Application {
         camera_linear = (LinearLayout) activity.findViewById(R.id.camera_linear);
         fadein = AnimationUtils.loadAnimation(context, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(context, R.anim.fadeout);
-
-        Log.i("Test", "This far D");
     }
 
 
@@ -122,8 +121,17 @@ class CameraRecorder extends Application {
                     imageFileName + ".jpg");
             photoPath = mediaFile.getAbsolutePath();
 
-            tagFile = new File(tag_directory.getPath() + File.separator +
-                    imageFileName + ".jpg");
+            if(tag_directory!=null) {
+                Log.i("Cool", "t directory empty" + ": " + tag_directory.toString());
+                tagFile = new File(tag_directory.getPath() + File.separator +
+                        imageFileName + ".jpg");
+            }
+
+            if(cover_directory!=null) {
+                Log.i("Cool", "c directory empty" + ": " + cover_directory.toString());
+                coverFile = new File(cover_directory.getPath() + File.separator +
+                        imageFileName + ".jpg");
+            }
 
         } else {
             return null;
@@ -135,6 +143,11 @@ class CameraRecorder extends Application {
     File getTagFile(){
 
         return tagFile;
+    }
+
+    File getCoverFile(){
+
+        return coverFile;
     }
 
 
@@ -192,7 +205,6 @@ class CameraRecorder extends Application {
 
         // Save a file: path for use with ACTION_VIEW intents
         photoPath = image.getAbsolutePath();
-        Log.i("File Name", "1" + photoPath);
         return image;
     }
 
@@ -249,7 +261,10 @@ class CameraRecorder extends Application {
         }
     }
 
-    public void copyFileToTag(File sourceFile, File destFile) throws IOException {
+    public void copyFile(File sourceFile, File destFile) throws IOException {
+
+        Log.i("UMMM", "t directory" + ": " + destFile.toString());
+
         if (!destFile.getParentFile().exists())
             destFile.getParentFile().mkdirs();
 

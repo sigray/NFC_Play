@@ -125,7 +125,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
             }
         });
 
-        if(shapeResourceCounter<3) {
+        if(shapeResourceCounter<2) {
             shapeResourceCounter++;
         }
 

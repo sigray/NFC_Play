@@ -159,7 +159,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
         if(previousActivity.equals("WelcomeScreenKidsUI")) {
 
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null);
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null, "LoginKidsUI");
         }
 
         else {
@@ -469,7 +469,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 //        LoginKidsUI.this.startActivity(intent);
 //        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null, "LoginKidsUI");
 
         Transition explode = new Explode();
 

@@ -7,19 +7,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v17.leanback.widget.HorizontalGridView;
 import android.support.v4.content.FileProvider;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.stucollyn.nfc_play.R;
@@ -62,6 +68,9 @@ public class ExploreArchiveItem extends AppCompatActivity {
     Context context;
     boolean authenticated;
     File story_directory;
+    ImageView back;
+    AnimatedVectorDrawable backRetrace, backBegin;
+    Handler animationBackHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +87,40 @@ public class ExploreArchiveItem extends AppCompatActivity {
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         fileMap = new LinkedHashMap<String, File>();
 
+        AnimationSetup();
         LoadFiles();
+    }
+
+    //Animation Setup
+    void AnimationSetup() {
+
+        back = (ImageView) findViewById(R.id.back);
+        backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+
+        animationBackHandler = new Handler();
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                back.setVisibility(View.VISIBLE);
+                Drawable d = back.getDrawable();
+                final AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
+                zigzaganim.start();
+            }
+        }, 2000);
+
+        animationBackHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+                d = DrawableCompat.wrap(d);
+                DrawableCompat.setTint(d, Color.WHITE);
+                back.setImageDrawable(d);
+
+            }
+        }, 3000);
     }
 
     File setupStoryDirectory(String ObjectName) {
@@ -220,9 +262,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
     void LoadLocalFiles(){
 
-        Log.i("objectFiles: ", objectFiles.toString());
-        Log.i("objectFiles Size: ", String.valueOf(objectFiles.size()));
-
         for(int i=0; i<objectFiles.size(); i++) {
 
             String path = objectFiles.get(i).getStoryRef();
@@ -330,6 +369,17 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void Back(View view) {
 
         onBackPressed();
+    }
+
+    public void AddStory(View view) {
+
+        Intent intent = new Intent(ExploreArchiveItem.this, ObjectAddStoryKidsUI.class);
+        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        intent.putExtra("ObjectStoryRecord", objectRecordMap);
+        intent.putExtra("ObjectName", objectName);
+        intent.putExtra("Authenticated", authenticated);
+        ExploreArchiveItem.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
     @Override

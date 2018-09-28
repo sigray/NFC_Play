@@ -88,9 +88,12 @@ public class AudioRecorderKidsUI extends Application {
         try {
 
             audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
-            tagFile = File.createTempFile(imageFileName, ".mp3", tag_directory);
             audioFileName = audioFile.getAbsolutePath();
-            tagFileName = tagFile.getAbsolutePath();
+
+            if(tagFile!=null) {
+                tagFile = File.createTempFile(imageFileName, ".mp3", tag_directory);
+                tagFileName = tagFile.getAbsolutePath();
+            }
         }
 
         catch (IOException e) {
@@ -155,7 +158,9 @@ public class AudioRecorderKidsUI extends Application {
 
         try {
 
-            copyFileToTag(audioFile, tagFile);
+            if(tagFile!=null) {
+                copyFileToTag(audioFile, tagFile);
+            }
         }
         catch (IOException e) {
 

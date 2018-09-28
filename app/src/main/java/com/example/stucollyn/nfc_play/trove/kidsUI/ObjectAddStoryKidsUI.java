@@ -7,15 +7,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -23,7 +24,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,17 +46,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
+import java.util.HashMap;
 import java.util.UUID;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
-public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
+/**
+ * Created by StuCollyn on 28/09/2018.
+ */
 
-    ImageView recordButton, cameraButton, archive, back;
-//    AnimatedVectorDrawable d;
+public class ObjectAddStoryKidsUI extends AppCompatActivity {
+
+    ImageView recordButton, cameraButton, back;
+    //    AnimatedVectorDrawable d;
     //Request Code Variables
     //General Variables
     boolean record_button_on, video_record_button_on,
@@ -87,12 +91,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     File image, video;
     Uri videoURI, photoUri;
     File story_directory;
-    File tag_directory;
-    File cover_directory;
+    File tag_directory = null;
+    File cover_directory = null;
     String story_directory_path;
     Uri story_directory_uri;
     String tag_data = null;
-    NFCInteraction nfcInteraction;
+//    NFCInteraction nfcInteraction;
     Tag mytag;
     boolean newStoryReady = false;
     NfcAdapter adapter;
@@ -114,7 +118,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     FrameLayout preview;
     LinearLayout camera_linear;
     Animation fadein, fadeout;
-
+    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
+    String objectName;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -142,12 +147,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logged_in_write_home);
+        setContentView(R.layout.activity_add_story_to_object_kids_ui);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         recordButton = (ImageView) findViewById(R.id.record);
         cameraButton = (ImageView) findViewById(R.id.camera);
-        archive = (ImageView) findViewById(R.id.archive);
         back = (ImageView) findViewById(R.id.back);
         captureButton = (ImageButton) findViewById(R.id.button_capture);
         preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -155,25 +159,18 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectStoryRecord");
+        objectName = (String) getIntent().getExtras().get("ObjectName");
         mCamera = cameraRecorder.getCameraInstance();
         mPreview = new CameraPreview(getApplicationContext(), mCamera);
         preview.addView(mPreview);
         archiveStoryHandler = new Handler();
-        nfcInteraction = new NFCInteraction(this, this);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class, "ObjectAddStoryKidsUI");
+        SetupStoryLocation();
         AnimationSetup();
         recordButtonController();
-
-        adapter = NfcAdapter.getDefaultAdapter(this);
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] {
-                tagDetected
-        };
     }
-
 
     //Animation and Layout Setup
     void AnimationSetup() {
@@ -209,28 +206,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }, 3000);
     }
 
-    void slideOutViewAnimation(View view) {
-
-        int visibility = view.getVisibility();
-
-        if(visibility==View.VISIBLE){
-
-            view.startAnimation(slideout);
-            view.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    void slideInViewAnimation(View view) {
-
-        int visibility = view.getVisibility();
-
-        if(visibility==View.INVISIBLE){
-
-            view.startAnimation(slidein);
-            view.setVisibility(View.VISIBLE);
-        }
-    }
-
     void recordButtonController() {
 
 //        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, LoggedInReadHomeKidsUI.class);
@@ -264,6 +239,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
+                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
+                        onBackPressed();
                         break;
                 }
 
@@ -274,66 +251,19 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void paintViews() {
 
-
         int paintColour = android.graphics.Color.rgb(253, 195, 204);
         Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back_anim, null);
-            d = DrawableCompat.wrap(d);
-            DrawableCompat.setTint(d, paintColour);
-            back.setImageDrawable(d);
-        }
-
-
-
-    //Handle NFC Interactions
-
-            @Override
-    protected void onNewIntent(Intent intent){
-        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Object Found.", Toast.LENGTH_LONG ).show();
-        }
-
-        if(newStoryReady) {
-            boolean success = nfcInteraction.doWrite(mytag, tag_data);
-
-//            for(int i=0; i<)
-
-
-            if(success) {
-
-                CancelStoryArchiveHandlerTimer();
-                ReleaseCamera();
-                commentaryInstruction.setTagData(tag_data);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
-            }
-        }
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, paintColour);
+        back.setImageDrawable(d);
     }
 
     //Setup new storage folder
     private void SetupStoryLocation() {
 
-        String LocalStoryFolder = ("/Stories");
-        String TagFolder = ("/Tag");
-        String CoverFolder = ("/Covers");
-        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
-        String name = UUID.randomUUID().toString();
-
-        tag_data = name;
-        String newDirectory = LocalStoryFolder + "/" + name;
-        String newDirectory2 = TagFolder + "/" + name;
-        String newDirectory3 = CoverFolder + "/" + name;
+        String LocalStoryFolder = ("/Stories/");
+        String newDirectory = LocalStoryFolder + "/" + objectName;
         story_directory = getExternalFilesDir(newDirectory);
-        tag_directory = getExternalFilesDir(newDirectory2);
-        cover_directory = getExternalFilesDir(newDirectory3);
-    }
-
-    void StoryReset() {
-
-        //Delete Any Previous Recordings
-
-
-        //Remove Previous Audio Commentary Callbacks
-        CancelStoryArchiveHandlerTimer();
     }
 
     //Recording Audio Management
@@ -342,7 +272,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         //Request permission to record audio (required for some newer Android devices)
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         try {
-            audioRecorder = new AudioRecorderKidsUI(this, story_directory, tag_directory);
+            audioRecorder = new AudioRecorderKidsUI(this, story_directory, null);
             audioRecorder.startRecording();
         } catch (IOException ex) {
             // Error occurred while creating the File
@@ -385,15 +315,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             if (!recordingStatus) {
 
-                StoryReset();
-                SetupStoryLocation();
-                slideOutViewAnimation(archive);
                 recordButton.setImageDrawable(recordButtonAnim);
                 recordAudio(view);
                 Log.i("Tag", "Starting Recording");
             } else {
                 Log.i("Tag", "Stopping Recording");
-                slideInViewAnimation(cameraButton);
                 audioRecorder.stopRecording();
                 animationHandler.removeCallbacks(RecordButtonRunnable);
                 recordButton.setImageDrawable(recordButtonNonAnim);
@@ -409,35 +335,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
-
-    //Archive Communication
-    public void Archive(View view) {
-
-        ReleaseCamera();
-        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
-        intent.putExtra("Authenticated", authenticated);
-        LoggedInWriteHomeKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-    }
-
-    void NewStoryArchiveHandlerTimer() {
-
-        archiveStoryHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.i("Annoying Handler", "Ach");
-                commentaryInstruction.setInputHandler(archiveStoryHandler);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveKidsUI.class, "LoggedInWriteHomeKidsUI");
-            }
-        }, 120000);
-    }
-
-    void CancelStoryArchiveHandlerTimer() {
-
-        archiveStoryHandler.removeCallbacksAndMessages(null);
-    }
-
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             // this device has a camera
@@ -451,10 +348,10 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Camera Management
     public void Camera(View view) {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_DENIED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
-            }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
+        }
 
         try {
             Log.i("Tag", "This far A");
@@ -490,7 +387,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         catch (NullPointerException e) {
 
-            }
+        }
     }
 
 
@@ -515,8 +412,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
                 fos.close();
-                cameraRecorder.copyFile(pictureFile, cameraRecorder.getTagFile());
-                cameraRecorder.copyFile(pictureFile, cameraRecorder.getCoverFile());
             } catch (FileNotFoundException e) {
                 Log.d("Tag", "File not found: " + e.getMessage());
             } catch (IOException e) {
@@ -525,17 +420,17 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             ResetCamera();
 //            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
-            newStoryReady = true;
-            NewStoryArchiveHandlerTimer();
-            slideOutViewAnimation(cameraButton);
-            slideInViewAnimation(archive);
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.tagnfc), false, null, "LoggedInWriteHomeKidsUI");
             UUID objectUUID = UUID.randomUUID();
 
             if(authenticated) {
                 SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
-                saveToCloud.CloudSaveNewObject();
+                saveToCloud.CloudSaveNewStory();
             }
+
+            ReleaseCamera();
+            commentaryInstruction.setTagData(tag_data);
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
+            onBackPressed();
         }
     };
 
@@ -582,8 +477,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         protected void onPostExecute(Void result) {
 
-            newStoryReady = true;
-            NewStoryArchiveHandlerTimer();
         }
     }
 
@@ -594,13 +487,13 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onPause(){
         super.onPause();
-        nfcInteraction.WriteModeOff(adapter);
+//        nfcInteraction.WriteModeOff(adapter);
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
+//        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
     }
 
     public void Back(View view) {
@@ -618,7 +511,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     public void onBackPressed() {
 
         ResetCamera();
-        CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
@@ -628,160 +520,15 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             @Override
             public void run() {
                 ReleaseCamera();
-                Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
-                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                Intent intent = new Intent(ObjectAddStoryKidsUI.this, ExploreArchiveItem.class);
+                intent.putExtra("ObjectName", objectName);
+                intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);
-                intent.putExtra("NewStory", false);
-                LoggedInWriteHomeKidsUI.this.startActivity(intent);
+                ObjectAddStoryKidsUI.this.startActivity(intent);
+                ObjectAddStoryKidsUI.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         }, 1000);
 
     }
 }
-
-
-//
-//
-//    void AttachToNFCInstruction() {
-//
-//        Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app);
-//        onPlay(audioFileUri);
-//    }
-//
-//    /*When audio playback buttons are selected for first time, setup new audio media player. When
-//    user interacts with playback buttons after audio media player has already been setup, toggle
-//    between media player pause and play*/
-//    public void onPlay(Uri audioFileUri) {
-//
-//        setupAudioMediaPlayer(audioFileUri);
-//        if (!playbackStatus) {
-//            startPlaying();
-//            playbackStatus = true;
-//        }
-//    }
-//
-//    //Setup new audio media player drawing from audio file location
-//    protected void setupAudioMediaPlayer(Uri audioFileUri) {
-//        Log.i("audio file", audioFileName);
-//
-//        try {
-//            mPlayer.setDataSource(this, audioFileUri);
-//            mPlayer.prepare();
-//            mPlayerSetup = true;
-//        } catch (IOException e) {
-//            Log.e("Error", "prepare() failed");
-//        }
-//    }
-//
-//    //Start audio media player and start listening for stop imageView to be pressed
-//    public void startPlaying() {
-//        mPlayer.start();
-//        mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            public void onCompletion(MediaPlayer mp) {
-//
-//                mPlayer.stop();
-//                mPlayer.reset();
-//                playbackStatus = false;
-//            }
-//        });
-//    }
-//
-//
-
-/*
-            new Thread(new Runnable() {
-                public void run() {
-                    while (recordButton != null) {
-                        try {
-                            recordButton.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    recordButtonAnim.start();
-                                }
-                            });
-                            Thread.sleep(500);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-
-
-
-
-
-
-
-
-
-
-
-    public void CompletePictureRecording(View view) {
-
-        pictureFileName = photoPath;
-//        recordedMediaHashMap.put("Picture", pictureFileName);
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Picture Processing
-        if (requestCode == 100) {
-            if (resultCode == RESULT_OK) {
-
-                new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
-                slideOutViewAnimation(cameraButton);
-                slideInViewAnimation(archive);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
-                UUID objectUUID = UUID.randomUUID();
-
-                if(authenticated) {
-                    SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
-                    saveToCloud.CloudSaveNewObject();
-                }
-            }
-        }
-
-        if (requestCode == 200) {
-            if (resultCode == RESULT_OK) {
-
-//                new LoggedInWriteHomeKidsUI.ProcessVideo().execute();
-
-            }
-        }
-    }
-
-
-   /*
-            new Thread(new Runnable() {
-                public void run() {
-                    while (!cameraRecorder.getPictureSave()) {
-                        try {
-                            Thread.sleep(200);
-                            Log.i("Woo", "Checking");
-                        } catch (InterruptedException ignored) {
-                        }
-                    }
-
-                    Log.i("Woo", "Let's Party");
-                    Thread.interrupted();
-                    new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
-                    slideOutViewAnimation(cameraButton);
-                    slideInViewAnimation(archive);
-                    commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
-                    UUID objectUUID = UUID.randomUUID();
-
-                    if(authenticated) {
-                        SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
-                        saveToCloud.CloudSaveNewObject();
-                    }
-                    //do something
-                }
-            }).start();
-
-            */

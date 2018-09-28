@@ -56,7 +56,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     LinkedHashMap<String, ArrayList<File>> folderFiles;
     HashMap<File, File> folderImages;
     HashMap<File, Bitmap> imageFiles;
-    File[] files;
+    File[] files, coverFiles;
     ImageAdapterKidsUI imageAdapter;
     CloudImageAdapterKidsUI cloudImageAdapter;
     HorizontalGridView gridview;
@@ -228,9 +228,12 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     void LocalSetup() {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
-        File directory = new File(path);
+        String StoryFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
+        String CoverFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/";
+        File directory = new File(StoryFilesPath);
+        File coverDirectory = new File(CoverFilesPath);
         files = directory.listFiles();
+        coverFiles = coverDirectory.listFiles();
     }
 
     void queryFireStoreDatabase() {
@@ -388,7 +391,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
             }
     }
 
-    void setupListsLocal(File[] files) {
+    void setupListsLocal(File[] files, File[] coverFiles) {
 
         objectRecordMap = new LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>();
 
@@ -406,7 +409,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                     if (extension.equalsIgnoreCase("jpg")&&!setCoverImage) {
 
-                        CoverImage = "yes";
+//                        CoverImage = "yes";
                         FileType = "PictureFile";
                     }
 
@@ -433,13 +436,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
                     objectStoryRecordObjectList.add(objectStoryRecord);
                     objectRecordMap.put(files[i].getName(), objectStoryRecordObjectList);
                 }
-
-                if(CoverImage.equals("yes")) {
-
-                    getCoverImageLocal(files[i].getName(), subFiles[j]);
-                }
-
             }
+        }
+
+        for (int i = 0; i < coverFiles.length; i++) {
+
+            File thumbnailsFile = Thumbnail(coverFiles[i]);
+            getCoverImageLocal(coverFiles[i].getName(), thumbnailsFile);
+            Log.i("Cover Files Name: ", coverFiles[i].getName() + " , File: " + coverFiles[i]);
+            Log.i("Cover Image Map: ", coverImageMap.toString());
         }
     }
 
@@ -514,6 +519,16 @@ public class ArchiveKidsUI extends AppCompatActivity {
         File[] files = directory.listFiles();
 
         return files;
+    }
+
+    File Thumbnail(File file) {
+
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/"+file.getName();
+        File directory = new File(path);
+        File[] covers = directory.listFiles();
+        File thumbnail = covers[0];
+
+        return thumbnail;
     }
 
     File GetPicture(File[] files) {
@@ -634,7 +649,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             boolean authenticated = params[0];
 
-            setupListsLocal(files);
+            setupListsLocal(files, coverFiles);
 
             CloudThumbnailColours();
 

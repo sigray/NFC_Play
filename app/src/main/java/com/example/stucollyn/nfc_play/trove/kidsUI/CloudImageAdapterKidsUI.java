@@ -103,7 +103,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         });
 
 
-        if(shapeResourceCounter<3) {
+        if(shapeResourceCounter<2) {
             shapeResourceCounter++;
         }
 
@@ -123,6 +123,8 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     }
 
     public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated) {
+
+        Log.i("Image Map Blaaah:", imageMap.toString());
 
         this.storyGallery = storyGallery;
         mContext = c;

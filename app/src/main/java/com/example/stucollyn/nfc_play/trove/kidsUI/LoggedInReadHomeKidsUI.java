@@ -155,7 +155,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         if(previousActivity.equals("LoginKidsUI")) {
 
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
-            commentaryInstruction.onPlay(audioFileUri, false, null);
+            commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
 
         else if(previousActivity.equals("LoggedInWriteHomeKidsUI")) {
@@ -197,7 +197,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         try {
             if (mytag == null) {
 
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null);
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "LoggedInReadHomeKidsUI");
                 Toast.makeText(this, "This tag is empty.", Toast.LENGTH_LONG ).show();
             }
 
@@ -382,7 +382,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

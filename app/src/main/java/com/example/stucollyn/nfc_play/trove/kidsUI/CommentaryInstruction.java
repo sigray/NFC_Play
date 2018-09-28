@@ -28,6 +28,7 @@ public class CommentaryInstruction {
     boolean authenticated = false;
     Handler inputHandler;
     String tag_data;
+    String currentActivityName;
 
     float volume = 0;
 
@@ -44,12 +45,12 @@ public class CommentaryInstruction {
     /*When audio playback buttons are selected for first time, setup new audio media player. When
     user interacts with playback buttons after audio media player has already been setup, toggle
     between media player pause and play*/
-    public void onPlay(Uri audioFileUri, final boolean onCompleteChangeActivitiy, final Class activityName) {
+    public void onPlay(Uri audioFileUri, final boolean onCompleteChangeActivitiy, final Class targetActivityName, String currentActivityName) {
 
         volume = 1;
         setupAudioMediaPlayer(audioFileUri);
         if (!playbackStatus) {
-            startPlaying(onCompleteChangeActivitiy, activityName);
+            startPlaying(onCompleteChangeActivitiy, targetActivityName, currentActivityName);
             playbackStatus = true;
         }
     }
@@ -74,7 +75,7 @@ public class CommentaryInstruction {
     }
 
     //Start audio media player and start listening for stop imageView to be pressed
-    public void startPlaying(final boolean onCompleteChangeActivitiy, final Class activityName) {
+    public void startPlaying(final boolean onCompleteChangeActivitiy, final Class activityName, final String currentActivityName) {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {

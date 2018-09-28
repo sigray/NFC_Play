@@ -65,7 +65,38 @@ public class SaveToCloud {
     }
 
     //Save to cloud
-    void CloudSave() {
+    void CloudSaveNewStory() {
+
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+        File directory = new File(path);
+        File[] files = directory.listFiles();
+
+        for (int i = 0; i < files.length; i++) {
+
+            String extension = FilenameUtils.getExtension(files[i].toString());
+            String fileName = files[i].toString();
+            coverImage = "no";
+
+            if (extension.equalsIgnoreCase("jpg")) {
+
+                Log.i("Uploading Audio", files[i].toString());
+                fileType = "PictureFile";
+//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName(),".jpg");
+//                    files[i].renameTo(to);
+            }
+
+            else if (extension.equalsIgnoreCase("mp3")) {
+
+                Log.i("Uploading Audio", files[i].toString());
+                fileType = "AudioFile";
+            }
+
+            uploadToCloud(files[i], i);
+        }
+    }
+
+    //Save to cloud
+    void CloudSaveNewObject() {
 
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
         File directory = new File(path);
