@@ -26,8 +26,8 @@
 
     <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
         android:id="@+id/grid_item_kids_ui"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"

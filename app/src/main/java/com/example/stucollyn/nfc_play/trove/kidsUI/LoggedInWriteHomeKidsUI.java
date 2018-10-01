@@ -413,6 +413,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Archive Communication
     public void Archive(View view) {
 
+        archive.setClickable(false);
         ReleaseCamera();
         Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
@@ -603,20 +604,44 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
     }
 
-    public void Back(View view) {
-
-        onBackPressed();
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
     }
 
     public void onDestroy() {
 
         super.onDestroy();
+    }
 
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        authenticated = savedInstanceState.getBoolean("Authenticated");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putBoolean("Authenticated", authenticated);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    public void Back(View view) {
+
+        onBackPressed();
     }
 
     @Override
     public void onBackPressed() {
 
+        back.setClickable(false);
         ResetCamera();
         CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);

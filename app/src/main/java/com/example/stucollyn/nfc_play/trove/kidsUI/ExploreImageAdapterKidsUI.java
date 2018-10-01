@@ -88,7 +88,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     }
 
     @Override
-    public void onBindViewHolder(SimpleViewHolder holder, final int position) {
+    public void onBindViewHolder(final SimpleViewHolder holder, final int position) {
 
         int currentColour = colourCode[position];
 

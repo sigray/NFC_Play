@@ -71,7 +71,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     }
 
     @Override
-    public void onBindViewHolder(SimpleViewHolder holder, final int position) {
+    public void onBindViewHolder(final SimpleViewHolder holder, final int position) {
 
         int currentColour = colourCode[position];
 
@@ -92,6 +92,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
             @Override
             public void onClick(View view) {
 //                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
+                holder.imageView.setClickable(false);
                 Intent intent = new Intent(storyGallery.getApplicationContext(), ExploreArchiveItem.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("ObjectName", objectName.get(position));
@@ -123,8 +124,6 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     }
 
     public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated) {
-
-        Log.i("Image Map Blaaah:", imageMap.toString());
 
         this.storyGallery = storyGallery;
         mContext = c;

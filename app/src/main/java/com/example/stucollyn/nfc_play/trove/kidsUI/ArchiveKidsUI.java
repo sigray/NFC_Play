@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -84,6 +85,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_archive_kids_ui);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         context = this;
@@ -612,9 +614,58 @@ public class ArchiveKidsUI extends AppCompatActivity {
         onBackPressed();
     }
 
+    public void Home(View view) {
+
+        Intent intent = new Intent(ArchiveKidsUI.this, LoggedInReadHomeKidsUI.class);
+        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        ArchiveKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    //Activity Governance
+    @Override
+    public void onPause(){
+        super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
+    }
+
+    public void onDestroy() {
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        authenticated = savedInstanceState.getBoolean("Authenticated");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putBoolean("Authenticated", authenticated);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
     @Override
     public void onBackPressed() {
 
+        back.setClickable(false);
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
         backRetrace.start();

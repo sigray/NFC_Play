@@ -526,6 +526,30 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         }
     };
 
+    //Activity Governance
+
+    @Override
+    public void onPause(){
+        super.onPause();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
+    }
+
+    public void onDestroy() {
+
+        super.onDestroy();
+
+    }
+
     public void Back(View view) {
 
         onBackPressed();

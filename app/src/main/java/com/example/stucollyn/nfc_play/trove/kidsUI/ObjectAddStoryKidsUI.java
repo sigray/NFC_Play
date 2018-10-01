@@ -240,7 +240,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingManager(v);
                         recordButtonAnimationController();
                         commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
-                        onBackPressed();
+                        SaveNewStory();
                         break;
                 }
 
@@ -430,7 +430,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             ReleaseCamera();
             commentaryInstruction.setTagData(tag_data);
             commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
-            onBackPressed();
+            SaveNewStory();
         }
     };
 
@@ -480,10 +480,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         }
     }
 
-
-
     //Activity Governance
-
     @Override
     public void onPause(){
         super.onPause();
@@ -496,9 +493,10 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 //        nfcInteraction.WriteModeOn(adapter, pendingIntent, writeTagFilters);
     }
 
-    public void Back(View view) {
-
-        onBackPressed();
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
     }
 
     public void onDestroy() {
@@ -508,8 +506,72 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     }
 
     @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        authenticated = savedInstanceState.getBoolean("Authenticated");
+        objectName = savedInstanceState.getString("ObjectName");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) savedInstanceState.getSerializable("ObjectStoryRecord");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putBoolean("Authenticated", authenticated);
+        savedInstanceState.putString("ObjectName", objectName);
+        savedInstanceState.putSerializable("ObjectStoryRecord", objectRecordMap);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void Home(View view) {
+
+        back.setClickable(false);
+        ResetCamera();
+        animationBackHandler.removeCallbacksAndMessages(null);
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, LoggedInReadHomeKidsUI.class);
+        intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        ObjectAddStoryKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+    }
+
+    public void SaveNewStory() {
+
+        back.setClickable(false);
+        ResetCamera();
+        animationBackHandler.removeCallbacksAndMessages(null);
+        back.setImageDrawable(backRetrace);
+        backRetrace.start();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ReleaseCamera();
+                Intent intent = new Intent(ObjectAddStoryKidsUI.this, ArchiveKidsUI.class);
+                intent.putExtra("ObjectName", objectName);
+                intent.putExtra("ObjectStoryRecord", objectRecordMap);
+                intent.putExtra("Authenticated", authenticated);
+                ObjectAddStoryKidsUI.this.startActivity(intent);
+                ObjectAddStoryKidsUI.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+//                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+            }
+        }, 1000);
+
+    }
+
+    public void Back(View view) {
+
+        onBackPressed();
+    }
+
+    @Override
     public void onBackPressed() {
 
+        back.setClickable(false);
         ResetCamera();
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);

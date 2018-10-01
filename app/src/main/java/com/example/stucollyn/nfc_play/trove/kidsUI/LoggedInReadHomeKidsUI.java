@@ -54,6 +54,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     IntentFilter readTagFilters[];
     ShowStoryContent showStoryContent;
     CommentaryInstruction commentaryInstruction;
+    String previousActivity;
     boolean authenticated = false;
     boolean record_button_on, video_record_button_on, recordingStatus = false,
             playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
@@ -65,7 +66,6 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         setContentView(R.layout.activity_logged_in_read_home);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mRootView = (ViewGroup) findViewById(R.id.activity_logged_in_read_home);
-
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
 
         paintColourArray = new Integer[4];
@@ -136,7 +136,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         alpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce_infinite);
-        String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
+        previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         paintViews();
         animateViews();
@@ -239,18 +239,6 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             System.out.println("Fail 4");
         }
 
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        nfcInteraction.ReadModeOff(adapter);
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        nfcInteraction.ReadModeOn(adapter, pendingIntent, readTagFilters);
     }
 
     void paintViews() {
@@ -380,6 +368,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     @Override
     public void onBackPressed() {
 
+        back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
         commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
@@ -393,5 +382,43 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             }
         }, 1000);
 
+    }
+
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
+//        nfcInteraction.ReadModeOff(adapter);
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        nfcInteraction.ReadModeOff(adapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        nfcInteraction.ReadModeOn(adapter, pendingIntent, readTagFilters);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        authenticated = savedInstanceState.getBoolean("Authenticated");
+        previousActivity = savedInstanceState.getString("PreviousActivity");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putBoolean("Authenticated", authenticated);
+        savedInstanceState.putString("PreviousActivity", previousActivity);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 }
