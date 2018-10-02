@@ -159,7 +159,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         mPreview = new CameraPreview(getApplicationContext(), mCamera);
         preview.addView(mPreview);
         archiveStoryHandler = new Handler();
-        nfcInteraction = new NFCInteraction(this, this);
+        nfcInteraction = new NFCInteraction(this, this, authenticated);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
         commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
         AnimationSetup();
@@ -291,21 +291,28 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             Toast.makeText(this, "Object Found.", Toast.LENGTH_LONG ).show();
-        }
 
         if(newStoryReady) {
-            boolean success = nfcInteraction.doWrite(mytag, tag_data);
-
-//            for(int i=0; i<)
-
-
-            if(success) {
-
-                CancelStoryArchiveHandlerTimer();
-                ReleaseCamera();
-                commentaryInstruction.setTagData(tag_data);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+            Log.i("YES", "we made it");
+            CancelStoryArchiveHandlerTimer();
+            nfcInteraction.doWrite(mytag, tag_data);
             }
+        }
+
+        else {
+
+            Log.i("YES", "we made it 2");
+            CancelStoryArchiveHandlerTimer();
+//                ReleaseCamera();
+//                commentaryInstruction.setTagData(tag_data);
+//                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+            Intent returnToPlayback = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
+            intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+            intent.putExtra("Authenticated", authenticated);
+            intent.putExtra("NewStory", true);
+            intent.putExtra("StoryRef", tag_data);
+            LoggedInWriteHomeKidsUI.this.startActivity(intent);
+
         }
     }
 

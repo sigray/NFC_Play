@@ -11,13 +11,13 @@ import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class LoggedInReadHomeKidsUI extends FragmentActivity {
+public class HamburgerKidsUI extends FragmentActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
@@ -65,7 +65,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logged_in_read_home_plus);
+        setContentView(R.layout.activity_hamburger_kids_ui);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mRootView = (ViewGroup) findViewById(R.id.activity_logged_in_read_home);
 //        mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -74,9 +74,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
 
         paintColourArray = new Integer[4];
-        paintColourArray[0] = android.graphics.Color.rgb(255, 157, 0);
-        paintColourArray[1] = android.graphics.Color.rgb(253, 195, 204);
-        paintColourArray[2] = android.graphics.Color.rgb(0, 235, 205);
+        paintColourArray[0] = Color.rgb(255, 157, 0);
+        paintColourArray[1] = Color.rgb(253, 195, 204);
+        paintColourArray[2] = Color.rgb(0, 235, 205);
         paintColourArray[3] = Color.WHITE;
 
         backgroundShapes = (ImageView) findViewById(R.id.small_shapes);
@@ -145,7 +145,6 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         paintViews();
         animateViews();
-        Autoplay(previousActivity);
 
         nfcInteraction = new NFCInteraction(this, this, authenticated);
         adapter = NfcAdapter.getDefaultAdapter(this);
@@ -159,38 +158,11 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         trove.clearAnimation();
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(LoggedInReadHomeKidsUI.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(HamburgerKidsUI.this, LoggedInReadHomeKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
-        intent.putExtra("PreviousActivity", previousActivity);
-        LoggedInReadHomeKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
-    }
-
-    void Autoplay(String previousActivity){
-
-        if(previousActivity.equals("LoginKidsUI")) {
-
-            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
-            commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
-        }
-
-        else if(previousActivity.equals("LoggedInWriteHomeKidsUI")) {
-
-            boolean newStory = (Boolean) getIntent().getExtras().get("NewStory");
-
-            if(newStory) {
-
-                String storyRef = (String) getIntent().getExtras().get("StoryRef");
-                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/" + storyRef;
-                File directory = new File(path);
-                File[] filesOnTag = directory.listFiles();
-                PlayStory(filesOnTag);
-            }
-        }
-
-        else {
-
-        }
+        intent.putExtra("PreviousActivity", "HamburgerKidsUI");
+        HamburgerKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.right_to_left_slide_in_activity, R.anim.right_to_left_slide_out_activity);
     }
 
     void PlayStory(File[] filesOnTag) {
@@ -259,6 +231,12 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
     void paintViews() {
 
+        Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(key), null);
+        d = DrawableCompat.wrap(d);
+        DrawableCompat.setTint(d, paintColourArray[1]);
+        key.setImageDrawable(d);
+
+       /*
         for(int i=0; i<allViews.length; i++) {
 
             Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(allViews[i]), null);
@@ -323,9 +301,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         trove.clearAnimation();
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
+        Intent intent = new Intent(HamburgerKidsUI.this, LoggedInWriteHomeKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
-        LoggedInReadHomeKidsUI.this.startActivity(intent);
+        HamburgerKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 
 /*
@@ -387,14 +365,14 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, HamburgerKidsUI.class, "LoggedInReadHomeKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, WelcomeScreenKidsUI.class);
-                LoggedInReadHomeKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HamburgerKidsUI.this, WelcomeScreenKidsUI.class);
+                HamburgerKidsUI.this.startActivity(intent);
             }
         }, 1000);
 

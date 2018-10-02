@@ -36,7 +36,7 @@ public class AudioRecorderKidsUI extends Application {
     private static String audioFileName = null, tagFileName = null;
     File story_directory, tag_directory;
     private Context context;
-    File audioFile, tagFile;
+    File audioFile, tagFile = null;
 
     public AudioRecorderKidsUI(Context context, File story_directory, File tag_directory) {
             this.context=context;
@@ -64,7 +64,6 @@ public class AudioRecorderKidsUI extends Application {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions((NFCRecord) context, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-
         }
     }
 
@@ -90,7 +89,7 @@ public class AudioRecorderKidsUI extends Application {
             audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
             audioFileName = audioFile.getAbsolutePath();
 
-            if(tagFile!=null) {
+            if(tag_directory!=null) {
                 tagFile = File.createTempFile(imageFileName, ".mp3", tag_directory);
                 tagFileName = tagFile.getAbsolutePath();
             }

@@ -53,18 +53,19 @@ public class NFCInteraction {
     Activity activity;
     NdefMessage tagContents;
     File[] filesOnTag;
+    boolean authenticated = false;
 
-    public NFCInteraction(Context context, Activity activity) {
+    public NFCInteraction(Context context, Activity activity, boolean authenticated) {
 
         this.context = context;
         this.activity = activity;
+        this.authenticated = authenticated;
     }
 
     protected void onNewIntent(Intent intent){
         if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(context, "Tag Discovered", Toast.LENGTH_LONG ).show();
-            Log.i("Hello", "Found it 2");
+            Toast.makeText(context, "Object found.", Toast.LENGTH_LONG ).show();
         }
 
         if(tag_data!=null) {
@@ -163,8 +164,9 @@ public class NFCInteraction {
     }
 
 
-    public boolean doWrite(Tag mytag, String tag_data){
+    public void doWrite(Tag mytag, String tag_data){
 
+        Toast.makeText(context, "Saving story.", Toast.LENGTH_LONG ).show();
         this.mytag = mytag;
         this.tag_data = tag_data;
 
@@ -190,16 +192,20 @@ public class NFCInteraction {
 
         if(success) {
 
-            Toast.makeText(context, "NFC write successful", Toast.LENGTH_LONG ).show();
+            Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
             success = true;
+            Intent intent = new Intent(context, LoggedInReadHomeKidsUI.class);
+            intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+            intent.putExtra("Authenticated", authenticated);
+            intent.putExtra("NewStory", true);
+            intent.putExtra("StoryRef", tag_data);
+            context.startActivity(intent);
         }
 
         else {
 
 //            writeinstruction.setText("Error writing object. Please rescan.");
         }
-
-        return success;
     }
 
     void WriteModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter writeTagFilters[]){
