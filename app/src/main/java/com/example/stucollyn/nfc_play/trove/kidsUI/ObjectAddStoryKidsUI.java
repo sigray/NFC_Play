@@ -239,7 +239,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
+//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
                         SaveNewStory();
                         break;
                 }
@@ -418,7 +418,6 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                 Log.d("Tag", "Error accessing file: " + e.getMessage());
             }
 
-            ResetCamera();
 //            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
             UUID objectUUID = UUID.randomUUID();
 
@@ -427,24 +426,26 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                 saveToCloud.CloudSaveNewStory();
             }
 
-            ReleaseCamera();
-            commentaryInstruction.setTagData(tag_data);
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
+//            commentaryInstruction.setTagData(tag_data);
             SaveNewStory();
         }
     };
 
     void ResetCamera() {
 
-        mCamera.stopPreview();
-        captureButton.setImageResource(R.drawable.kids_ui_record_circle_mini);
-        mCamera.startPreview();
+        if(mCamera!=null) {
+            mCamera.stopPreview();
+            captureButton.setImageResource(R.drawable.kids_ui_record_circle_mini);
+            mCamera.startPreview();
+        }
     }
 
     void ReleaseCamera() {
 
-        mCamera.stopPreview();
-        mCamera.release();
+        if(mCamera!=null) {
+            mCamera.stopPreview();
+            mCamera.release();
+        }
     }
 
 
@@ -542,6 +543,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
         back.setClickable(false);
         ResetCamera();
+        ReleaseCamera();
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
@@ -550,7 +552,6 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ReleaseCamera();
                 Intent intent = new Intent(ObjectAddStoryKidsUI.this, ArchiveKidsUI.class);
                 intent.putExtra("ObjectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);

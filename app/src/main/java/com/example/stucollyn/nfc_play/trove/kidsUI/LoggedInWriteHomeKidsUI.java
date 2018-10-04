@@ -42,6 +42,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -303,7 +305,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             Log.i("YES", "we made it 2");
             CancelStoryArchiveHandlerTimer();
-//                ReleaseCamera();
+            ReleaseCamera();
 //                commentaryInstruction.setTagData(tag_data);
 //                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
             Intent returnToPlayback = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
@@ -319,6 +321,19 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Setup new storage folder
     private void SetupStoryLocation() {
 
+        if(story_directory!=null&&!newStoryReady) {
+            deleteStoryDirectory();
+        }
+
+        if(tag_directory!=null&&!newStoryReady) {
+            deleteTagDirectory();
+        }
+
+        if(cover_directory!=null&&!newStoryReady) {
+            deleteCoverDirectory();
+        }
+
+        newStoryReady = false;
         String LocalStoryFolder = ("/Stories");
         String TagFolder = ("/Tag");
         String CoverFolder = ("/Covers");
@@ -337,7 +352,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     void StoryReset() {
 
         //Delete Any Previous Recordings
-
 
         //Remove Previous Audio Commentary Callbacks
         CancelStoryArchiveHandlerTimer();
@@ -370,11 +384,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
                 if(currentlyRecording) {
                     animationHandler.postDelayed(this, 1000);
-                    Log.i("Tag", "I'm a barbie girl");
                 }
 
                 else {
-                    Log.i("Tag", "In a barbie world");
                     animationHandler.removeCallbacks(RecordButtonRunnable);
                     recordButton.setImageDrawable(recordButtonNonAnim);
                 }
@@ -397,14 +409,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 slideOutViewAnimation(archive);
                 recordButton.setImageDrawable(recordButtonAnim);
                 recordAudio(view);
-                Log.i("Tag", "Starting Recording");
             } else {
-                Log.i("Tag", "Stopping Recording");
                 slideInViewAnimation(cameraButton);
                 audioRecorder.stopRecording();
                 animationHandler.removeCallbacks(RecordButtonRunnable);
                 recordButton.setImageDrawable(recordButtonNonAnim);
-                newStoryReady = true;
             }
 
             recordingStatus = !recordingStatus;
@@ -434,9 +443,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             @Override
             public void run() {
 
-                Log.i("Annoying Handler", "Ach");
-                commentaryInstruction.setInputHandler(archiveStoryHandler);
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveKidsUI.class, "LoggedInWriteHomeKidsUI");
+//                Log.i("Annoying Handler", "Ach");
+//                commentaryInstruction.setInputHandler(archiveStoryHandler);
+//                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveKidsUI.class, "LoggedInWriteHomeKidsUI");
             }
         }, 120000);
     }
@@ -465,16 +474,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             }
 
         try {
-            Log.i("Tag", "This far A");
-
             cameraRecorder = new CameraRecorder(this, this, story_directory, tag_directory, cover_directory, mCamera, mPreview);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     // Do something after 5s = 5000ms
-                    Log.i("Tag", "This far C");
-
                     camera_linear.startAnimation(fadein);
                     captureButton.startAnimation(fadein);
                     preview.startAnimation(fadein);
@@ -549,15 +554,61 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void ResetCamera() {
 
-        mCamera.stopPreview();
-        captureButton.setImageResource(R.drawable.kids_ui_record_circle_mini);
-        mCamera.startPreview();
+        if(mCamera!=null) {
+            mCamera.stopPreview();
+            captureButton.setImageResource(R.drawable.kids_ui_record_circle_mini);
+            mCamera.startPreview();
+        }
     }
 
     void ReleaseCamera() {
 
-        mCamera.stopPreview();
-        mCamera.release();
+        if(mCamera!=null) {
+            mCamera.stopPreview();
+            mCamera.release();
+        }
+    }
+
+    void deleteStoryDirectory() {
+
+        try {
+
+            Log.i("Deleting StoryDirectory", story_directory.toString());
+            FileUtils.deleteDirectory(story_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+    }
+
+    void deleteTagDirectory() {
+
+        try {
+
+            Log.i("Deleting Tag Directory", tag_directory.toString());
+            FileUtils.deleteDirectory(tag_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+    }
+
+    void deleteCoverDirectory() {
+
+        try {
+
+            Log.i("Deleting Covr Directory", cover_directory.toString());
+            FileUtils.deleteDirectory(cover_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
     }
 
 

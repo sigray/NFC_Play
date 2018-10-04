@@ -60,7 +60,7 @@ public class CommentaryInstruction {
 
         try {
 
-            if(mPlayer.isPlaying()) {
+            if(mPlayer!=null) {
                 mPlayer.stop();
                 mPlayer.reset();
                 playbackStatus = false;

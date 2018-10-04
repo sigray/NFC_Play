@@ -129,6 +129,7 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
+
     public File getAudioFile() {
 
         return audioFile;

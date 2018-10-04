@@ -443,6 +443,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         for (int i = 0; i < coverFiles.length; i++) {
 
+            //For the number of files in the Cover folder, return each file in turn and add it to
             File thumbnailsFile = Thumbnail(coverFiles[i]);
             getCoverImageLocal(coverFiles[i].getName(), thumbnailsFile);
             Log.i("Cover Files Name: ", coverFiles[i].getName() + " , File: " + coverFiles[i]);
@@ -454,8 +455,11 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             final String theObjectName = ObjectName;
             Bitmap adjustedBitmap = ShowPicture(file);
+
+        if (objectRecordMap.containsKey(ObjectName)) {
             coverImageMap.put(theObjectName, adjustedBitmap);
             CloudThumbnailColours();
+        }
     }
 
     /*
