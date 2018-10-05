@@ -37,6 +37,8 @@ public class ShowStoryContent {
     Activity activity;
     ShowStoryContentDialog newFragment;
     File[] filesOnTag;
+    FragmentManager ft;
+
 
     public ShowStoryContent(MediaPlayer mPlayer, Context context, Activity activity, File[] filesOnTag) {
 
@@ -44,6 +46,7 @@ public class ShowStoryContent {
         this.context = context;
         this.activity = activity;
         this.filesOnTag = filesOnTag;
+        ft = ((FragmentActivity)activity).getSupportFragmentManager();
     }
 
     void checkFilesOnArchive(){
@@ -123,11 +126,24 @@ public class ShowStoryContent {
         }
     }
 
+    ShowStoryContentDialog returnDialog() {
 
-    public void showStoryContentDialog(File imageFile) {
+        return newFragment;
+    }
+
+    void closeOpenFragments(ShowStoryContentDialog currentFragment) {
+
+        if(currentFragment!=null) {
+
+
+            currentFragment.dismiss();
+        }
+    }
+
+    void showStoryContentDialog(File imageFile) {
         // Create an instance of the dialog fragment and show it
         Bundle bundle = new Bundle();
-        FragmentManager ft = ((FragmentActivity)activity).getSupportFragmentManager();
+        ft = ((FragmentActivity)activity).getSupportFragmentManager();
         newFragment = new ShowStoryContentDialog();
         bundle.putSerializable("ImageFile", imageFile);
         newFragment.setArguments(bundle);

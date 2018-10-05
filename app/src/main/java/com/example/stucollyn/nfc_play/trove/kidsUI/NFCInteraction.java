@@ -44,9 +44,8 @@ public class NFCInteraction {
     String colour;
     TextView instruction;
     static String display;
-    boolean success = true;
     Tag mytag;
-   // File fileDirectory;
+    // File fileDirectory;
     String tag_data = "";
     int mode;
     Context context;
@@ -62,13 +61,13 @@ public class NFCInteraction {
         this.authenticated = authenticated;
     }
 
-    protected void onNewIntent(Intent intent){
-        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+    protected void onNewIntent(Intent intent) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(context, "Object found.", Toast.LENGTH_LONG ).show();
+            Toast.makeText(context, "Object found.", Toast.LENGTH_LONG).show();
         }
 
-        if(tag_data!=null) {
+        if (tag_data != null) {
             doWrite(mytag, tag_data);
         }
     }
@@ -90,8 +89,7 @@ public class NFCInteraction {
 
         byte[] mesg = null;
         String[] recTypes = new String[len];     // will contain the NDEF record types
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             recTypes[i] = new String(ndefRecords[i].getType());
             mesg = ndefRecords[i].getPayload();
             s = new String(mesg);
@@ -109,19 +107,18 @@ public class NFCInteraction {
         ndef.close();
 
 //        String path = packageName.toString()+"/files";
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/"+s;
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/" + s;
         Log.i("NFC_Tag_Files_Path", path);
         File directory = new File(path);
         File[] files = directory.listFiles();
-        for (int i = 0; i < files.length; i++)
-        {
+        for (int i = 0; i < files.length; i++) {
 
             Log.i("NFC_Tag_Files_Format", files[i].getName());
 
         }
 
         filesOnTag = files;
-        return  filesOnTag;
+        return filesOnTag;
     }
 
     private void write(Tag tag) throws IOException, FormatException {
@@ -143,11 +140,11 @@ public class NFCInteraction {
     }
 
     private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
-        String lang       = "en";
-        byte[] textBytes  = text.getBytes();
-        byte[] langBytes  = lang.getBytes("US-ASCII");
-        int    langLength = langBytes.length;
-        int    textLength = textBytes.length;
+        String lang = "en";
+        byte[] textBytes = text.getBytes();
+        byte[] langBytes = lang.getBytes("US-ASCII");
+        int langLength = langBytes.length;
+        int textLength = textBytes.length;
 
         // set status byte (see NDEF spec for actual bits)
         byte[] payload = new byte[1 + langLength + textLength];
@@ -157,54 +154,64 @@ public class NFCInteraction {
         System.arraycopy(textBytes, 0, payload, 1, langLength);
         System.arraycopy(textBytes, 0, payload, 1 + langLength, textLength);
 
-        NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_WELL_KNOWN,  NdefRecord.RTD_TEXT,  new byte[0], payload);
+        NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload);
 
 
         return recordNFC;
     }
 
 
-    public void doWrite(Tag mytag, String tag_data){
+    public boolean doWrite(Tag mytag, String tag_data) {
 
-        Toast.makeText(context, "Saving story.", Toast.LENGTH_LONG ).show();
+        boolean success = false;
+        Toast.makeText(context, "Saving story.", Toast.LENGTH_LONG).show();
         this.mytag = mytag;
         this.tag_data = tag_data;
 
         try {
-            if(mytag==null){
-                Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG ).show();
+            if (mytag == null) {
+                Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG).show();
+                Log.i("TagNull Exception", "");
 //                Toast.makeText(this, this.getString(R.string.error_detected), Toast.LENGTH_LONG ).show();
-                success = false;
-            }else{
+            } else {
                 //write(message.getText().toString(),mytag);
+                Log.i("Reached", mytag.toString());
                 write(mytag);
-                Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
+                success = true;
+                Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG).show();
             }
         } catch (IOException e) {
-            Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG ).show();
+            Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG).show();
+            Log.i("IOException Exception", "");
             e.printStackTrace();
             success = false;
         } catch (FormatException e) {
-            Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG ).show();
+            Toast.makeText(context, "Error Detected", Toast.LENGTH_LONG).show();
+            Log.i("Format Exception", "");
+
             e.printStackTrace();
             success = false;
         }
 
-        if(success) {
+        Log.i("Success Value NFC", String.valueOf(success));
+
+
+        return success;
+    }
+
+
+
+    void Complete(boolean complete) {
+
+        if(complete) {
 
             Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
-            success = true;
             Intent intent = new Intent(context, LoggedInReadHomeKidsUI.class);
             intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
             intent.putExtra("Authenticated", authenticated);
             intent.putExtra("NewStory", true);
             intent.putExtra("StoryRef", tag_data);
             context.startActivity(intent);
-        }
-
-        else {
-
-//            writeinstruction.setText("Error writing object. Please rescan.");
         }
     }
 

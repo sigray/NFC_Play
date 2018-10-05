@@ -678,8 +678,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ArchiveKidsUI.this, LoggedInWriteHomeKidsUI.class);
-                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                Intent intent = new Intent(ArchiveKidsUI.this, LoggedInReadHomeKidsUI.class);
+                intent.putExtra("PreviousActivity", "ArchiveKidsUI");
                 intent.putExtra("Authenticated", authenticated);
                 ArchiveKidsUI.this.startActivity(intent);
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

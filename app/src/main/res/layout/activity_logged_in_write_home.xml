@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4559de"
+    android:id="@+id/logged_in_write_home_layout"
     tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsUI">
 
     <ImageView

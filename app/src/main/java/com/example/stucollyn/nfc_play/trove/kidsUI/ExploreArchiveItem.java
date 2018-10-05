@@ -96,8 +96,8 @@ public class ExploreArchiveItem extends AppCompatActivity {
     void AnimationSetup() {
 
         back = (ImageView) findViewById(R.id.back);
-        backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim);
-        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+        backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_1);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_2);
 
         animationBackHandler = new Handler();
         animationBackHandler.postDelayed(new Runnable() {
@@ -115,7 +115,9 @@ public class ExploreArchiveItem extends AppCompatActivity {
             @Override
             public void run() {
 
-                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+                Log.i("YUUUUUS", "yessir");
+                back.setVisibility(View.VISIBLE);
+                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_close, null);
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d, Color.WHITE);
                 back.setImageDrawable(d);

@@ -197,7 +197,14 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
 
 //        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
-        ShowStoryContent showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
+
+        if(showStoryContent!=null) {
+
+            ShowStoryContentDialog currentDialog = showStoryContent.returnDialog();
+            showStoryContent.closeOpenFragments(currentDialog);
+        }
+
+        showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }
 

@@ -13,11 +13,13 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -290,31 +292,35 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
             @Override
     protected void onNewIntent(Intent intent){
-        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+        if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+
+            Log.i("New Story Ready", String.valueOf(newStoryReady));
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Object Found.", Toast.LENGTH_LONG ).show();
+            Toast.makeText(this, "Object Found.", Toast.LENGTH_LONG).show();
 
-        if(newStoryReady) {
-            Log.i("YES", "we made it");
-            CancelStoryArchiveHandlerTimer();
-            nfcInteraction.doWrite(mytag, tag_data);
+            if (newStoryReady) {
+
+                    newStoryReady = false;
+                    boolean success = false;
+                    success = nfcInteraction.doWrite(mytag, tag_data);
+
+                Log.i("Success Value", String.valueOf(success));
+
+                if(success) {
+
+                    disableViewClickability();
+                    CancelStoryArchiveHandlerTimer();
+                    ResetCamera();
+                    ReleaseCamera();
+                    nfcInteraction.Complete(success);
+                }
+
+                else {
+
+                    newStoryReady = true;
+                }
+
             }
-        }
-
-        else {
-
-            Log.i("YES", "we made it 2");
-            CancelStoryArchiveHandlerTimer();
-            ReleaseCamera();
-//                commentaryInstruction.setTagData(tag_data);
-//                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, LoggedInReadHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
-            Intent returnToPlayback = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
-            intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
-            intent.putExtra("Authenticated", authenticated);
-            intent.putExtra("NewStory", true);
-            intent.putExtra("StoryRef", tag_data);
-            LoggedInWriteHomeKidsUI.this.startActivity(intent);
-
         }
     }
 
@@ -429,6 +435,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Archive Communication
     public void Archive(View view) {
 
+        disableViewClickability();
         archive.setClickable(false);
         ReleaseCamera();
         Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
@@ -649,7 +656,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
 
     //Activity Governance
-
     @Override
     public void onPause(){
         super.onPause();
@@ -690,9 +696,20 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    void disableViewClickability() {
+
+        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            child.setClickable(false);
+        }
+
+    }
+
 
     public void Back(View view) {
 
+        disableViewClickability();
         onBackPressed();
     }
 
