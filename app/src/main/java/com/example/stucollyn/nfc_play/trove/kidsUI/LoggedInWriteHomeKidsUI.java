@@ -327,17 +327,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Setup new storage folder
     private void SetupStoryLocation() {
 
-        if(story_directory!=null&&!newStoryReady) {
-            deleteStoryDirectory();
-        }
-
-        if(tag_directory!=null&&!newStoryReady) {
-            deleteTagDirectory();
-        }
-
-        if(cover_directory!=null&&!newStoryReady) {
-            deleteCoverDirectory();
-        }
+        deleteDirectories();
 
         newStoryReady = false;
         String LocalStoryFolder = ("/Stories");
@@ -576,6 +566,21 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         }
     }
 
+    void deleteDirectories() {
+
+        if(story_directory!=null&&!newStoryReady) {
+            deleteStoryDirectory();
+        }
+
+        if(tag_directory!=null&&!newStoryReady) {
+            deleteTagDirectory();
+        }
+
+        if(cover_directory!=null&&!newStoryReady) {
+            deleteCoverDirectory();
+        }
+    }
+
     void deleteStoryDirectory() {
 
         try {
@@ -687,6 +692,15 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         authenticated = savedInstanceState.getBoolean("Authenticated");
     }
 
+    void disableViewClickability() {
+
+        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            child.setClickable(false);
+        }
+    }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
@@ -696,20 +710,27 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    void disableViewClickability() {
+    public void Drawer(View view){
 
-        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
-        for (int i = 0; i < layout.getChildCount(); i++) {
-            View child = layout.getChildAt(i);
-            child.setClickable(false);
-        }
+        disableViewClickability();
+        deleteDirectories();
+        ResetCamera();
+        CancelStoryArchiveHandlerTimer();
+        animationBackHandler.removeCallbacksAndMessages(null);
 
+        ReleaseCamera();
+        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, HamburgerKidsUI.class);
+        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
 
     public void Back(View view) {
 
         disableViewClickability();
+        deleteDirectories();
         onBackPressed();
     }
 

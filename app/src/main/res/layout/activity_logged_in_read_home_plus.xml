@@ -296,7 +296,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.28"  />
 
-            <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
+            <ImageView
                 android:id="@+id/drawer_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                app:svg_raw_resource="@raw/archive_shape_1" />
+                />
 
         </android.support.constraint.ConstraintLayout>
 

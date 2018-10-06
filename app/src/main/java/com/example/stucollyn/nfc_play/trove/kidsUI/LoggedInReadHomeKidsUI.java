@@ -13,6 +13,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
@@ -157,11 +158,12 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
     public void Drawer(View view){
 
+        disableViewClickability();
         trove.clearAnimation();
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(LoggedInReadHomeKidsUI.this, HamburgerKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
-        intent.putExtra("PreviousActivity", previousActivity);
+        intent.putExtra("PreviousActivity", "LoggedInReadHomeKidsUI");
         LoggedInReadHomeKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
@@ -328,6 +330,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
     public void Continue(View view) {
 
+        disableViewClickability();
         trove.clearAnimation();
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
@@ -391,6 +394,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     @Override
     public void onBackPressed() {
 
+        disableViewClickability();
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
@@ -404,7 +408,20 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 LoggedInReadHomeKidsUI.this.startActivity(intent);
             }
         }, 1000);
+    }
 
+    void interrupt() {
+
+        commentaryInstruction.stopPlaying();
+    }
+
+    void disableViewClickability() {
+
+        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.activity_logged_in_read_home);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            child.setClickable(false);
+        }
     }
 
     @Override

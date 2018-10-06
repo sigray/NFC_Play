@@ -1,10 +1,13 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.widget.ImageView;
 
 import com.example.stucollyn.nfc_play.R;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class WelcomeScreenKidsUI extends AppCompatActivity {
@@ -34,6 +38,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     Runnable TroveRunnable;
     String previousActivity = "Empty";
     public static boolean AppStarted = false;
+    HashMap<ImageView, Integer> IvDrawable;
 
 
     @Override
@@ -102,6 +107,25 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         allViews[14] = heart;
         allViews[15] = halfcircle;
 
+        IvDrawable = new HashMap<ImageView, Integer>();
+        IvDrawable.put(star, R.drawable.kids_ui_star);
+        IvDrawable.put(moon, R.drawable.kids_ui_moon);
+        IvDrawable.put(shell, R.drawable.kids_ui_shell);
+        IvDrawable.put(book, R.drawable.kids_ui_book);
+        IvDrawable.put(key, R.drawable.kids_ui_key);
+        IvDrawable.put(leaf, R.drawable.kids_ui_leaf);
+        IvDrawable.put(umbrella, R.drawable.kids_ui_umbrella);
+        IvDrawable.put(tear, R.drawable.kids_ui_tear);
+        IvDrawable.put(teddy, R.drawable.kids_ui_teddy);
+        IvDrawable.put(heart,  R.drawable.kids_ui_heart);
+        IvDrawable.put(halfcircle,  R.drawable.kids_ui_halfcircle);
+        IvDrawable.put(zigzag1,  R.drawable.kids_ui_zigzag);
+        IvDrawable.put(zigzag2,  R.drawable.kids_ui_zigzag);
+        IvDrawable.put(zigzag3,  R.drawable.kids_ui_zigzag);
+        IvDrawable.put(zigzag4,  R.drawable.kids_ui_zigzag);
+        IvDrawable.put(back,  R.drawable.kids_ui_back);
+        IvDrawable.put(trove,  R.drawable.kids_ui_trove);
+
 
         //Initialize animations
         spin = AnimationUtils.loadAnimation(this, R.anim.spin);
@@ -111,24 +135,9 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
 
-        if(!AppStarted) {
-
-            AppStarted = true;
-            animationStartSequence();
-
-        }
-
-        else {
-
-            for(int i=0; i<allViews.length; i++) {
-
-                allViews[i].setVisibility(View.VISIBLE);
-            }
-
-            trove.setVisibility(View.VISIBLE);
-            startupTroveLogoAnimation();
-            animationIdleSequence();
-        }
+        paintViews();
+        animationStartSequence();
+    }
 
         //Animations once setup
         //animationIdleSequence();
@@ -151,6 +160,15 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
 */
 
+    void paintViews() {
+
+        for(int i=0; i<largeItemArray.length; i++) {
+
+            Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(largeItemArray[i]), null);
+            d = DrawableCompat.wrap(d);
+            DrawableCompat.setTint(d, android.graphics.Color.rgb(111,133,226));
+            largeItemArray[i].setImageDrawable(d);
+        }
     }
 
     void animationIdleSequence() {

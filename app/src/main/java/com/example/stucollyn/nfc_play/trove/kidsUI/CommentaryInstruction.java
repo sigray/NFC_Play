@@ -133,9 +133,12 @@ public class CommentaryInstruction {
     }
 
     public void stopPlaying() {
-        mPlayer.stop();
-        mPlayer.reset();
-        playbackStatus = false;
+
+        if(mPlayer.isPlaying()) {
+            mPlayer.stop();
+            mPlayer.reset();
+            playbackStatus = false;
+        }
     }
 
     void setInputHandler(Handler input){

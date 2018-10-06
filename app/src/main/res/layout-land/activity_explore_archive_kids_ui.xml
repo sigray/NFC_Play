@@ -104,37 +104,25 @@
         app:layout_constraintTop_toTopOf="@+id/new_background"
         app:svg_raw_resource="@raw/archive_shape_1" />
 
-    <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
-        android:id="@+id/home_background"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <ImageView
+        android:id="@+id/drawer_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/kids_ui_archive_shape_2"
         android:contentDescription="@string/app_name"
+        android:onClick="Drawer"
         android:scaleType="centerCrop"
+        android:src="@drawable/menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.99"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <com.example.stucollyn.nfc_play.trove.kidsUI.CustomImageView
-        android:id="@+id/home"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/app_name"
-        android:scaleType="centerCrop"
-        android:src="@drawable/home"
-        android:onClick="Home"
-        app:layout_constraintBottom_toBottomOf="@+id/home_background"
-        app:layout_constraintEnd_toEndOf="@+id/home_background"
-        app:layout_constraintStart_toStartOf="@+id/home_background"
-        app:layout_constraintTop_toTopOf="@+id/home_background"
-        app:svg_raw_resource="@raw/archive_shape_1" />
+        app:layout_constraintVertical_bias="0.0"
+        />
 
 </android.support.constraint.ConstraintLayout>

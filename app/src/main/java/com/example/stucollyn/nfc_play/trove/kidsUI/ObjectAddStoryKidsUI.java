@@ -564,6 +564,15 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     }
 
+    public void Drawer(View view){
+
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerKidsUI.class);
+        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        intent.putExtra("Authenticated", authenticated);
+        ObjectAddStoryKidsUI.this.startActivity(intent);
+        overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
+    }
+
     public void Back(View view) {
 
         onBackPressed();

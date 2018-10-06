@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#4559de"
-    android:id="@+id/activity_logged_in_read_home"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInReadHomeKidsUI">
+    android:id="@+id/activity_hamburger_kids_ui"
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HamburgerKidsUI">
 
     <ImageView
         android:id="@+id/small_shapes"
@@ -30,8 +30,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/kids_ui_back_anim"
-        android:onClick="Back"
-        android:clickable="true"
+        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -113,7 +112,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="Continue"
         android:src="@drawable/kids_ui_trove"
         android:visibility="gone"
         android:alpha="0.8"
@@ -223,24 +221,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.06999999" />
-
-    <ImageView
-        android:id="@+id/key"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0.8"
-        android:rotation="0"
-        android:src="@drawable/kids_ui_key"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.96"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.52" />
 
     <ImageView
         android:id="@+id/star"
@@ -357,7 +337,7 @@
         android:layout_marginBottom="8dp"
         android:paddingEnd="200dp"
         android:paddingStart="50dp"
-        android:paddingTop="80dp"
+        android:paddingTop="50dp"
         android:text="trove"
         android:textColor="#ffff"
         android:textSize="20dp"
@@ -386,6 +366,26 @@
             android:textColor="#ffff"
             android:textSize="16dp" />
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.8"
+        android:rotation="0"
+        android:clickable="true"
+        android:src="@drawable/key_log_out"
+        android:onClick="LogOut"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.96"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.52" />
 
 </android.support.constraint.ConstraintLayout>
 
