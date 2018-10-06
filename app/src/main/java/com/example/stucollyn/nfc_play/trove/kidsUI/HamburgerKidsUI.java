@@ -138,7 +138,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         allViews[12] = tear;
         allViews[13] = umbrella;
         allViews[14] = heart;
-        allViews[15] = back;
+        allViews[15] = back2;
         allViews[16] = key;
         allViews[17] = trove;
 

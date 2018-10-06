@@ -417,6 +417,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
     void disableViewClickability() {
 
+        back.setClickable(false);
         ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.activity_logged_in_read_home);
         for (int i = 0; i < layout.getChildCount(); i++) {
             View child = layout.getChildAt(i);

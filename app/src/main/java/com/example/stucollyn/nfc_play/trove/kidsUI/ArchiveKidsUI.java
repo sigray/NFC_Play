@@ -557,7 +557,28 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     Bitmap ShowPicture(File pictureFile) {
 
+        // Get the dimensions of the View
+        int targetW = 300;
+        int targetH = 300;
 
+// Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions); // you can get imagePath from file
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+// Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+// Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        return BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
+
+        /*
         ExifInterface exif = null;
         Bitmap adjustedBitmap;
         try {
@@ -597,8 +618,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
             adjustedBitmap = bitmap;
         }
 
-
         return adjustedBitmap;
+
+        */
     }
 
     private static int exifToDegrees(int exifOrientation) {
@@ -713,8 +735,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
             boolean authenticated = params[0];
 
-            setupListsLocal(files, coverFiles);
 
+            setupListsLocal(files, coverFiles);
             CloudThumbnailColours();
 
             return authenticated;
@@ -723,7 +745,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         protected void onPostExecute(Boolean authenticated) {
 
             progressBar.setVisibility(View.INVISIBLE);
-
             cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);

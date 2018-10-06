@@ -257,6 +257,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
 //                        handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+                        commentaryInstruction.stopPlaying();
                         currentlyRecording = true;
                         recordingStatus = false;
                         recordingManager(v);
@@ -309,6 +310,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                 if(success) {
 
                     disableViewClickability();
+                    commentaryInstruction.stopPlaying();
                     CancelStoryArchiveHandlerTimer();
                     ResetCamera();
                     ReleaseCamera();
@@ -694,6 +696,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void disableViewClickability() {
 
+        back.setClickable(false);
         ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
         for (int i = 0; i < layout.getChildCount(); i++) {
             View child = layout.getChildAt(i);
@@ -737,7 +740,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        back.setClickable(false);
         ResetCamera();
         CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);

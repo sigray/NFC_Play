@@ -327,6 +327,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         if(zigzagInt<5) {
 
+            zigzagArray[zigzagInt].setVisibility(View.VISIBLE);
             Drawable d = zigzagArray[zigzagInt].getDrawable();
             final AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
             zigzaganim.start();
