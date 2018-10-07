@@ -165,7 +165,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         archiveStoryHandler = new Handler();
         nfcInteraction = new NFCInteraction(this, this, authenticated);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recordstory1), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
         AnimationSetup();
         recordButtonController();
 
@@ -269,6 +269,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
+                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.takeapicture), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
                         break;
                 }
 
@@ -427,6 +428,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     //Archive Communication
     public void Archive(View view) {
 
+        commentaryInstruction.stopPlaying();
         disableViewClickability();
         archive.setClickable(false);
         ReleaseCamera();
@@ -541,7 +543,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             NewStoryArchiveHandlerTimer();
             slideOutViewAnimation(cameraButton);
             slideInViewAnimation(archive);
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.tagnfc), false, null, "LoggedInWriteHomeKidsUI");
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachnfc), false, null, "LoggedInWriteHomeKidsUI");
             UUID objectUUID = UUID.randomUUID();
 
             if(authenticated) {
@@ -720,6 +722,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         ResetCamera();
         CancelStoryArchiveHandlerTimer();
         animationBackHandler.removeCallbacksAndMessages(null);
+        commentaryInstruction.stopPlaying();
 
         ReleaseCamera();
         Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, HamburgerKidsUI.class);
@@ -732,6 +735,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     public void Back(View view) {
 
+        commentaryInstruction.stopPlaying();
         disableViewClickability();
         deleteDirectories();
         onBackPressed();

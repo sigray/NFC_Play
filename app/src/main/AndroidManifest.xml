@@ -33,7 +33,7 @@
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@drawable/trove_logo_icon"
+        android:icon="@mipmap/trove_launcher"
         android:label="trove"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"

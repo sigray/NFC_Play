@@ -172,7 +172,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         if(previousActivity.equals("LoginKidsUI")) {
 
-            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app);
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
             commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
 
@@ -188,10 +188,17 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 File[] filesOnTag = directory.listFiles();
                 PlayStory(filesOnTag);
             }
+
+            else {
+                Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
+                commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
+            }
         }
 
         else {
 
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
+            commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
     }
 

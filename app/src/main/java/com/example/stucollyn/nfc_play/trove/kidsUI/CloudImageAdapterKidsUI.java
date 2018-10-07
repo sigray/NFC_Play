@@ -49,6 +49,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     int[] shapeResource = new int[]{R.raw.archive_shape_1, R.raw.archive_shape_2, R.raw.archive_shape_1};
     int[] shapeResourceBackground = new int[]{R.drawable.kids_ui_archive_shape_1, R.drawable.kids_ui_archive_shape_2, R.drawable.kids_ui_archive_shape_1};
     int shapeResourceCounter=0;
+    CommentaryInstruction commentaryInstruction;
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         public final CustomImageView imageView;
@@ -92,6 +93,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
             @Override
             public void onClick(View view) {
 //                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
+                commentaryInstruction.stopPlaying();
                 holder.imageView.setClickable(false);
                 Intent intent = new Intent(storyGallery.getApplicationContext(), ExploreArchiveItem.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -123,7 +125,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         return this.elements.size();
     }
 
-    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated) {
+    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated, CommentaryInstruction commentaryInstruction) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -135,6 +137,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         this.imageMap = imageMap;
         this.folderToImageRef = folderToImageRef;
         this.authenticated = authenticated;
+        this.commentaryInstruction = commentaryInstruction;
 
         this.elements = new ArrayList<String>();
 

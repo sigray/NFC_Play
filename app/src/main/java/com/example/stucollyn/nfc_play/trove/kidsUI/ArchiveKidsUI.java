@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
@@ -80,6 +81,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     int numberOfDownloads = 0;
     int listSize=0;
     boolean authenticated = false;
+    CommentaryInstruction commentaryInstruction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
         folderImages = new HashMap<File, File>();
         imageFiles = new HashMap<File, Bitmap>();
         coverImageMap = new HashMap<String, Bitmap>();
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.archive), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
         AnimationSetup();
         CheckAuthentication(authenticated);
     }
@@ -373,7 +377,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
                             CloudThumbnailColours();
                             progressBar.setVisibility(View.INVISIBLE);
-                            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated);
+                            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
                             gridview.invalidate();
                             gridview.setAdapter(cloudImageAdapter);
                        // }
@@ -637,6 +641,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     public void Drawer(View view){
 
+        commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ArchiveKidsUI.this, HamburgerKidsUI.class);
         intent.putExtra("PreviousActivity", "ArchiveKidsUI");
         intent.putExtra("Authenticated", authenticated);
@@ -651,6 +656,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     public void Home(View view) {
 
+        commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ArchiveKidsUI.this, LoggedInReadHomeKidsUI.class);
         intent.putExtra("PreviousActivity", "ArchiveKidsUI");
         intent.putExtra("Authenticated", authenticated);
@@ -700,6 +706,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        commentaryInstruction.stopPlaying();
         back.setClickable(false);
         animationBackHandler.removeCallbacksAndMessages(null);
         back.setImageDrawable(backRetrace);
@@ -745,7 +752,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         protected void onPostExecute(Boolean authenticated) {
 
             progressBar.setVisibility(View.INVISIBLE);
-            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated);
+            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }

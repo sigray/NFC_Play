@@ -166,7 +166,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         preview.addView(mPreview);
         archiveStoryHandler = new Handler();
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), false, LoggedInWriteHomeKidsUI.class, "ObjectAddStoryKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, LoggedInWriteHomeKidsUI.class, "ObjectAddStoryKidsUI");
         SetupStoryLocation();
         AnimationSetup();
         recordButtonController();
@@ -531,6 +531,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
         back.setClickable(false);
         ResetCamera();
+        commentaryInstruction.stopPlaying();
         animationBackHandler.removeCallbacksAndMessages(null);
         Intent intent = new Intent(ObjectAddStoryKidsUI.this, LoggedInReadHomeKidsUI.class);
         intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
@@ -541,6 +542,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     public void SaveNewStory() {
 
+        commentaryInstruction.stopPlaying();
         back.setClickable(false);
         ResetCamera();
         ReleaseCamera();
@@ -566,6 +568,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     public void Drawer(View view){
 
+        commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerKidsUI.class);
         intent.putExtra("PreviousActivity", "ArchiveKidsUI");
         intent.putExtra("Authenticated", authenticated);
@@ -581,6 +584,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+        commentaryInstruction.stopPlaying();
         back.setClickable(false);
         ResetCamera();
         animationBackHandler.removeCallbacksAndMessages(null);

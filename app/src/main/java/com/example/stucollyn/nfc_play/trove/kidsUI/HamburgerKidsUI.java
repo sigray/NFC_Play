@@ -19,6 +19,9 @@ import android.support.design.widget.NavigationView;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.transition.Explode;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +29,26 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.R;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.UUID;
 
 public class HamburgerKidsUI extends FragmentActivity {
 
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-            leaf, umbrella, tear, teddy, heart, trove, back, back2, halfcircle;
+            leaf, umbrella, tear, teddy, heart, back, back2, halfcircle;
     Handler startupZigZagHandler, startupLargeObjectsHandler;
     Animation spin, shrink, blink, draw, bounce, fadein, alpha, fadeout;
     ImageView zigzagArray[], largeItemArray[], allViews[];
@@ -63,6 +74,9 @@ public class HamburgerKidsUI extends FragmentActivity {
     ImageView drawerButton;
     NavigationView navigationView;
     Class targetClass;
+    TextView troveTitle, troveBody;
+    ScrollView troveBodyScroll;
+    int deleteCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +111,11 @@ public class HamburgerKidsUI extends FragmentActivity {
         teddy = (ImageView) findViewById(R.id.teddy);
         heart = (ImageView) findViewById(R.id.heart);
         halfcircle = (ImageView) findViewById(R.id.circle);
-        trove = (ImageView) findViewById(R.id.trove);
         back = (ImageView) findViewById(R.id.back);
         back2 = (ImageView) findViewById(R.id.back2);
         backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+        troveTitle = (TextView) findViewById(R.id.trove_title);
+        troveBody = (TextView) findViewById(R.id.trove_body);
 
         IvDrawable = new HashMap<ImageView, Integer>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
@@ -120,9 +135,8 @@ public class HamburgerKidsUI extends FragmentActivity {
         IvDrawable.put(zigzag4,  R.drawable.kids_ui_zigzag);
         IvDrawable.put(back,  R.drawable.kids_ui_back);
         IvDrawable.put(back2,  R.drawable.kids_ui_back);
-        IvDrawable.put(trove,  R.drawable.kids_ui_trove);
 
-        allViews = new ImageView[18];
+        allViews = new ImageView[17];
         allViews[0] = zigzag2;
         allViews[1] = zigzag1;
         allViews[2] = zigzag4;
@@ -140,7 +154,6 @@ public class HamburgerKidsUI extends FragmentActivity {
         allViews[14] = heart;
         allViews[15] = back2;
         allViews[16] = key;
-        allViews[17] = trove;
 
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
@@ -159,7 +172,6 @@ public class HamburgerKidsUI extends FragmentActivity {
         Log.i("Target Class", targetClass.toString());
 
         paintViews();
-        animateViews();
 
         nfcInteraction = new NFCInteraction(this, this, authenticated);
         adapter = NfcAdapter.getDefaultAdapter(this);
@@ -172,7 +184,6 @@ public class HamburgerKidsUI extends FragmentActivity {
     public void Drawer(View view){
 
         disableViewClickability();
-        trove.clearAnimation();
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(HamburgerKidsUI.this, targetClass);
         intent.putExtra("Authenticated", authenticated);
@@ -262,39 +273,24 @@ public class HamburgerKidsUI extends FragmentActivity {
 //        key.setImageDrawable(d);
     }
 
-    void animateViews() {
-
-        startupTroveLogoAnimation();
+    private static void toggleVisibility(View... views) {
+        for (View view : views) {
+            view.setVisibility(View.INVISIBLE);
+//            boolean isVisible = view.getVisibility() == View.VISIBLE;
+//            view.setVisibility(isVisible ? View.INVISIBLE : View.VISIBLE);
+        }
     }
 
-    void startupTroveLogoAnimation() {
+    public void LogOut(View view) {
 
-        trove.startAnimation(bounce);
-    }
-
-    void delay() {
-
-        startupLargeObjectsHandler = new Handler();
-        startupLargeObjectsHandler.postDelayed(new Runnable() {
+        disableViewClickability();
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                // Do something after 5s = 5000ms
 
-//            Continue();
-            }
-        }, 5000);
-
-    }
-
-    public void Continue(View view) {
-
-        trove.clearAnimation();
-        commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(HamburgerKidsUI.this, LoggedInWriteHomeKidsUI.class);
-        intent.putExtra("Authenticated", authenticated);
-        HamburgerKidsUI.this.startActivity(intent);
-        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-
-/*
         Transition explode = new Explode();
 
 
@@ -307,8 +303,8 @@ public class HamburgerKidsUI extends FragmentActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(LoggedInReadHomeKidsUI.this, LoggedInWriteHomeKidsUI.class);
-                LoggedInReadHomeKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HamburgerKidsUI.this, WelcomeScreenKidsUI.class);
+                HamburgerKidsUI.this.startActivity(intent);
             }
 
             @Override
@@ -330,29 +326,8 @@ public class HamburgerKidsUI extends FragmentActivity {
 
         TransitionManager.beginDelayedTransition(mRootView, explode);
         toggleVisibility(backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-                leaf, umbrella, tear, teddy, halfcircle, heart, trove, back);
+                leaf, umbrella, tear, teddy, halfcircle, heart, back, back2, troveTitle, troveBody, drawerButton);
 
-                */
-    }
-
-    private static void toggleVisibility(ImageView... views) {
-        for (ImageView view : views) {
-            boolean isVisible = view.getVisibility() == View.VISIBLE;
-            view.setVisibility(isVisible ? View.INVISIBLE : View.VISIBLE);
-        }
-    }
-
-    public void LogOut(View view) {
-
-        disableViewClickability();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Do something after 5s = 5000ms
-                Intent intent = new Intent(HamburgerKidsUI.this, WelcomeScreenKidsUI.class);
-                HamburgerKidsUI.this.startActivity(intent);
             }
         }, 1000);
 
@@ -367,9 +342,82 @@ public class HamburgerKidsUI extends FragmentActivity {
         }
     }
 
-    public void Back(View view) {
+    public void Reset(View view) {
 
-        Log.i("OOOOOOOOOOOOPS", "Back");
+        deleteCounter++;
+        deleteDirectories();
+    }
+
+    void deleteDirectories() {
+
+
+        if(deleteCounter>5) {
+
+            Toast.makeText(this, "Resetting archive", Toast.LENGTH_LONG).show();
+
+            String LocalStoryFolder = ("/Stories");
+            String TagFolder = ("/Tag");
+            String CoverFolder = ("/Covers");
+            String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
+
+            String newDirectory = LocalStoryFolder + "/";
+            String newDirectory2 = TagFolder + "/";
+            String newDirectory3 = CoverFolder + "/";
+            File story_directory = getExternalFilesDir(newDirectory);
+            File tag_directory = getExternalFilesDir(newDirectory2);
+            File cover_directory = getExternalFilesDir(newDirectory3);
+
+            if (story_directory != null && !newStoryReady) {
+                deleteStoryDirectory(story_directory);
+            }
+
+            if (tag_directory != null && !newStoryReady) {
+                deleteTagDirectory(tag_directory);
+            }
+
+            if (cover_directory != null && !newStoryReady) {
+                deleteCoverDirectory(cover_directory);
+            }
+
+        }
+    }
+
+    void deleteStoryDirectory(File story_directory) {
+
+        try {
+
+            FileUtils.cleanDirectory(story_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+    }
+
+    void deleteTagDirectory(File tag_directory) {
+
+        try {
+
+            FileUtils.cleanDirectory(tag_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+    }
+
+    void deleteCoverDirectory(File cover_directory) {
+
+        try {
+
+            FileUtils.cleanDirectory(cover_directory);
+        }
+
+        catch (IOException e) {
+
+        }
 
     }
 

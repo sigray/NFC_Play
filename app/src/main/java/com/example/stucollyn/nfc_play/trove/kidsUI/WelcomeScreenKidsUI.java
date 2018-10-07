@@ -20,8 +20,16 @@ import android.widget.ImageView;
 
 import com.example.stucollyn.nfc_play.R;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
 public class WelcomeScreenKidsUI extends AppCompatActivity {
 
@@ -137,6 +145,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         paintViews();
         animationStartSequence();
+        SetupStoryLocation();
     }
 
         //Animations once setup
@@ -159,6 +168,40 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 //            }
 
 */
+
+    //Setup new storage folder
+    private void SetupStoryLocation() {
+
+
+        String LocalStoryFolder = ("/Stories");
+        String TagFolder = ("/Tag");
+        String CoverFolder = ("/Covers");
+
+        String newDirectory = LocalStoryFolder + "/";
+        String newDirectory2 = TagFolder + "/";
+        String newDirectory3 = CoverFolder + "/";
+        File story_directory = getExternalFilesDir(newDirectory);
+        File tag_directory = getExternalFilesDir(newDirectory2);
+        File cover_directory = getExternalFilesDir(newDirectory3);
+
+        if (! story_directory.exists()){
+            story_directory.mkdir();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+
+        if (! tag_directory.exists()){
+            tag_directory.mkdir();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+
+        if (! cover_directory.exists()){
+            cover_directory.mkdir();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+    }
 
     void paintViews() {
 

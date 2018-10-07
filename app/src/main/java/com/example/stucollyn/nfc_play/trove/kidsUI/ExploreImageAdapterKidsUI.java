@@ -49,6 +49,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     int[] shapeResource = new int[]{R.raw.archive_shape_1, R.raw.archive_shape_2, R.raw.archive_shape_1};
     int[] shapeResourceBackground = new int[]{R.drawable.kids_ui_archive_shape_1, R.drawable.kids_ui_archive_shape_2, R.drawable.kids_ui_archive_shape_1};
     int shapeResourceCounter=0;
+    CommentaryInstruction commentaryInstruction;
 
 
     boolean record_button_on, video_record_button_on, recordingStatus = false,
@@ -121,6 +122,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 //                intent.putExtra("ObjectStoryRecord", folderToImageRef);
 //                storyGallery.getApplicationContext().startActivity(intent);
 //                storyGallery.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+                commentaryInstruction.stopPlaying();
         PlayFile(position);
             }
         });
@@ -147,7 +149,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
     public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode,
                                      HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
-                                     LinkedHashMap<String, String> storyTypeMap) {
+                                     LinkedHashMap<String, String> storyTypeMap, CommentaryInstruction commentaryInstruction) {
 
         this.storyGallery = storyGallery;
         mContext = c;
@@ -158,6 +160,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         this.colourCode = colourCode;
         this.imageMap = imageMap;
         this.folderToImageRef = folderToImageRef;
+        this.commentaryInstruction = commentaryInstruction;
 
         this.elements = new ArrayList<String>();
 
