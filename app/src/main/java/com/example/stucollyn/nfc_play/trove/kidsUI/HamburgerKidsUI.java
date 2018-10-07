@@ -205,7 +205,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
+            Toast.makeText(this, "Object found.", Toast.LENGTH_LONG ).show();
         }
 
 
@@ -213,7 +213,7 @@ public class HamburgerKidsUI extends FragmentActivity {
             if (mytag == null) {
 
                 commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "LoggedInReadHomeKidsUI");
-                Toast.makeText(this, "This tag is empty.", Toast.LENGTH_LONG ).show();
+                Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
             }
 
             else {
@@ -252,6 +252,9 @@ public class HamburgerKidsUI extends FragmentActivity {
             // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             System.out.println("Fail 4");
+            Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
+            commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
 
     }
@@ -284,7 +287,7 @@ public class HamburgerKidsUI extends FragmentActivity {
     public void LogOut(View view) {
 
         disableViewClickability();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -427,7 +430,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, HamburgerKidsUI.class, "LoggedInReadHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerKidsUI.class, "LoggedInReadHomeKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

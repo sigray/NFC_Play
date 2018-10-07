@@ -30,7 +30,7 @@
             android:layout_marginTop="8dp"
             android:onClick="Back"
             android:visibility="invisible"
-            android:src="@drawable/kids_ui_back_anim"
+            android:src="@drawable/kids_ui_close_1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

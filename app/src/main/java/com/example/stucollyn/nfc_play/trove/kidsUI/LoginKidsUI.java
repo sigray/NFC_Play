@@ -159,7 +159,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
         if(previousActivity.equals("WelcomeScreenKidsUI")) {
 
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcome_app), false, null, "LoginKidsUI");
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.helloandpassword), false, null, "LoginKidsUI");
         }
 
         else {

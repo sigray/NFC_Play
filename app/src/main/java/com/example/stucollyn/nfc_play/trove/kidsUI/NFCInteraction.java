@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -108,7 +109,6 @@ public class NFCInteraction {
 
 //        String path = packageName.toString()+"/files";
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Tag/" + s;
-        Log.i("NFC_Tag_Files_Path", path);
         File directory = new File(path);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {

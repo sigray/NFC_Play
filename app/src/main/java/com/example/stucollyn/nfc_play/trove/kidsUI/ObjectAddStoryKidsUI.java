@@ -69,7 +69,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     //File Save Variables
 
     AudioRecorderKidsUI audioRecorder;
-    AnimatedVectorDrawable recordButtonAnim, backRetrace;
+    AnimatedVectorDrawable recordButtonAnim, backBegin, backRetrace;
     Drawable recordButtonNonAnim;
     Handler animationHandler, animationBackHandler;
     Runnable RecordButtonRunnable;
@@ -177,7 +177,8 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim_alt);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
-        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_back_anim_retrace);
+        backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_2);
+        backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_1);
         slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
         slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
 
@@ -197,7 +198,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             @Override
             public void run() {
 
-                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_back, null);
+                Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_close, null);
                 d = DrawableCompat.wrap(d);
                 DrawableCompat.setTint(d, Color.WHITE);
                 back.setImageDrawable(d);
@@ -228,6 +229,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
 //                        handler.postDelayed(mLongPressed, ViewConfiguration.getLongPressTimeout());
+                        commentaryInstruction.stopPlaying();
                         currentlyRecording = true;
                         recordingStatus = false;
                         recordingManager(v);

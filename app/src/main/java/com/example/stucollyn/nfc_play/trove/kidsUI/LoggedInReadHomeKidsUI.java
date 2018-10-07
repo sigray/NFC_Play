@@ -172,7 +172,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
         if(previousActivity.equals("LoginKidsUI")) {
 
-            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcomehome);
             commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
 
@@ -205,7 +205,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
     void PlayStory(File[] filesOnTag) {
 
 
-//        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
+        commentaryInstruction.stopPlaying();
 
         if(showStoryContent!=null) {
 
@@ -222,15 +222,14 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Tag Discovered", Toast.LENGTH_LONG ).show();
+            Toast.makeText(this, "Object found.", Toast.LENGTH_LONG ).show();
         }
-
 
         try {
             if (mytag == null) {
 
                 commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "LoggedInReadHomeKidsUI");
-                Toast.makeText(this, "This tag is empty.", Toast.LENGTH_LONG ).show();
+                Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
             }
 
             else {
@@ -238,7 +237,6 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
                 PackageManager m = getPackageManager();
                 String packageName = getPackageName();
                 File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
-                Log.d("NFC_Tag_Files_Format B", "FileName:" + filesOnTag[0].getName());
 //                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
 
 //                Uri story_directory_uri = FileProvider.getUriForFile(this,
@@ -269,6 +267,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
             e.printStackTrace();
             System.out.println("Fail 4");
+            Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
+            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
+            commentaryInstruction.onPlay(audioFileUri, false, null, "LoggedInReadHomeKidsUI");
         }
 
     }
@@ -405,7 +406,7 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.poweroff), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, LoggedInReadHomeKidsUI.class, "LoggedInReadHomeKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
