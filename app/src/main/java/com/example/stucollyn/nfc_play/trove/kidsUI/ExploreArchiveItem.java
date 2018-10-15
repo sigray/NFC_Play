@@ -270,11 +270,12 @@ public class ExploreArchiveItem extends AppCompatActivity {
         for(int i=0; i<objectFiles.size(); i++) {
 
             String path = objectFiles.get(i).getStoryRef();
+            Log.i("File Path: ", path);
             File file = new File(path);
             fileMap.put(objectFiles.get(i).getStoryName(), file);
 
-            Log.i("FileMap: ", fileMap.toString());
-            Log.i("getStoryCover: ", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryType() + ", " + file.getName());
+//            Log.i("FileMap: ", fileMap.toString());
+//            Log.i("getStoryCover: ", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryType() + ", " + file.getName());
 
             getStoryCover(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryType(), file);
             CloudThumbnailColours();

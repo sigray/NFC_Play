@@ -106,6 +106,8 @@ public class ShowStoryContent {
                         "com.example.android.fileprovider",
                         filesOnTag[i]);
 
+
+
                 mPlayer = new MediaPlayer();
                 try {
                     mPlayer.setDataSource(context, story_directory_uri);

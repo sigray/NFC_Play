@@ -65,7 +65,7 @@ public class CommentaryInstruction {
                 mPlayer.reset();
                 playbackStatus = false;
             }
-            Log.i("audioFile", audioFileUri.toString());
+//            Log.i("audioFile", audioFileUri.toString());
             mPlayer.setDataSource(context, audioFileUri);
             mPlayer.prepare();
 //            mPlayerSetup = true;

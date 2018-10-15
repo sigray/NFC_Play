@@ -263,9 +263,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     //Setup new storage folder
     private void SetupStoryLocation() {
 
-        String LocalStoryFolder = ("/Stories/");
-        String newDirectory = LocalStoryFolder + "/" + objectName;
-        story_directory = getExternalFilesDir(newDirectory);
+        story_directory = new File (getFilesDir() + File.separator + "Stories" + File.separator + objectName);
     }
 
     //Recording Audio Management

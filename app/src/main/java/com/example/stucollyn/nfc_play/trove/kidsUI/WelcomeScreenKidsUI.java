@@ -1,62 +1,71 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
-
 import com.example.stucollyn.nfc_play.R;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Random;
-import java.util.UUID;
+
+/*
+This activity is the opening animation sequence for the trove app and the first activity run on launch.
+ */
 
 public class WelcomeScreenKidsUI extends AppCompatActivity {
 
+    //The ImageViews displayed on the activity layout
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-            leaf, umbrella, tear, teddy, halfcircle, heart, trove, back;
-    Animation spin, shrink, blink, draw, bounce, fadeout;
+    leaf, umbrella, tear, teddy, halfcircle, heart, trove, back;
+
+    //The animations used on the ImageViews
+    Animation blink, bounce;
+
+    //Arrays for grouping specific views together
     ImageView zigzagArray[], largeItemArray[], allViews[];
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+    HashMap<ImageView, Integer> IvDrawable;
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
     Handler startupZigZagHandler, startupLargeObjectsHandler, idleZigZagHandler,
-            idleLargeObjectsHandler, idleTroveHandler;
+    idleLargeObjectsHandler, idleTroveHandler;
+    Runnable TroveRunnable;
     int zigzagInt = 0;
     int largeObjectsInt = 0;
     boolean startupZigZagAnimationComplete = false, startupLargeObjectsAnimationComplete = false;
-    ViewGroup mRootView;
-    Runnable TroveRunnable;
-    String previousActivity = "Empty";
-    public static boolean AppStarted = false;
-    HashMap<ImageView, Integer> IvDrawable;
 
-
+    //onCreate is called when the activity starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Layout associated with this activity
         setContentView(R.layout.kids_ui_activity_welcome_screen);
+        //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //Initialize the ImageViews for programmatic use
+        initializeViews();
+        //Check whether the internal storage directory folders exist. If they do not, create them.
+        setupStoryLocation();
+        //Ensure all the large items the painted same colour - light blue/grey
+        paintViews();
+        //triggerAnimationSequence
+        animationStartSequence();
+    }
 
-        mRootView = (ViewGroup) findViewById(R.id.welcome_screen);
-        //Initialize views
+    void initializeViews() {
+        //Initialize views from the associated layout
         backgroundShapes = (ImageView) findViewById(R.id.small_shapes);
         zigzag1 = (ImageView) findViewById(R.id.zigzag_1);
         zigzag2 = (ImageView) findViewById(R.id.zigzag_2);
@@ -76,6 +85,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         trove = (ImageView) findViewById(R.id.trove);
         back = (ImageView) findViewById(R.id.back);
 
+        //Initialize array which stores all animated vector drawables - the zigzag views and the back button
         zigzagArray = new ImageView[5];
         zigzagArray[0] = zigzag1;
         zigzagArray[1] = zigzag2;
@@ -83,7 +93,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         zigzagArray[3] = zigzag4;
         zigzagArray[4] = back;
 
-
+        //Initialize array which stores all of the large background objects
         largeItemArray = new ImageView[11];
         largeItemArray[0] = star;
         largeItemArray[1] = moon;
@@ -97,6 +107,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         largeItemArray[9] = heart;
         largeItemArray[10] = halfcircle;
 
+        //Initialize array which stores all the views in the layout
         allViews = new ImageView[16];
         allViews[0] = zigzag1;
         allViews[1] = zigzag2;
@@ -115,6 +126,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         allViews[14] = heart;
         allViews[15] = halfcircle;
 
+        //Initialize hash map, which couples every image view with an image resource
         IvDrawable = new HashMap<ImageView, Integer>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
         IvDrawable.put(moon, R.drawable.kids_ui_moon);
@@ -134,79 +146,52 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         IvDrawable.put(back,  R.drawable.kids_ui_back);
         IvDrawable.put(trove,  R.drawable.kids_ui_trove);
 
-
         //Initialize animations
-        spin = AnimationUtils.loadAnimation(this, R.anim.spin);
         blink = AnimationUtils.loadAnimation(this, R.anim.blink);
-        draw = AnimationUtils.loadAnimation(this, R.anim.draw);
-        shrink = AnimationUtils.loadAnimation(this, R.anim.shrink);
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce);
-        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
-
-        paintViews();
-        animationStartSequence();
-        SetupStoryLocation();
     }
 
-        //Animations once setup
-        //animationIdleSequence();
-        /*
-        //Create an animation set to do spin animation
-        AnimationSet s = new AnimationSet(true);
-        s.setInterpolator(new AccelerateInterpolator());
-        s.addAnimation(draw);
-        s.addAnimation(fadein);
-        //zigzag1.startAnimation(s);
+    //Setup internal file storage folders
+    private void setupStoryLocation() {
 
 
-//            if (d instanceof AnimatedVectorDrawableCompat) {
-//                AnimatedVectorDrawableCompat zigzaganim = (AnimatedVectorDrawableCompat) d;
-//                zigzaganim.start();
-//            } else if (d instanceof AnimatedVectorDrawable) {
-//                AnimatedVectorDrawable zigzaganim = (AnimatedVectorDrawable) d;
-//                zigzaganim.start();
-//            }
+        /*Create a series of internal folder directories.
+        * Inside the 'Stories' directory, every specific object is given its own directory. The title of this directory is a unique object ID. Inside these object directories we store individual story
+        * files (images, audio, video) about the object. Inside the 'Tag' directory, every specific object is given its own directory, in the same way as with the Stories folder - using the same unique
+        * object ID. However, there are only ever two files within each object directory - an audio file and an image (or video) file. When NFC tags are read, the currently associated files are read from
+        * the Tag folder. Insider the 'Covers' directory, every specific object is also given its own directory. However, there is only ever the very first image associated with the object in each
+        * directory. The archive activity read from this folder when populating gallery items with images. Inside the 'Cloud' directory every specific object is also given its own directory, upon being
+        * downloaded from the cloud. The Cloud directory contents is deleted every time the user logs out of trove.
+        */
+        File story_directory = new File (getFilesDir() + File.separator + "Stories");
+        File tag_directory = new File (getFilesDir() + File.separator + "Tag");
+        File cover_directory = new File (getFilesDir() + File.separator + "Covers");
+        File cloud_directory = new File (getFilesDir() + File.separator + "Cloud");
 
-*/
-
-    //Setup new storage folder
-    private void SetupStoryLocation() {
-
-
-        String LocalStoryFolder = ("/Stories");
-        String TagFolder = ("/Tag");
-        String CoverFolder = ("/Covers");
-
-        String newDirectory = LocalStoryFolder + "/";
-        String newDirectory2 = TagFolder + "/";
-        String newDirectory3 = CoverFolder + "/";
-        File story_directory = getExternalFilesDir(newDirectory);
-        File tag_directory = getExternalFilesDir(newDirectory2);
-        File cover_directory = getExternalFilesDir(newDirectory3);
-
+        //Check if the Stories, Tag, Covers, and Cloud directories exist. If not, create them. This is important because the archive activities will attempt to read from them later.
         if (! story_directory.exists()){
             story_directory.mkdir();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
         }
 
         if (! tag_directory.exists()){
             tag_directory.mkdir();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
         }
 
         if (! cover_directory.exists()){
             cover_directory.mkdir();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
+        }
+
+        if (! cloud_directory.exists()){
+            cloud_directory.mkdir();
         }
     }
 
     void paintViews() {
 
+        //For all the large items, which are painted different colours at later stages of the app, ensure they are repainted their original colour.
         for(int i=0; i<largeItemArray.length; i++) {
 
+            //Retrieve vector drawable, then wrap it in a specific RGB colour value. Next apply that to the ImageView.
             Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(largeItemArray[i]), null);
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d, android.graphics.Color.rgb(111,133,226));
@@ -401,10 +386,4 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         WelcomeScreenKidsUI.this.startActivity(intent);
     }
 
-    private static void toggleVisibility(ImageView... views) {
-        for (ImageView view : views) {
-            boolean isVisible = view.getVisibility() == View.VISIBLE;
-            view.setVisibility(isVisible ? View.INVISIBLE : View.VISIBLE);
-        }
-    }
 }

@@ -80,6 +80,8 @@ class CameraRecorder extends Application {
         camera_linear = (LinearLayout) activity.findViewById(R.id.camera_linear);
         fadein = AnimationUtils.loadAnimation(context, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(context, R.anim.fadeout);
+
+        Log.i("SD: ", story_directory.toString());
     }
 
 
@@ -106,7 +108,7 @@ class CameraRecorder extends Application {
     File getOutputMediaFile(int type){
 
 
-        File mediaStorageDir = story_directory;
+//        File mediaStorageDir = story_directory;
 
 
         // Create a media file name
@@ -117,9 +119,13 @@ class CameraRecorder extends Application {
 //                    "IMG_"+ timeStamp + ".jpg");
             UUID storyName = UUID.randomUUID();
             String imageFileName = storyName.toString();
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    imageFileName + ".jpg");
+
+            Log.i("SD2: ", story_directory.toString());
+
+            mediaFile = new File(story_directory.getPath() + File.separator +
+                        imageFileName + ".jpg");
             photoPath = mediaFile.getAbsolutePath();
+
 
             if(tag_directory!=null) {
                 Log.i("Cool", "t directory empty" + ": " + tag_directory.toString());

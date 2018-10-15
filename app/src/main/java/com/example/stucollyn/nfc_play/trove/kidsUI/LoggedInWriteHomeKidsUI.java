@@ -93,6 +93,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     File story_directory;
     File tag_directory;
     File cover_directory;
+    File cloud_directory;
     String story_directory_path;
     Uri story_directory_uri;
     String tag_data = null;
@@ -333,19 +334,30 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         deleteDirectories();
 
         newStoryReady = false;
-        String LocalStoryFolder = ("/Stories");
-        String TagFolder = ("/Tag");
-        String CoverFolder = ("/Covers");
-        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
+//        String LocalStoryFolder = ("/Stories");
+//        String TagFolder = ("/Tag");
+//        String CoverFolder = ("/Covers");
+//        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
         String name = UUID.randomUUID().toString();
-
         tag_data = name;
-        String newDirectory = LocalStoryFolder + "/" + name;
-        String newDirectory2 = TagFolder + "/" + name;
-        String newDirectory3 = CoverFolder + "/" + name;
-        story_directory = getExternalFilesDir(newDirectory);
-        tag_directory = getExternalFilesDir(newDirectory2);
-        cover_directory = getExternalFilesDir(newDirectory3);
+        story_directory = new File (getFilesDir() + File.separator + "Stories" + File.separator + name);
+        tag_directory = new File (getFilesDir() + File.separator + "Tag" + File.separator + name);
+        cover_directory = new File (getFilesDir() + File.separator + "Covers" + File.separator + name);
+        cloud_directory = new File (getFilesDir() + File.separator + "Cloud" + File.separator + name);
+        story_directory.mkdir();
+        tag_directory.mkdir();
+        cover_directory.mkdir();
+        cloud_directory.mkdir();
+
+        Log.i("Testing Story Path", story_directory.toString());
+        Log.i("Testing Story Abso", story_directory.getAbsolutePath());
+
+//        String newDirectory = LocalStoryFolder + "/" + name;
+//        String newDirectory2 = TagFolder + "/" + name;
+//        String newDirectory3 = CoverFolder + "/" + name;
+//        story_directory = getExternalFilesDir(newDirectory);
+//        tag_directory = getExternalFilesDir(newDirectory2);
+//        cover_directory = getExternalFilesDir(newDirectory3);
     }
 
     void StoryReset() {
@@ -504,6 +516,8 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         catch (NullPointerException e) {
 
+
+                Log.i("Error", "Eh nah");
             }
     }
 

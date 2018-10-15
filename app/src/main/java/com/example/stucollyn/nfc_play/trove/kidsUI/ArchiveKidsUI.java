@@ -234,12 +234,34 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     void LocalSetup() {
 
-        String StoryFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
-        String CoverFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/";
-        File directory = new File(StoryFilesPath);
-        File coverDirectory = new File(CoverFilesPath);
+//        String StoryFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
+//        String CoverFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/";
+//        File directory = new File(StoryFilesPath);
+//        File coverDirectory = new File(CoverFilesPath);
+//        files = directory.listFiles();
+//        coverFiles = coverDirectory.listFiles();
+
+
+        File directory = new File(getFilesDir() + File.separator + "Stories");
+        File coverDirectory = new File(getFilesDir() + File.separator + "Covers");
         files = directory.listFiles();
         coverFiles = coverDirectory.listFiles();
+
+//        File[] files = directory.listFiles();
+//        Log.d("Files", "Size: "+ files.length);
+//        for (int i = 0; i < files.length; i++)
+//        {
+//            Log.d("Files", "FileName:" + files[i].getName());
+//
+//            File subFile = new File(getFilesDir() + File.separator + "Stories" + File.separator + files[i].getName());
+//            File[] subFiles = subFile.listFiles();
+//
+//            for (int j = 0; j < subFiles.length; j++)
+//            {
+//                Log.d("SubFiles", "FileName:" + subFiles[j].getName());
+//            }
+//
+//        }
     }
 
     void queryFireStoreDatabase() {
@@ -347,7 +369,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
         File story_directory;
         newDirectory = ("/Cloud");
         storage = FirebaseStorage.getInstance();
-        story_directory = getExternalFilesDir(newDirectory);
+//        story_directory = getExternalFilesDir(newDirectory);
+        story_directory = new File(getFilesDir() + File.separator + "Cloud");
+
         userID = mAuth.getCurrentUser().getUid();
         final Bitmap adjustedBitmap;
         gsReference = storage.getReferenceFromUrl(URLlink);
@@ -524,8 +548,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     File[] FilesForThumbnail(File file) {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+file.getName();
-        File directory = new File(path);
+//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+file.getName();
+//        File directory = new File(path);
+        File directory = new File (getFilesDir() + File.separator + "Stories" + File.separator + file.getName());
         File[] files = directory.listFiles();
 
         return files;
@@ -533,8 +558,9 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     File Thumbnail(File file) {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/"+file.getName();
-        File directory = new File(path);
+//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/"+file.getName();
+//        File directory = new File(path);
+        File directory = new File (getFilesDir() + File.separator + "Covers" + File.separator + file.getName());
         File[] covers = directory.listFiles();
         File thumbnail = covers[0];
 
@@ -741,20 +767,27 @@ public class ArchiveKidsUI extends AppCompatActivity {
         protected Boolean doInBackground(Boolean... params) {
 
             boolean authenticated = params[0];
+            boolean success = false;
 
 
-            setupListsLocal(files, coverFiles);
-            CloudThumbnailColours();
+            if(files!=null) {
+                setupListsLocal(files, coverFiles);
+                CloudThumbnailColours();
+                success = true;
+            }
 
-            return authenticated;
+            return success;
         }
 
-        protected void onPostExecute(Boolean authenticated) {
+        protected void onPostExecute(Boolean success) {
 
             progressBar.setVisibility(View.INVISIBLE);
-            cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
-            gridview.invalidate();
-            gridview.setAdapter(cloudImageAdapter);
+
+            if(success) {
+                cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCode, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
+                gridview.invalidate();
+                gridview.setAdapter(cloudImageAdapter);
+            }
         }
     }
 }

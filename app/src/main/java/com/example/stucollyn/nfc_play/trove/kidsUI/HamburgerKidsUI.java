@@ -358,17 +358,21 @@ public class HamburgerKidsUI extends FragmentActivity {
 
             Toast.makeText(this, "Resetting archive", Toast.LENGTH_LONG).show();
 
-            String LocalStoryFolder = ("/Stories");
-            String TagFolder = ("/Tag");
-            String CoverFolder = ("/Covers");
-            String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
+//            String LocalStoryFolder = ("/Stories");
+//            String TagFolder = ("/Tag");
+//            String CoverFolder = ("/Covers");
+//            String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
+//
+//            String newDirectory = LocalStoryFolder + "/";
+//            String newDirectory2 = TagFolder + "/";
+//            String newDirectory3 = CoverFolder + "/";
+//            File story_directory = getExternalFilesDir(newDirectory);
+//            File tag_directory = getExternalFilesDir(newDirectory2);
+//            File cover_directory = getExternalFilesDir(newDirectory3);
 
-            String newDirectory = LocalStoryFolder + "/";
-            String newDirectory2 = TagFolder + "/";
-            String newDirectory3 = CoverFolder + "/";
-            File story_directory = getExternalFilesDir(newDirectory);
-            File tag_directory = getExternalFilesDir(newDirectory2);
-            File cover_directory = getExternalFilesDir(newDirectory3);
+            File story_directory = new File (getFilesDir() + File.separator + "Stories");
+            File tag_directory = new File (getFilesDir() + File.separator + "Tag");
+            File cover_directory = new File (getFilesDir() + File.separator + "Covers");
 
             if (story_directory != null && !newStoryReady) {
                 deleteStoryDirectory(story_directory);

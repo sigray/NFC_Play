@@ -80,10 +80,6 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
         filesOnTag = new File[1];
         filesOnTag[0] = storyFile.get(position);
 
-        Uri story_directory_uri = FileProvider.getUriForFile(mContext,
-                "com.example.android.fileprovider",
-                filesOnTag[0].getAbsoluteFile());
-
         ShowStoryContent showStoryContent = new ShowStoryContent(mPlayer, mContext, storyGallery, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }
