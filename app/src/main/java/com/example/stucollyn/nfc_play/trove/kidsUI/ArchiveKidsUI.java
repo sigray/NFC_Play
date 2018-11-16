@@ -275,8 +275,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
             coverFolders[i].getName();
 
             File subFile = new File(getFilesDir() + File.separator + "Covers" + File.separator + coverFolders[i].getName());
-//          File[] subFiles = subFile.listFiles();
-            if(subFile.length()>0){
+            File[] subFiles = subFile.listFiles();
+            if(subFiles.length>0){
 
                 validCoverFolders.add(coverFolders[i]);
 
@@ -492,11 +492,15 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         for (int i = 0; i < validCoverFolders.size(); i++) {
 
+
+//            Log.i("validCoverFolders", String.valueOf(validCoverFolders.get(i)));
+
+
             //For the number of validStoryFolders in the Cover folder, return each file in turn and add it to
             File thumbnailsFile = Thumbnail(validCoverFolders.get(i));
             getCoverImageLocal(validCoverFolders.get(i).getName(), thumbnailsFile);
-            Log.i("Cover Files Name: ", validCoverFolders.get(i).getName() + " , File: " + validCoverFolders.get(i));
-            Log.i("Cover Image Map: ", coverImageMap.toString());
+//            Log.i("Cover Files Name: ", validCoverFolders.get(i).getName() + " , File: " + validCoverFolders.get(i));
+//            Log.i("Cover Image Map: ", coverImageMap.toString());
         }
     }
 
@@ -531,6 +535,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
         //Change to cover folder arraylist
         File directory = new File (getFilesDir() + File.separator + "Covers" + File.separator + file.getName());
         File[] covers = directory.listFiles();
+
+        Log.i("Cover Files Folder: ", file.getName());
+        Log.i("Cover Files FolSize: ", String.valueOf(covers.length));
+
         File thumbnail = covers[0];
 
         return thumbnail;
