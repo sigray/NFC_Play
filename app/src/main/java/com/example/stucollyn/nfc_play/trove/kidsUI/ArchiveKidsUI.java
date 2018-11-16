@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -58,7 +56,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     LinkedHashMap<String, ArrayList<File>> folderFiles;
     HashMap<File, File> folderImages;
     HashMap<File, Bitmap> imageFiles;
-    File[] files, coverFiles;
+    ArrayList<File> validStoryFolders, validCoverFolders;
     ImageAdapterKidsUI imageAdapter;
     CloudImageAdapterKidsUI cloudImageAdapter;
     HorizontalGridView gridview;
@@ -143,10 +141,10 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         colourCounter = 0;
         currentColour = Color.parseColor("#756bc7");;
-        colourCode = new int[files.length];
+        colourCode = new int[validStoryFolders.size()];
 
 
-        for (int i = 0; i < files.length; i++) {
+        for (int i = 0; i < validStoryFolders.size(); i++) {
 
             if(colourCounter==0) {
 
@@ -234,34 +232,57 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     void LocalSetup() {
 
-//        String StoryFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/";
-//        String CoverFilesPath = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/";
-//        File directory = new File(StoryFilesPath);
-//        File coverDirectory = new File(CoverFilesPath);
-//        files = directory.listFiles();
-//        coverFiles = coverDirectory.listFiles();
+        Log.d("LocalSetup", "Breached");
+
+        validCoverFolders = new ArrayList<File>();
+        validStoryFolders = new ArrayList<File>();
+        File findStoryFolders = new File(getFilesDir() + File.separator + "Stories");
+        File findCoverFolders = new File(getFilesDir() + File.separator + "Covers");
+        File[] storyFolders  = findStoryFolders.listFiles();
+        File[] coverFolders  = findCoverFolders.listFiles();
+
+        Log.d("LocalSetup", "storyFolders:" + storyFolders.toString());
+        Log.d("LocalSetup", "storyFolders:" + storyFolders.length);
 
 
-        File directory = new File(getFilesDir() + File.separator + "Stories");
-        File coverDirectory = new File(getFilesDir() + File.separator + "Covers");
-        files = directory.listFiles();
-        coverFiles = coverDirectory.listFiles();
 
-//        File[] files = directory.listFiles();
-//        Log.d("Files", "Size: "+ files.length);
-//        for (int i = 0; i < files.length; i++)
-//        {
-//            Log.d("Files", "FileName:" + files[i].getName());
-//
-//            File subFile = new File(getFilesDir() + File.separator + "Stories" + File.separator + files[i].getName());
-//            File[] subFiles = subFile.listFiles();
-//
-//            for (int j = 0; j < subFiles.length; j++)
-//            {
-//                Log.d("SubFiles", "FileName:" + subFiles[j].getName());
-//            }
-//
-//        }
+        for(int i = 0; i<storyFolders.length; i++) {
+
+
+            Log.d("LocalSetup", "storyFolders:" + storyFolders[i].getName());
+
+            File subFile = new File(getFilesDir() + File.separator + "Stories" + File.separator + storyFolders[i].getName());
+            File[] subFiles = subFile.listFiles();
+
+            if (subFile.length() > 0) {
+
+                for (int j = 0; j < subFiles.length; j++) {
+                    Log.d("LocalSetup", "storyFolders subFiles:" + subFiles[j].getName());
+                    String extension = FilenameUtils.getExtension(subFiles[j].toString());
+
+                    if (extension.equalsIgnoreCase("jpg")) {
+
+                        validStoryFolders.add(storyFolders[i]);
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i<coverFolders.length; i++) {
+
+            Log.d("LocalSetup", "coverFolders:" + storyFolders[i].getName());
+
+            coverFolders[i].getName();
+
+            File subFile = new File(getFilesDir() + File.separator + "Covers" + File.separator + coverFolders[i].getName());
+//          File[] subFiles = subFile.listFiles();
+            if(subFile.length()>0){
+
+                validCoverFolders.add(coverFolders[i]);
+
+            }
+
+        }
     }
 
     void queryFireStoreDatabase() {
@@ -421,13 +442,13 @@ public class ArchiveKidsUI extends AppCompatActivity {
             }
     }
 
-    void setupListsLocal(File[] files, File[] coverFiles) {
+    void setupListsLocal() {
 
         objectRecordMap = new LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>>();
 
-        for (int i = 0; i < files.length; i++) {
+        for (int i = 0; i < validStoryFolders.size(); i++) {
 
-            File[] subFiles = FilesForThumbnail(files[i]);
+            File[] subFiles = FilesForThumbnail(validStoryFolders.get(i));
             boolean setCoverImage = false;
 
             for (int j = 0; j < subFiles.length; j++) {
@@ -453,28 +474,28 @@ public class ArchiveKidsUI extends AppCompatActivity {
                         FileType = "AudioFile";
                     }
 
-                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(files[i].getName(), subFiles[j].getName(), "", subFiles[j].getAbsolutePath(), FileType, CoverImage, FileContext);
+                ObjectStoryRecordKidsUI objectStoryRecord = new ObjectStoryRecordKidsUI(validStoryFolders.get(i).getName(), subFiles[j].getName(), "", subFiles[j].getAbsolutePath(), FileType, CoverImage, FileContext);
 
-                if (objectRecordMap.containsKey(files[i].getName())) {
+                if (objectRecordMap.containsKey(validStoryFolders.get(i).getName())) {
 
-                    objectRecordMap.get(files[i].getName()).add(objectStoryRecord);
+                    objectRecordMap.get(validStoryFolders.get(i).getName()).add(objectStoryRecord);
                 }
 
                 else {
 
                     ArrayList<ObjectStoryRecordKidsUI> objectStoryRecordObjectList = new ArrayList<ObjectStoryRecordKidsUI>();
                     objectStoryRecordObjectList.add(objectStoryRecord);
-                    objectRecordMap.put(files[i].getName(), objectStoryRecordObjectList);
+                    objectRecordMap.put(validStoryFolders.get(i).getName(), objectStoryRecordObjectList);
                 }
             }
         }
 
-        for (int i = 0; i < coverFiles.length; i++) {
+        for (int i = 0; i < validCoverFolders.size(); i++) {
 
-            //For the number of files in the Cover folder, return each file in turn and add it to
-            File thumbnailsFile = Thumbnail(coverFiles[i]);
-            getCoverImageLocal(coverFiles[i].getName(), thumbnailsFile);
-            Log.i("Cover Files Name: ", coverFiles[i].getName() + " , File: " + coverFiles[i]);
+            //For the number of validStoryFolders in the Cover folder, return each file in turn and add it to
+            File thumbnailsFile = Thumbnail(validCoverFolders.get(i));
+            getCoverImageLocal(validCoverFolders.get(i).getName(), thumbnailsFile);
+            Log.i("Cover Files Name: ", validCoverFolders.get(i).getName() + " , File: " + validCoverFolders.get(i));
             Log.i("Cover Image Map: ", coverImageMap.toString());
         }
     }
@@ -490,55 +511,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
         }
     }
 
-    /*
-    public void setupLists(File[] files) {
-
-        for (int i = 0; i < files.length; i++) {
-
-            folders.add(files[i]);
-            File[] subFiles = FilesForThumbnail(files[i]);
-
-           Log.i("Reached 1: File: ", files[i].getName());
-
-            for (int j = 0; j < subFiles.length; j++) {
-
-                put(folderFiles, files[i], subFiles[j]);
-
-                Log.i("Reached 2: File: Sub", files[i].getName() + ": " + subFiles[j].getName());
-            }
-        }
-
-        for (Map.Entry<File, List<File>> entry : folderFiles.entrySet()) {
-            File key = entry.getKey();
-            List<File> value = entry.getValue();
-
-            Log.i("Reached 3: File: Sub", key.getName() + ": " + value.toString());
-
-            int loadNum = 0;
-
-            for(File element : value){
-
-                String extension = FilenameUtils.getExtension(element.toString());
-                String fileName = element.toString();
-
-                if (extension.equalsIgnoreCase("jpg")) {
-
-                    folderImages.put(key, element);
-                    loadNum++;
-                    int progressUpdate = (loadNum*100)/value.size();
-                    progressBar.setProgress(progressUpdate);
-
-                    Bitmap test = ShowPicture(element);
-                    Log.i("Test element", test.toString());
-
-                    imageFiles.put(key, ShowPicture(element));
-                }
-            }
-        }
-    }
-
-    */
-
     public static void put(Map<File, List<File>> map, File key, File value) {
         if(map.get(key) == null){
             map.put(key, new ArrayList<File>());
@@ -548,8 +520,6 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     File[] FilesForThumbnail(File file) {
 
-//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+file.getName();
-//        File directory = new File(path);
         File directory = new File (getFilesDir() + File.separator + "Stories" + File.separator + file.getName());
         File[] files = directory.listFiles();
 
@@ -558,8 +528,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
     File Thumbnail(File file) {
 
-//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Covers/"+file.getName();
-//        File directory = new File(path);
+        //Change to cover folder arraylist
         File directory = new File (getFilesDir() + File.separator + "Covers" + File.separator + file.getName());
         File[] covers = directory.listFiles();
         File thumbnail = covers[0];
@@ -770,8 +739,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
             boolean success = false;
 
 
-            if(files!=null) {
-                setupListsLocal(files, coverFiles);
+            if(validStoryFolders !=null) {
+                setupListsLocal();
                 CloudThumbnailColours();
                 success = true;
             }
@@ -791,3 +760,52 @@ public class ArchiveKidsUI extends AppCompatActivity {
         }
     }
 }
+
+/*
+    public void setupLists(File[] validStoryFolders) {
+
+        for (int i = 0; i < validStoryFolders.length; i++) {
+
+            folders.add(validStoryFolders[i]);
+            File[] subFiles = FilesForThumbnail(validStoryFolders[i]);
+
+           Log.i("Reached 1: File: ", validStoryFolders[i].getName());
+
+            for (int j = 0; j < subFiles.length; j++) {
+
+                put(folderFiles, validStoryFolders[i], subFiles[j]);
+
+                Log.i("Reached 2: File: Sub", validStoryFolders[i].getName() + ": " + subFiles[j].getName());
+            }
+        }
+
+        for (Map.Entry<File, List<File>> entry : folderFiles.entrySet()) {
+            File key = entry.getKey();
+            List<File> value = entry.getValue();
+
+            Log.i("Reached 3: File: Sub", key.getName() + ": " + value.toString());
+
+            int loadNum = 0;
+
+            for(File element : value){
+
+                String extension = FilenameUtils.getExtension(element.toString());
+                String fileName = element.toString();
+
+                if (extension.equalsIgnoreCase("jpg")) {
+
+                    folderImages.put(key, element);
+                    loadNum++;
+                    int progressUpdate = (loadNum*100)/value.size();
+                    progressBar.setProgress(progressUpdate);
+
+                    Bitmap test = ShowPicture(element);
+                    Log.i("Test element", test.toString());
+
+                    imageFiles.put(key, ShowPicture(element));
+                }
+            }
+        }
+    }
+
+    */

@@ -156,7 +156,7 @@ public class ImageAdapterKidsUI extends  RecyclerView.Adapter<ImageAdapterKidsUI
 
     File[] FilesForThumbnail(int position) {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+filesOnTag.get(position).getName();
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+filesOnTag.get(position).getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 

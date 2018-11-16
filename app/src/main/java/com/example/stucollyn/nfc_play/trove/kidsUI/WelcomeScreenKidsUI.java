@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import com.example.stucollyn.nfc_play.R;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Random;
 
 /*
 This activity is the opening animation sequence for the trove app and the first activity run on launch.
@@ -66,24 +65,24 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
     void initializeViews() {
         //Initialize views from the associated layout
-        backgroundShapes = (ImageView) findViewById(R.id.small_shapes);
-        zigzag1 = (ImageView) findViewById(R.id.zigzag_1);
-        zigzag2 = (ImageView) findViewById(R.id.zigzag_2);
-        zigzag3 = (ImageView) findViewById(R.id.zigzag_3);
-        zigzag4 = (ImageView) findViewById(R.id.zigzag_4);
-        star = (ImageView) findViewById(R.id.star);
-        moon = (ImageView) findViewById(R.id.moon);
-        shell = (ImageView) findViewById(R.id.shell);
-        book = (ImageView) findViewById(R.id.book);
-        key = (ImageView) findViewById(R.id.key);
-        leaf = (ImageView) findViewById(R.id.leaf);
-        umbrella = (ImageView) findViewById(R.id.umbrella);
-        tear = (ImageView) findViewById(R.id.tear);
-        teddy = (ImageView) findViewById(R.id.teddy);
-        heart = (ImageView) findViewById(R.id.heart);
-        halfcircle = (ImageView) findViewById(R.id.circle);
-        trove = (ImageView) findViewById(R.id.trove);
-        back = (ImageView) findViewById(R.id.back);
+        backgroundShapes = findViewById(R.id.small_shapes);
+        zigzag1 = findViewById(R.id.zigzag_1);
+        zigzag2 = findViewById(R.id.zigzag_2);
+        zigzag3 = findViewById(R.id.zigzag_3);
+        zigzag4 = findViewById(R.id.zigzag_4);
+        star = findViewById(R.id.star);
+        moon = findViewById(R.id.moon);
+        shell = findViewById(R.id.shell);
+        book = findViewById(R.id.book);
+        key = findViewById(R.id.key);
+        leaf = findViewById(R.id.leaf);
+        umbrella = findViewById(R.id.umbrella);
+        tear = findViewById(R.id.tear);
+        teddy = findViewById(R.id.teddy);
+        heart = findViewById(R.id.heart);
+        halfcircle = findViewById(R.id.circle);
+        trove = findViewById(R.id.trove);
+        back = findViewById(R.id.back);
 
         //Initialize array which stores all animated vector drawables - the zigzag views and the back button
         zigzagArray = new ImageView[5];
@@ -127,7 +126,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         allViews[15] = halfcircle;
 
         //Initialize hash map, which couples every image view with an image resource
-        IvDrawable = new HashMap<ImageView, Integer>();
+        IvDrawable = new HashMap<>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
         IvDrawable.put(moon, R.drawable.kids_ui_moon);
         IvDrawable.put(shell, R.drawable.kids_ui_shell);
@@ -157,8 +156,8 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         /*Create a series of internal folder directories.
         * Inside the 'Stories' directory, every specific object is given its own directory. The title of this directory is a unique object ID. Inside these object directories we store individual story
-        * files (images, audio, video) about the object. Inside the 'Tag' directory, every specific object is given its own directory, in the same way as with the Stories folder - using the same unique
-        * object ID. However, there are only ever two files within each object directory - an audio file and an image (or video) file. When NFC tags are read, the currently associated files are read from
+        * validStoryFolders (images, audio, video) about the object. Inside the 'Tag' directory, every specific object is given its own directory, in the same way as with the Stories folder - using the same unique
+        * object ID. However, there are only ever two validStoryFolders within each object directory - an audio file and an image (or video) file. When NFC tags are read, the currently associated validStoryFolders are read from
         * the Tag folder. Insider the 'Covers' directory, every specific object is also given its own directory. However, there is only ever the very first image associated with the object in each
         * directory. The archive activity read from this folder when populating gallery items with images. Inside the 'Cloud' directory every specific object is also given its own directory, upon being
         * downloaded from the cloud. The Cloud directory contents is deleted every time the user logs out of trove.
@@ -186,6 +185,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         }
     }
 
+    //Ensure all the large items the painted same colour - light blue/grey
     void paintViews() {
 
         //For all the large items, which are painted different colours at later stages of the app, ensure they are repainted their original colour.
@@ -198,6 +198,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
             largeItemArray[i].setImageDrawable(d);
         }
     }
+
 
     void animationIdleSequence() {
 
@@ -244,84 +245,105 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
     void idleTroveAnimation() {
 
+        //Bounce animate the trove logo
         trove.startAnimation(bounce);
     }
 
     void idleLargeItemAnimation() {
 
-        Random random = new Random();
+        //This commented-out code can be used if trying to make random large items blink if desired
+        /*Random random = new Random();
         int i = random.nextInt(9);
+        largeItemArray[i].startAnimation(blink);*/
+
+        //Blink animate the background shapes
         backgroundShapes.startAnimation(blink);
-//        largeItemArray[i].startAnimation(blink);
     }
 
+    //triggerAnimationSequence
     void animationStartSequence() {
 
+        //Create two UI Handlers. One handler to manage the timing and animation of the zig zag animated vectors. Another handler to manage the timing and animation of the larger background objects.
+        //Although presented in the opposite order, the larger objects handler is actually the one which is called and completed first.
         startupZigZagHandler = new Handler();
         startupLargeObjectsHandler = new Handler();
 
-        //Runnable to handle the zig zag drawings
+        //Runnable to handle the zig zag animated vectors drawings. A new zig zag vector should appear and animate every second until all 4 zig zags are complete.
         final Runnable zigZagRunnable = new Runnable() {
 
             @Override
             public void run() {
 
+                //Call zig zag animation method.
                 startupZigZagAnimation();
 
+                //After one second, if not all of the 4 zig zags have been completed, run the runnable again.
                 if(!startupZigZagAnimationComplete) {
 
                     startupZigZagHandler.postDelayed(this, 1000);
                 }
 
+                //When all 4 zig zags have completed, remove call backs to the zig zag handler (i.e. end zig zag animations), and begin to animate the trove logo as well as the idle animation sequence.
                 else {
 
                     startupZigZagHandler.removeCallbacks(this);
                     startupTroveLogoAnimation();
                     animationIdleSequence();
-
                 }
             }
         };
 
+        //Runnable to handle and time the fade in animations of the large background items.
         final Runnable largeObjectsRunnable = new Runnable() {
 
             @Override
             public void run() {
+
+                //Call large item animation method.
                 startupLargeItemAnimation();
 
+                //Begin to fade in a new large background object every second until all of these objects are visible.
                 if(!startupLargeObjectsAnimationComplete) {
 
                     startupLargeObjectsHandler.postDelayed(this, 1000);
                 }
 
+                //When all of the objects are visible, remove call backs and begin the zig zag animation sequence.
                 else {
 
                     startupLargeObjectsHandler.removeCallbacks(this);
+
+                    //Call the zig zag handler to begin zig zag animations for the first time.
                     startupZigZagHandler.post(zigZagRunnable);
                 }
             }
         };
 
+        //Begin the large objects handler UI thread.
         startupLargeObjectsHandler.post(largeObjectsRunnable);
-
     }
 
+    //Initial fade in animation of the trove logo.
     void startupTroveLogoAnimation() {
 
+        //Initialize animation, start it, and ensure the ImageView remains visible upon completion.
         Animation fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         trove.startAnimation(fadein);
         trove.setVisibility(View.VISIBLE);
-
     }
 
+    //Initial fade in animations of every large background object.
     void startupLargeItemAnimation() {
 
+        //Initialize animation. For each large background object, apply the animation, start it, and ensure each ImageView remains visible upon completion.
         Animation fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
+        //If the counter largeObjectsInt is remains less than the total number of ImageViews we require to animate, select the next ImageView.
         if(largeObjectsInt<11) {
 
             largeItemArray[largeObjectsInt].startAnimation(fadein);
 
+            //Listen for the current animation to finish, before the next object is eligible to be animated.
             fadein.setAnimationListener(new AnimationListener() {
 
                 @Override
@@ -336,11 +358,13 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
 
+                    //add one to the counter
                     largeObjectsInt += 1;
                 }
             });
         }
 
+        //When all large background objects are loaded, begin to animate the background shapes
         else {
 
             largeObjectsInt=0;
@@ -369,6 +393,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         }
     }
 
+    //If the user presses the star ImageView (the first image visible), skip the animations and continue to the Login activity.
     public void Skip(View view) {
 
         Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
@@ -377,6 +402,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //If the user presses the trove button (visible after all animations have completed), continue to the Login activity.
     public void Continue(View view) {
 
         idleTroveHandler.removeCallbacks(TroveRunnable);

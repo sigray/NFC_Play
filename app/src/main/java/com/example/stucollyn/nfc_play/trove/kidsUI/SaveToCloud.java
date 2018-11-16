@@ -67,7 +67,7 @@ public class SaveToCloud {
     //Save to cloud
     void CloudSaveNewStory() {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
@@ -81,8 +81,8 @@ public class SaveToCloud {
 
                 Log.i("Uploading Audio", files[i].toString());
                 fileType = "PictureFile";
-//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName(),".jpg");
-//                    files[i].renameTo(to);
+//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName(),".jpg");
+//                    validStoryFolders[i].renameTo(to);
             }
 
             else if (extension.equalsIgnoreCase("mp3")) {
@@ -98,7 +98,7 @@ public class SaveToCloud {
     //Save to cloud
     void CloudSaveNewObject() {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName();
+        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
@@ -113,8 +113,8 @@ public class SaveToCloud {
                     Log.i("Uploading Audio", files[i].toString());
                     fileType = "PictureFile";
                     coverImage = "yes";
-//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/files/Stories/"+fileDirectory.getName(),".jpg");
-//                    files[i].renameTo(to);
+//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName(),".jpg");
+//                    validStoryFolders[i].renameTo(to);
                 }
 
                 else if (extension.equalsIgnoreCase("mp3")) {

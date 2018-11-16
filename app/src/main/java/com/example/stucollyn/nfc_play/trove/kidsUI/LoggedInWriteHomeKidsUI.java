@@ -292,7 +292,6 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
 
     //Handle NFC Interactions
-
             @Override
     protected void onNewIntent(Intent intent){
         if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
