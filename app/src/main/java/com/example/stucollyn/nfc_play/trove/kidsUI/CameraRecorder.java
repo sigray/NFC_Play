@@ -63,8 +63,7 @@ class CameraRecorder extends Application {
     CameraPreview mPreview;
     public static final int MEDIA_TYPE_IMAGE = 1;
     boolean pictureSave = false;
-
-
+    private boolean safeToTakePicture = false;
 
     public CameraRecorder(Activity activity, Context context, File story_directory, File tag_directory, File cover_directory, Camera mCamera, CameraPreview mPreview) {
         this.context = context;
@@ -98,6 +97,16 @@ class CameraRecorder extends Application {
             }
             return c; // returns null if camera is unavailable
         }
+
+    void setSafeToTakePicture(boolean safeToTakePicture) {
+
+        this.safeToTakePicture = safeToTakePicture;
+    }
+
+    boolean getSafeToTakePicture() {
+
+        return safeToTakePicture;
+    }
 
     /** Create a file Uri for saving an image or video */
     Uri getOutputMediaFileUri(int type){

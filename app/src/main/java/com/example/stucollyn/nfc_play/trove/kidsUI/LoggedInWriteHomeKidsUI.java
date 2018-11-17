@@ -119,6 +119,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
     FrameLayout preview;
     LinearLayout camera_linear;
     Animation fadein, fadeout;
+    private boolean safeToTakePicture = false;
 
 
     //Grant permission to record audio (required for some newer Android devices)
@@ -487,14 +488,25 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
         try {
             cameraRecorder = new CameraRecorder(this, this, story_directory, tag_directory, cover_directory, mCamera, mPreview);
+
+            final Handler handler2 = new Handler();
+            handler2.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    cameraRecorder.setSafeToTakePicture(true);
+                }
+            }, 600);
+
+
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     // Do something after 5s = 5000ms
+                    preview.startAnimation(fadein);
                     camera_linear.startAnimation(fadein);
                     captureButton.startAnimation(fadein);
-                    preview.startAnimation(fadein);
                     preview.setVisibility(View.VISIBLE);
                     captureButton.setVisibility(View.VISIBLE);
                     camera_linear.setVisibility(View.VISIBLE);
@@ -503,8 +515,16 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
                                     // get an image from the camera
-                                    captureButton.setImageResource(R.drawable.kids_ui_record_anim_alt_mini);
-                                    mCamera.takePicture(null, null, mPicture);
+                                    if(cameraRecorder.getSafeToTakePicture()) {
+                                        Log.i("Taking Picture: ", "Safe");
+                                        captureButton.setImageResource(R.drawable.kids_ui_record_anim_alt_mini);
+                                        mCamera.takePicture(null, null, mPicture);
+                                        cameraRecorder.setSafeToTakePicture(false);
+                                    }
+
+                                    else {
+                                        Log.i("Taking Picture: ", "Unsafe");
+                                    }
                                 }
                             }
                     );
