@@ -254,7 +254,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
         //This commented-out code can be used if trying to make random large items blink if desired
         /*Random random = new Random();
         int i = random.nextInt(9);
-        largeItemArray[i].startAnimation(blink);*/
+        passCodeItemArray[i].startAnimation(blink);*/
 
         //Blink animate the background shapes
         backgroundShapes.startAnimation(blink);

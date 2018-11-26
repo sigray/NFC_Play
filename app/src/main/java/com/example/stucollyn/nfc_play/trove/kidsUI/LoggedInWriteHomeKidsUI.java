@@ -59,6 +59,16 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
+    //The ImageViews displayed on the activity layout
+
+    //The animations used on the ImageViews
+
+    //Arrays for grouping specific views together
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
+
     ImageView recordButton, cameraButton, archive, back;
 //    AnimatedVectorDrawable d;
     //Request Code Variables

@@ -53,6 +53,16 @@ import java.util.Map;
 
 public class ArchiveKidsUI extends AppCompatActivity {
 
+    //The ImageViews displayed on the activity layout
+
+    //The animations used on the ImageViews
+
+    //Arrays for grouping specific views together
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
+
     LinkedHashMap<String, ArrayList<File>> folderFiles;
     HashMap<File, File> folderImages;
     HashMap<File, Bitmap> imageFiles;

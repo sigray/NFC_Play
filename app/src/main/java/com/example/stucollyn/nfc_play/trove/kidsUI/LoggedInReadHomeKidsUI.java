@@ -36,6 +36,16 @@ import java.util.HashMap;
 
 public class LoggedInReadHomeKidsUI extends FragmentActivity {
 
+    //The ImageViews displayed on the activity layout
+
+    //The animations used on the ImageViews
+
+    //Arrays for grouping specific views together
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
+
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
     Handler startupZigZagHandler, startupLargeObjectsHandler;
@@ -183,8 +193,9 @@ public class LoggedInReadHomeKidsUI extends FragmentActivity {
             if(newStory) {
 
                 String storyRef = (String) getIntent().getExtras().get("StoryRef");
-                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Tag/" + storyRef;
-                File directory = new File(path);
+//                String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Tag/" + storyRef;
+//                File directory = new File(path);
+                File directory = new File (getFilesDir() + File.separator + "Tag" + File.separator + storyRef);
                 File[] filesOnTag = directory.listFiles();
                 PlayStory(filesOnTag);
             }

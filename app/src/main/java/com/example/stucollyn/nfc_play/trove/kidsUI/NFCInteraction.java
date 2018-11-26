@@ -108,8 +108,10 @@ public class NFCInteraction {
         ndef.close();
 
 //        String path = packageName.toString()+"/validStoryFolders";
-        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Tag/" + s;
-        File directory = new File(path);
+//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Tag/" + s;
+        File directory = new File (context.getFilesDir() + File.separator + "Tag" + File.separator + s);
+
+//        File directory = new File(path);
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
 

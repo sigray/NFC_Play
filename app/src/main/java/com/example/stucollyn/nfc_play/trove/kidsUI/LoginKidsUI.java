@@ -2,7 +2,6 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -30,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.example.stucollyn.nfc_play.*;
-import com.example.stucollyn.nfc_play.LoginDialogFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,43 +41,109 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+This activity handles the login procedure for the app, allowing a new user to sign up or an existing user to sign in. New users must submit their name, an  email address
+and a password. New users must enter a pattern to sign in.
+ */
+
+/*
+To do: allow users to set and reset password object patterns, and for that password to be pulled and validated from the cloud rather than as it currently is - hard coded (heart, key, book).
+ */
+
 public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener,
         LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
 
+    //The ImageViews displayed on the activity layout
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
-    Handler startupZigZagHandler, startupLargeObjectsHandler;
+
+    //The animations used on the ImageViews
     Animation spin, shrink, blink, draw, bounce, fadeout, shake;
+
+    //Arrays for grouping specific views together
+    ImageView passCodeItemArray[], nonPassCodeItemArray[];
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+    HashMap<ImageView, Integer> IvDrawable;
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
+    Handler startupZigZagHandler, startupLargeObjectsHandler;
     int largeObjectsInt = 0;
     boolean startupLargeObjectsAnimationComplete = false, passcodeReady = false;
-    ImageView largeItemArray[], otherItemArray[];
-    HashMap<ImageView, Integer> IvDrawable;
+    ViewGroup mRootView;
+
+    //trove Voice variables
+    CommentaryInstruction commentaryInstruction;
+
+    //Google Firebase Backend, password, and password display variables
+    private FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    boolean isNetworkConnected;
+    boolean authenticated = false;
     String testPasscode = "heartmoonshell";
     String passcode = "heartkeybook";
     StringBuilder passcodeAppend;
     Integer[] paintColourArray;
     int paintColourArrayInt = 0;
     int attemptInt = 0;
-    ViewGroup mRootView;
-    private FirebaseAuth mAuth;
-    FirebaseFirestore db;
-    boolean isNetworkConnected;
-    boolean authenticated = false;
-    CommentaryInstruction commentaryInstruction;
 
+    //onCreate is called when the activity starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Layout associated with this activity
         setContentView(R.layout.activity_login_kids_ui);
+        //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //Initialize the ImageViews for programmatic use
+        initializeViews();
+        //Check for data connection before allowing user to sign in via cloud account
+        checkConnection();
+        //Check where the user navigated to this activity from and take appropriate action
+        checkPreviousActivity();
+    }
+
+    //Check for data connection before allowing user to sign in via cloud account
+    void checkConnection() {
+
+        //Call method which checks for connection
+        isNetworkConnected = isNetworkConnected();
+
+        //If there is a data connection currently available for use, attempt to authenticate login details with Firebase,
+        // allow user to login offline but without a profile and access only to local storage.
+        if(isNetworkConnected) {
+
+            AuthenticatedLogin();
+        }
+
+        else {
+
+            //Fadeout back button and call passcodePhase method to show passcode objects
+            //Note, the need to enter a passcode could be completely removed once the app goes live as security is only assured
+            //to individuals with an active user account i.e. if an individual were to root the device. However, a simple non-cloud
+            //authenticated passcode / useraccount works (locally in the short-term) as stories are currently saved to internal folders.
+            back.startAnimation(fadeout);
+            back.setVisibility(View.INVISIBLE);
+            PasscodePhase();
+        }
+    }
+
+    void initializeViews() {
+
+        //Initialize view group - to reference all image views we will be manipulating and animating.
         mRootView = (ViewGroup) findViewById(R.id.login_kids_ui);
 
+        //Initialize passcode builder which creates the string representation of object presses.
         passcodeAppend = new StringBuilder("");
+
+        //Initialize the three different colours used to denote passcode object presses. Every time a new passcode object is pressed
+        //it is painted by one of the below colours.
         paintColourArray = new Integer[3];
         paintColourArray[0] = android.graphics.Color.rgb(255, 157, 0);
         paintColourArray[1] = android.graphics.Color.rgb(253, 195, 204);
         paintColourArray[2] = android.graphics.Color.rgb(0, 235, 205);
 
+        //Initialize the image views themselves.
         backgroundShapes = (ImageView) findViewById(R.id.small_shapes);
         zigzag1 = (ImageView) findViewById(R.id.zigzag_1);
         zigzag2 = (ImageView) findViewById(R.id.zigzag_2);
@@ -99,6 +163,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         trove = (ImageView) findViewById(R.id.trove);
         back = (ImageView) findViewById(R.id.back);
 
+        //Hashmap which we can use to reference the image resource of each imageview.
         IvDrawable = new HashMap<ImageView, Integer>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
         IvDrawable.put(moon, R.drawable.kids_ui_moon);
@@ -111,67 +176,51 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         IvDrawable.put(teddy, R.drawable.kids_ui_teddy);
         IvDrawable.put(heart,  R.drawable.kids_ui_heart);
 
-        largeItemArray = new ImageView[10];
-        largeItemArray[0] = star;
-        largeItemArray[1] = moon;
-        largeItemArray[2] = shell;
-        largeItemArray[3] = book;
-        largeItemArray[4] = key;
-        largeItemArray[5] = leaf;
-        largeItemArray[6] = umbrella;
-        largeItemArray[7] = tear;
-        largeItemArray[8] = teddy;
-        largeItemArray[9] = heart;
+        //Initialize array which stores all of the large background objects used as part of the passcode.
+        passCodeItemArray = new ImageView[10];
+        passCodeItemArray[0] = star;
+        passCodeItemArray[1] = moon;
+        passCodeItemArray[2] = shell;
+        passCodeItemArray[3] = book;
+        passCodeItemArray[4] = key;
+        passCodeItemArray[5] = leaf;
+        passCodeItemArray[6] = umbrella;
+        passCodeItemArray[7] = tear;
+        passCodeItemArray[8] = teddy;
+        passCodeItemArray[9] = heart;
 
-        otherItemArray = new ImageView[7];
-        otherItemArray[0] = backgroundShapes;
-        otherItemArray[1] = zigzag1;
-        otherItemArray[2] = zigzag2;
-        otherItemArray[3] = zigzag3;
-        otherItemArray[4] = zigzag4;
-        otherItemArray[5] = halfcircle;
-        otherItemArray[6] = trove;
+        //Initialize array which stores all non-passcode objects.
+        nonPassCodeItemArray = new ImageView[7];
+        nonPassCodeItemArray[0] = backgroundShapes;
+        nonPassCodeItemArray[1] = zigzag1;
+        nonPassCodeItemArray[2] = zigzag2;
+        nonPassCodeItemArray[3] = zigzag3;
+        nonPassCodeItemArray[4] = zigzag4;
+        nonPassCodeItemArray[5] = halfcircle;
+        nonPassCodeItemArray[6] = trove;
 
-    //Initialize animations
+        //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
         shake = AnimationUtils.loadAnimation(this, R.anim.shake_left);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        CheckPreviousActivity();
 
-        isNetworkConnected = isNetworkConnected();
-
-        if(isNetworkConnected) {
-
-           AuthenticatedLogin();
-        }
-
-        else {
-
-            back.startAnimation(fadeout);
-            back.setVisibility(View.INVISIBLE);
-            PasscodePhase();
-        }
     }
 
-    void CheckPreviousActivity() {
+    //Check what the previous activity was and take appropriate action. Currently, the default previous activity will be the WelcomeScreen.
+    void checkPreviousActivity() {
 
+        //Check what the previous activity was from the variable passed from the last activity.
         String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
 
+        //If the previous activity was WelcomeScreen, play the welcome commentary instruction.
         if(previousActivity.equals("WelcomeScreenKidsUI")) {
 
             commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.helloandpassword), false, null, "LoginKidsUI");
         }
-
-        else {
-
-
-        }
-
     }
 
-    // The dialog fragment receives a reference to this Activity through the
-    // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
+    //defined by the SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
         // User touched the dialog's positive imageView
@@ -180,14 +229,15 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         FirebaseSignUp(username, password, firstName, lastName);
     }
 
+    //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
+    //defined by the SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
     }
 
-    // The dialog fragment receives a reference to this Activity through the
-    // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    //The login dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
+    //defined by the LoginDialogFragmentKidsUI.NoticeLoginDialogListener interface.
     @Override
     public void onLoginDialogPositiveClick(String username, String password) {
         // User touched the dialog's positive imageView
@@ -197,6 +247,8 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         FirebaseLogin(username, password);
     }
 
+    //The login dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
+    //defined by the LoginDialogFragmentKidsUI.NoticeLoginDialogListener interface.
     @Override
     public void onLoginDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
@@ -329,26 +381,26 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
     void startupLargeItemAnimation() {
 
-        for (int i=0; i<otherItemArray.length; i++) {
+        for (int i = 0; i< nonPassCodeItemArray.length; i++) {
 
-            otherItemArray[i].setClickable(false);
-            otherItemArray[i].startAnimation(fadeout);
-            otherItemArray[i].setVisibility(View.INVISIBLE);
+            nonPassCodeItemArray[i].setClickable(false);
+            nonPassCodeItemArray[i].startAnimation(fadeout);
+            nonPassCodeItemArray[i].setVisibility(View.INVISIBLE);
         }
 
-        for (int i=0; i<largeItemArray.length; i++) {
+        for (int i = 0; i< passCodeItemArray.length; i++) {
 
-            largeItemArray[i].setClickable(true);
+            passCodeItemArray[i].setClickable(true);
         }
 
 /*
         Animation fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
 
-        for (int i=0; i<largeItemArray.length; i++) {
+        for (int i=0; i<passCodeItemArray.length; i++) {
 
-            largeItemArray[i].startAnimation(fadein);
-            largeItemArray[i].setClickable(true);
-            largeItemArray[i].setVisibility(View.VISIBLE);
+            passCodeItemArray[i].startAnimation(fadein);
+            passCodeItemArray[i].setClickable(true);
+            passCodeItemArray[i].setVisibility(View.VISIBLE);
         }
 
         */
@@ -452,13 +504,13 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             v.vibrate(500);
         }
 
-        for(int i=0; i<largeItemArray.length; i++) {
+        for(int i = 0; i< passCodeItemArray.length; i++) {
 
-            largeItemArray[i].startAnimation(shake);
-            Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(largeItemArray[i]), null);
+            passCodeItemArray[i].startAnimation(shake);
+            Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(passCodeItemArray[i]), null);
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d, android.graphics.Color.rgb(111, 133, 226));
-            largeItemArray[i].setImageDrawable(d);
+            passCodeItemArray[i].setImageDrawable(d);
         }
     }
 
@@ -565,17 +617,17 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
    /* public void setPasscodeReady(){
 
-//        VectorChildFinder vector = new VectorChildFinder(LoginKidsUI.this, IvDrawable.get(largeItemArray[0]), largeItemArray[0]);
+//        VectorChildFinder vector = new VectorChildFinder(LoginKidsUI.this, IvDrawable.get(passCodeItemArray[0]), passCodeItemArray[0]);
 //
 //        VectorDrawableCompat.VFullPath path1 = vector.findPathByName("path1");
 //        path1.setFillColor(Color.RED);
 
         if(passcodeReady){
 
-            for(int i =0; i<largeItemArray.length; i++) {
+            for(int i =0; i<passCodeItemArray.length; i++) {
 
-                largeItemArray[i].setClickable(true);
-                largeItemArray[i].setOnClickListener(new View.OnClickListener() {
+                passCodeItemArray[i].setClickable(true);
+                passCodeItemArray[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Toast.makeText(LoginKidsUI.this,
@@ -584,10 +636,10 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
 
 
 
-                    Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(largeItemArray[largeObjectsInt]), null);
+                    Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(passCodeItemArray[largeObjectsInt]), null);
                     d = DrawableCompat.wrap(d);
                     DrawableCompat.setTint(d, Color.CYAN);
-                    largeItemArray[largeObjectsInt].setImageDrawable(d);
+                    passCodeItemArray[largeObjectsInt].setImageDrawable(d);
                 }
             });
             }

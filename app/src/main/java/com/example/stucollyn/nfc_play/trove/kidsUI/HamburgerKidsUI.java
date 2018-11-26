@@ -47,6 +47,16 @@ import java.util.UUID;
 
 public class HamburgerKidsUI extends FragmentActivity {
 
+    //The ImageViews displayed on the activity layout
+
+    //The animations used on the ImageViews
+
+    //Arrays for grouping specific views together
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+
+    //Handlers, runnables, and logical components governing the timing and repetition of animations
+
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, back, back2, halfcircle;
     Handler startupZigZagHandler, startupLargeObjectsHandler;
