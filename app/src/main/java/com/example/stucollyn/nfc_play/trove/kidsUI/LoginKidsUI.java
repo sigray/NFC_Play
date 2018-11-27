@@ -48,14 +48,17 @@ and a password. New users must enter a pattern to sign in.
 
 /*
 To do: allow users to set and reset password object patterns, and for that password to be pulled and validated from the cloud rather than as it currently is - hard coded (heart, key, book).
+To do: //Note, the need to enter a passcode could be completely removed once the app goes live as security is only assured
+       //to individuals with an active user account i.e. if an individual were to root the device. However, a simple non-cloud
+       //authenticated passcode / useraccount works (locally in the short-term) as stories are currently saved to internal folders.
  */
 
-public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener,
-        LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
+    public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, HomeScreen.NoticeSignUpDialogListener,
+            LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
 
-    //The ImageViews displayed on the activity layout
-    ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-            leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
+        //The ImageViews displayed on the activity layout
+        ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
+                leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
 
     //The animations used on the ImageViews
     Animation spin, shrink, blink, draw, bounce, fadeout, shake;
@@ -203,7 +206,6 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
         shake = AnimationUtils.loadAnimation(this, R.anim.shake_left);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-
     }
 
     //Check what the previous activity was and take appropriate action. Currently, the default previous activity will be the WelcomeScreen.
@@ -220,7 +222,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     }
 
     //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener interface.
+    //defined by the HomeScreen.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
         // User touched the dialog's positive imageView
@@ -230,10 +232,12 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     }
 
     //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener interface.
+    //defined by the HomeScreen.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
+
+        //Insert some operation e.g. close dialog.
     }
 
     //The login dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
@@ -241,8 +245,6 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     @Override
     public void onLoginDialogPositiveClick(String username, String password) {
         // User touched the dialog's positive imageView
-        Log.i("username: ", username);
-        Log.i("password: ", password);
 
         FirebaseLogin(username, password);
     }
@@ -252,59 +254,75 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     @Override
     public void onLoginDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
+
+        //Insert some operation e.g. close dialog.
     }
 
+    //When the login button is pressed, open login button dialog fragment.
     @Override
     public void onLoginButton() {
 
-        Toast.makeText(LoginKidsUI.this,
-                "Wooohoo",
-                Toast.LENGTH_LONG).show();
         DialogFragment dialog = new LoginDialogFragmentKidsUI();
         dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
+    //To do:
+    //When signup button is pressed - do something.
     public void onSignUpButton(){
 
-//        DialogFragment dialog = new SignUpDialogFragmentKidsUI();
+//        DialogFragment dialog = new HomeScreen();
 //        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
+    //Check whether a network connection is present.
     private boolean isNetworkConnected() {
 
+        //Use Android connectivity manager to get the status of whether connected to a data connection.
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
     }
 
+    //Launch signup dialog fragment.
     void newLoginSignUp() {
 
         DialogFragment dialog = new LoginOrSignUpDialogFragment();
         dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
+    //Authenticate Firebase user credentials
     void AuthenticatedLogin() {
 
+        //Get Firebase authentication token
         mAuth = FirebaseAuth.getInstance();
+        //Get Firebase database instance
         db = FirebaseFirestore.getInstance();
 
+        //Get Firebase user for current authentication token.
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        //If the user exists allow them to enter their passcode.
         if (user != null) {
 
+            //Launch visible text message on screen to show the name of the user successfully attempting to login
             Toast.makeText(LoginKidsUI.this,
                     "Logged in as " + user.getEmail(),
                     Toast.LENGTH_LONG).show();
+            //Set the value of 'authenticated' variable to true - this variable is then passed to subsequent activities to denote the current user has been authenticated
             authenticated = true;
             PasscodePhase();
         }
 
+        //If the user does not exist, launch user sign up sequence.
         else {
 
             newLoginSignUp();
         }
     }
 
+    //Firebase login sequence
     void FirebaseLogin(String username, String password) {
 
+        //Use authentication token to sign-in with registered username and password. If this process is successful launch passcode sequence. If not launch failure message.
         mAuth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -326,44 +344,19 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
                 });
     }
 
-    void FirebaseDatabaseNewUser(String username, String password, String firstName, String lastName) {
-
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        Map<String, Object> newUser = new HashMap<>();
-        newUser.put("Username", username);
-        newUser.put("Password", password);
-        newUser.put("First Name", firstName);
-        newUser.put("Last Name", lastName);
-
-        db.collection("User").document(username)
-                .set(newUser)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
-
-    }
-
+    //Sign-up new user sequence.
+    //To do: add mechanism for saving visual password.
     void FirebaseSignUp(final String username, final String password, final String firstName, final String lastName) {
 
+        //Create authentication credentials for cloud storage folders.
         mAuth.createUserWithEmailAndPassword(username, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(LoginKidsUI.this, "Account Created.",
-                                    Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            //Now add user's details to trove database
                             FirebaseDatabaseNewUser(username, password, firstName, lastName);
-                            FirebaseLogin(username, password);
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(LoginKidsUI.this, "Authentication failed.",
@@ -373,14 +366,50 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
                 });
     }
 
+    //Add new user's details to database
+    void FirebaseDatabaseNewUser(final String username, final String password, String firstName, String lastName) {
 
+
+        //Gather user details and put them in a Hash Map
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("Username", username);
+        newUser.put("Password", password);
+        newUser.put("First Name", firstName);
+        newUser.put("Last Name", lastName);
+
+        //Access the trove database and the 'User' collection. Create new document for new user using the data in the newUser map. If process is successful, log in new user automatically.
+        //If process fails, show error message.
+        db.collection("User").document(username)
+                .set(newUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Toast.makeText(LoginKidsUI.this, "Account Created.",
+                                Toast.LENGTH_SHORT).show();
+                        FirebaseLogin(username, password);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    //Begin the passcode sequence.
     void PasscodePhase() {
 
+        //Animate views to show only passcode objects.
         startupLargeItemAnimation();
     }
 
+    //Animate views to show only passcode objects.
     void startupLargeItemAnimation() {
 
+        //Hide non-passcode objects.
         for (int i = 0; i< nonPassCodeItemArray.length; i++) {
 
             nonPassCodeItemArray[i].setClickable(false);
@@ -388,98 +417,106 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             nonPassCodeItemArray[i].setVisibility(View.INVISIBLE);
         }
 
+        //Ensure all passcode objects are made clickable.
         for (int i = 0; i< passCodeItemArray.length; i++) {
 
             passCodeItemArray[i].setClickable(true);
         }
-
-/*
-        Animation fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
-
-        for (int i=0; i<passCodeItemArray.length; i++) {
-
-            passCodeItemArray[i].startAnimation(fadein);
-            passCodeItemArray[i].setClickable(true);
-            passCodeItemArray[i].setVisibility(View.VISIBLE);
-        }
-
-        */
     }
 
+    //When shell button is pressed, append the string 'shell' to current password
     public void shell (View view) {
 
         AppendPassword("shell", shell, R.drawable.kids_ui_shell);
     }
 
+    //When heart button is pressed, append the string 'heart' to current password
     public void heart (View view) {
 
         AppendPassword("heart", heart, R.drawable.kids_ui_heart);
     }
 
+    //When teddy button is pressed, append the string 'teddy' to current password
     public void teddy (View view) {
 
         AppendPassword("teddy", teddy, R.drawable.kids_ui_teddy);
     }
 
+    //When key button is pressed, append the string 'key' to current password
     public void key (View view) {
 
         AppendPassword("key", key, R.drawable.kids_ui_key);
     }
 
+    //When star button is pressed, append the string 'star' to current password
     public void star (View view) {
 
         AppendPassword("star", star, R.drawable.kids_ui_star);
     }
 
+    //When umbrella button is pressed, append the string 'umbrella' to current password
     public void umbrella (View view) {
 
         AppendPassword("umbrella", umbrella, R.drawable.kids_ui_umbrella);
     }
 
+    //When leaf button is pressed, append the string 'leaf' to current password
     public void leaf (View view) {
 
         AppendPassword("leaf", leaf, R.drawable.kids_ui_leaf);
     }
 
+    //When tear button is pressed, append the string 'tear' to current password
     public void tear (View view) {
 
         AppendPassword("tear", tear, R.drawable.kids_ui_tear);
     }
 
+    //When moon button is pressed, append the string 'moon' to current password
     public void moon (View view) {
 
         AppendPassword("moon", moon, R.drawable.kids_ui_moon);
     }
 
+    //When book button is pressed, append the string 'book' to current password
     public void book (View view) {
 
         AppendPassword("book", book, R.drawable.kids_ui_book);
     }
 
+    //Append given string to current password. Paint the corresponding image views one of three colours to represent its selection.
+    //If password is correct, begin login sequence. Else, return image views to their original colour.
     void AppendPassword(String imageName, ImageView ivName, Integer drawable) {
 
+        //For the given image view, paint its corresponding image resource.
         Drawable d = VectorDrawableCompat.create(getResources(), drawable, null);
         d = DrawableCompat.wrap(d);
         DrawableCompat.setTint(d, paintColourArray[paintColourArrayInt]);
         ivName.setImageDrawable(d);
 
+        //Cycle through the 3 different possible colours to paint the image view.
         if(paintColourArrayInt<2) {
 
             paintColourArrayInt += 1;
         }
 
+        //After reaching the end of the third and final colour option, return to first colour to restart cycle.
         else {
 
             paintColourArrayInt = 0;
         }
 
+        //Append string to current working password.
         passcodeAppend.append(imageName);
 
+        //If current working password matches the target, begin login sequence.
+        //To do: pull target from database.
         if(passcodeAppend.toString().equals(passcode)) {
 
             Login();
         }
 
+        //If the number of image view strings appended is less than 9, add one to the attempt counter. If not, reset the number of attempts and the current working password.
         if(attemptInt<9) {
 
             attemptInt += 1;
@@ -493,8 +530,10 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         }
     }
 
+    //Reset current working password.
     void ResetAttempt(){
 
+        //Vibrate the phone to indicate reset. Check the device SDK to ensure that this functionality is implemented most appropriately.
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // Vibrate for 500 milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -504,6 +543,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             v.vibrate(500);
         }
 
+        //Animate shake and default paint every image view to indicate reset.
         for(int i = 0; i< passCodeItemArray.length; i++) {
 
             passCodeItemArray[i].startAnimation(shake);
@@ -514,18 +554,16 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         }
     }
 
+    //Login sequence animations and chime noise from trove to acknowledge successful login.
     void Login() {
 
-//        Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
-//        intent.putExtra("PreviousActivity", "LoginKidsUI");
-//        LoginKidsUI.this.startActivity(intent);
-//        overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
-
+        //Play chime noise.
         commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null, "LoginKidsUI");
 
+        //Initialize explode transition which sends shapes flying in all directions.
         Transition explode = new Explode();
 
-
+        //Listen for explode transition to end. Upon ending begin intent to move to Home Screen Activity.
         explode.addListener(new Transition.TransitionListener() {
             @Override
             public void onTransitionStart(Transition transition) {
@@ -535,6 +573,7 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
             @Override
             public void onTransitionEnd(Transition transition) {
 
+                //Advance to Home Screen Activity.
                 Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
                 intent.putExtra("PreviousActivity", "LoginKidsUI");
                 intent.putExtra("Authenticated", authenticated);
@@ -558,11 +597,13 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
         });
 
 
+        //Manage explode transition. Upon finishing animation, hide listed image views.
         TransitionManager.beginDelayedTransition(mRootView, explode);
         toggleVisibility(star, moon, shell, book, key,
                 leaf, umbrella, tear, teddy, heart);
     }
 
+    //Toggle view visibility off and on.
     private static void toggleVisibility(ImageView... views) {
         for (ImageView view : views) {
             boolean isVisible = view.getVisibility() == View.VISIBLE;
@@ -579,14 +620,15 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     };
 
     //Activity Governance
-
     @Override
     public void onPause(){
+
         super.onPause();
     }
 
     @Override
     public void onResume(){
+
         super.onResume();
     }
 
@@ -599,14 +641,15 @@ public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialog
     public void onDestroy() {
 
         super.onDestroy();
-
     }
 
+    //When the back button image view is pressed, forward action to onBackPressed().
     public void Back(View view) {
 
         onBackPressed();
     }
 
+    //If the back button is pressed, launch option for users to login using different credentials or sign up.
     @Override
     public void onBackPressed() {
 

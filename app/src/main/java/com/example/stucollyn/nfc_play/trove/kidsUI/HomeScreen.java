@@ -16,7 +16,11 @@ import com.example.stucollyn.nfc_play.R;
  * Created by StuCollyn on 20/07/2018.
  */
 
-public class SignUpDialogFragmentKidsUI extends DialogFragment {
+/*
+This activity acts as the app's home page. Within this activity users are able to scan object's NFC tags. This is also the first activity to incorporate the hamburger menu
+ */
+
+public class HomeScreen extends DialogFragment {
 
     String username = "";
     String password = "";
@@ -33,7 +37,7 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
     }
 
     // Use this instance of the interface to deliver action events
-    SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener mListener;
+    HomeScreen.NoticeSignUpDialogListener mListener;
 
     // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
@@ -42,7 +46,7 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-//            mListener = (SignUpDialogFragmentKidsUI.NoticeSignUpDialogListener) activity;
+//            mListener = (HomeScreen.NoticeSignUpDialogListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -80,7 +84,7 @@ public class SignUpDialogFragmentKidsUI extends DialogFragment {
         })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        SignUpDialogFragmentKidsUI.this.getDialog().cancel();
+                        HomeScreen.this.getDialog().cancel();
                     }
                 });
         return builder.create();
