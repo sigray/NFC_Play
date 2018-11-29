@@ -166,7 +166,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         preview.addView(mPreview);
         archiveStoryHandler = new Handler();
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, LoggedInWriteHomeKidsUI.class, "ObjectAddStoryKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, RecordStory.class, "ObjectAddStoryKidsUI");
         SetupStoryLocation();
         AnimationSetup();
         recordButtonController();
@@ -209,7 +209,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     void recordButtonController() {
 
-//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, LoggedInReadHomeKidsUI.class);
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
 
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
@@ -241,7 +241,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, LoggedInReadHomeKidsUI.class, "ObjectAddStoryKidsUI");
+//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreen.class, "ObjectAddStoryKidsUI");
                         SaveNewStory();
                         break;
                 }
@@ -418,7 +418,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                 Log.d("Tag", "Error accessing file: " + e.getMessage());
             }
 
-//            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+//            new RecordStory.ProcessPicture().execute();
             UUID objectUUID = UUID.randomUUID();
 
             if(authenticated) {
@@ -533,7 +533,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         ResetCamera();
         commentaryInstruction.stopPlaying();
         animationBackHandler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, LoggedInReadHomeKidsUI.class);
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreen.class);
         intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
         intent.putExtra("Authenticated", authenticated);
         ObjectAddStoryKidsUI.this.startActivity(intent);
@@ -570,7 +570,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerKidsUI.class);
-        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ObjectAddStoryKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);

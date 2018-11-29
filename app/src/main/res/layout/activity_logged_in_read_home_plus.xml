@@ -8,7 +8,7 @@
             android:layout_height="match_parent"
             android:background="#4559de"
             android:id="@+id/activity_logged_in_read_home"
-            tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInReadHomeKidsUI">
+            tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HomeScreen">
 
             <ImageView
                 android:id="@+id/small_shapes"
@@ -104,7 +104,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/kids_ui_trove"
-                android:onClick="Continue"
+                android:onClick="progressToRecordStory"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -315,7 +315,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:contentDescription="@string/app_name"
-                android:onClick="Drawer"
+                android:onClick="Hamburger"
                 android:scaleType="centerCrop"
                 android:src="@drawable/menu"
                 app:layout_constraintBottom_toBottomOf="parent"

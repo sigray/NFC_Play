@@ -52,7 +52,7 @@ class VideoRecorder  extends Application {
                 // Error occurred while creating the File
             }
 
-            // Continue only if the File was successfully created
+            // progressToRecordStory only if the File was successfully created
             if (videoFile != null) {
               //  videoURI = FileProvider.getUriForFile(this,
                 //        "com.example.android.fileprovider",

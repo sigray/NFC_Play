@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -24,7 +22,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
@@ -39,14 +36,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
 
 public class ExploreArchiveItem extends AppCompatActivity {
 
@@ -89,7 +81,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         fileMap = new LinkedHashMap<String, File>();
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.exploreobject), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.exploreobject), false, RecordStory.class, "RecordStory");
         AnimationSetup();
         LoadFiles();
     }
@@ -403,7 +395,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ExploreArchiveItem.this, HamburgerKidsUI.class);
-        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
@@ -429,7 +421,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void Home(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, LoggedInReadHomeKidsUI.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, HomeScreen.class);
         intent.putExtra("PreviousActivity", "ExploreArchiveItem");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
@@ -493,7 +485,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent(ExploreArchiveItem.this, ArchiveKidsUI.class);
-                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                intent.putExtra("PreviousActivity", "RecordStory");
                 intent.putExtra("Authenticated", authenticated);
                 ExploreArchiveItem.this.startActivity(intent);
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#4559de"
     android:id="@+id/logged_in_write_home_layout"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsUI">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.RecordStory">
 
     <ImageView
         android:id="@+id/small_shapes"
@@ -119,7 +119,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:contentDescription="@string/app_name"
-        android:onClick="Drawer"
+        android:onClick="Hamburger"
         android:scaleType="centerCrop"
         android:src="@drawable/menu"
         app:layout_constraintBottom_toBottomOf="parent"

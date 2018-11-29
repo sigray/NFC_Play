@@ -1,11 +1,8 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -13,14 +10,7 @@ import android.hardware.Camera;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -31,15 +21,12 @@ import com.example.stucollyn.nfc_play.R;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-
-import static com.example.stucollyn.nfc_play.trove.kidsUI.LoggedInWriteHomeKidsUI.REQUEST_IMAGE_CAPTURE;
 
 /**
  * Created by StuCollyn on 07/06/2018.
@@ -181,7 +168,7 @@ class CameraRecorder extends Application {
                 // Error occurred while creating the File
             }
 
-            // Continue only if the File was successfully created
+            // progressToRecordStory only if the File was successfully created
             if (photoFile != null) {
                // photoURI = FileProvider.getUriForFile(this,
                   //      "com.example.android.fileprovider",

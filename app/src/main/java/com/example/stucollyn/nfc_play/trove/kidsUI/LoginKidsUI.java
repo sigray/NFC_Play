@@ -53,7 +53,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
        //authenticated passcode / useraccount works (locally in the short-term) as stories are currently saved to internal folders.
  */
 
-    public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, HomeScreen.NoticeSignUpDialogListener,
+    public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragment.NoticeSignUpDialogListener,
             LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
 
         //The ImageViews displayed on the activity layout
@@ -100,6 +100,8 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Initialize the ImageViews for programmatic use
         initializeViews();
+        //Initialize commentary instructions for trove's voice and other noises
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
         //Check for data connection before allowing user to sign in via cloud account
         checkConnection();
         //Check where the user navigated to this activity from and take appropriate action
@@ -131,6 +133,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         }
     }
 
+    //Initialize all views in activity
     void initializeViews() {
 
         //Initialize view group - to reference all image views we will be manipulating and animating.
@@ -205,7 +208,6 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         //Initialize animations
         fadeout = AnimationUtils.loadAnimation(this, R.anim.slowfadeout);
         shake = AnimationUtils.loadAnimation(this, R.anim.shake_left);
-        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
     }
 
     //Check what the previous activity was and take appropriate action. Currently, the default previous activity will be the WelcomeScreen.
@@ -222,7 +224,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     }
 
     //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the HomeScreen.NoticeSignUpDialogListener interface.
+    //defined by the SignUpDialogFragment.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpPositiveClick(String username, String password, String firstName, String lastName) {
         // User touched the dialog's positive imageView
@@ -232,7 +234,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     }
 
     //The sign up dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the HomeScreen.NoticeSignUpDialogListener interface.
+    //defined by the SignUpDialogFragment.NoticeSignUpDialogListener interface.
     @Override
     public void onDialogSignUpNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
@@ -270,7 +272,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     //When signup button is pressed - do something.
     public void onSignUpButton(){
 
-//        DialogFragment dialog = new HomeScreen();
+//        DialogFragment dialog = new SignUpDialogFragment();
 //        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
@@ -574,7 +576,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
             public void onTransitionEnd(Transition transition) {
 
                 //Advance to Home Screen Activity.
-                Intent intent = new Intent(LoginKidsUI.this, LoggedInReadHomeKidsUI.class);
+                Intent intent = new Intent(LoginKidsUI.this, HomeScreen.class);
                 intent.putExtra("PreviousActivity", "LoginKidsUI");
                 intent.putExtra("Authenticated", authenticated);
                 LoginKidsUI.this.startActivity(intent);

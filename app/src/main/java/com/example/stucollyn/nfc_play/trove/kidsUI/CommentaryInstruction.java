@@ -8,8 +8,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
-import com.example.stucollyn.nfc_play.R;
-
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -74,8 +72,8 @@ public class CommentaryInstruction {
         }
     }
 
-    //Start audio media player and start listening for stop imageView to be pressed
-    public void startPlaying(final boolean onCompleteChangeActivitiy, final Class activityName, final String currentActivityName) {
+    //Start audio media player and start listening for stop imageView to be pressed. Upon completion of instruction
+    public void startPlaying(final boolean onCompleteChangeActivity, final Class activityName, final String currentActivityName) {
         mPlayer.start();
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
@@ -89,16 +87,16 @@ public class CommentaryInstruction {
 //                    inputHandler.removeCallbacksAndMessages(null);
 //                }
 
-                if(onCompleteChangeActivitiy) {
+                if(onCompleteChangeActivity) {
 
-                    if(activityName==LoggedInReadHomeKidsUI.class) {
+                    if(activityName==HomeScreen.class) {
 
-                        LoggedInReadHomeKidsUI();
+                        HomeScreen();
                     }
 
                     else if(activityName==ArchiveKidsUI.class) {
 
-                        ArchiveKidsUI();
+                        ArchiveMainMenu();
                     }
 
                     else {
@@ -109,18 +107,18 @@ public class CommentaryInstruction {
         });
     }
 
-    void ArchiveKidsUI() {
+    void ArchiveMainMenu() {
 
         Intent intent = new Intent(context, ArchiveKidsUI.class);
-        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         context.startActivity(intent);
     }
 
-    void LoggedInReadHomeKidsUI() {
+    void HomeScreen() {
 
-        Intent intent = new Intent(context, LoggedInReadHomeKidsUI.class);
-        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        Intent intent = new Intent(context, HomeScreen.class);
+        intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("NewStory", true);
         intent.putExtra("StoryRef", tag_data);

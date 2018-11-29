@@ -107,7 +107,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         imageFiles = new HashMap<File, Bitmap>();
         coverImageMap = new HashMap<String, Bitmap>();
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.archive), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.archive), false, RecordStory.class, "RecordStory");
         AnimationSetup();
         CheckAuthentication(authenticated);
     }
@@ -656,7 +656,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
 
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ArchiveKidsUI.this, HamburgerKidsUI.class);
-        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ArchiveKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
@@ -670,8 +670,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
     public void Home(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ArchiveKidsUI.this, LoggedInReadHomeKidsUI.class);
-        intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+        Intent intent = new Intent(ArchiveKidsUI.this, HomeScreen.class);
+        intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ArchiveKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -729,8 +729,8 @@ public class ArchiveKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ArchiveKidsUI.this, LoggedInReadHomeKidsUI.class);
-                intent.putExtra("PreviousActivity", "ArchiveKidsUI");
+                Intent intent = new Intent(ArchiveKidsUI.this, HomeScreen.class);
+                intent.putExtra("PreviousActivity", "ArchiveMainMenu");
                 intent.putExtra("Authenticated", authenticated);
                 ArchiveKidsUI.this.startActivity(intent);
                 overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);

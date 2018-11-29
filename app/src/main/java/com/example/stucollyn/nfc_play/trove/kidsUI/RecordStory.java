@@ -13,7 +13,6 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.AsyncTask;
@@ -50,14 +49,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
-public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
+public class RecordStory extends AppCompatActivity {
 
     //The ImageViews displayed on the activity layout
 
@@ -177,7 +174,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         archiveStoryHandler = new Handler();
         nfcInteraction = new NFCInteraction(this, this, authenticated);
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recordstory1), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recordstory1), false, RecordStory.class, "RecordStory");
         AnimationSetup();
         recordButtonController();
 
@@ -249,7 +246,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
     void recordButtonController() {
 
-//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, LoggedInReadHomeKidsUI.class);
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
 
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
@@ -281,7 +278,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.takeapicture), false, LoggedInWriteHomeKidsUI.class, "LoggedInWriteHomeKidsUI");
+                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.takeapicture), false, RecordStory.class, "RecordStory");
                         break;
                 }
 
@@ -454,9 +451,9 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         disableViewClickability();
         archive.setClickable(false);
         ReleaseCamera();
-        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, ArchiveKidsUI.class);
+        Intent intent = new Intent(RecordStory.this, ArchiveKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
-        LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        RecordStory.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
@@ -468,7 +465,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
 //                Log.i("Annoying Handler", "Ach");
 //                commentaryInstruction.setInputHandler(archiveStoryHandler);
-//                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveKidsUI.class, "LoggedInWriteHomeKidsUI");
+//                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.recorddone1), true, ArchiveMainMenu.class, "RecordStory");
             }
         }, 120000);
     }
@@ -581,12 +578,12 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             }
 
             ResetCamera();
-//            new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+//            new RecordStory.ProcessPicture().execute();
             newStoryReady = true;
             NewStoryArchiveHandlerTimer();
             slideOutViewAnimation(cameraButton);
             slideInViewAnimation(archive);
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachnfc), false, null, "LoggedInWriteHomeKidsUI");
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachnfc), false, null, "RecordStory");
             UUID objectUUID = UUID.randomUUID();
 
             if(authenticated) {
@@ -768,10 +765,10 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         commentaryInstruction.stopPlaying();
 
         ReleaseCamera();
-        Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, HamburgerKidsUI.class);
-        intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+        Intent intent = new Intent(RecordStory.this, HamburgerKidsUI.class);
+        intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
-        LoggedInWriteHomeKidsUI.this.startActivity(intent);
+        RecordStory.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
@@ -798,11 +795,11 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
             @Override
             public void run() {
                 ReleaseCamera();
-                Intent intent = new Intent(LoggedInWriteHomeKidsUI.this, LoggedInReadHomeKidsUI.class);
-                intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+                Intent intent = new Intent(RecordStory.this, HomeScreen.class);
+                intent.putExtra("PreviousActivity", "RecordStory");
                 intent.putExtra("Authenticated", authenticated);
                 intent.putExtra("NewStory", false);
-                LoggedInWriteHomeKidsUI.this.startActivity(intent);
+                RecordStory.this.startActivity(intent);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         }, 1000);
@@ -904,7 +901,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         if (requestCode == 100) {
             if (resultCode == RESULT_OK) {
 
-                new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+                new RecordStory.ProcessPicture().execute();
                 slideOutViewAnimation(cameraButton);
                 slideInViewAnimation(archive);
                 commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);
@@ -920,7 +917,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
         if (requestCode == 200) {
             if (resultCode == RESULT_OK) {
 
-//                new LoggedInWriteHomeKidsUI.ProcessVideo().execute();
+//                new RecordStory.ProcessVideo().execute();
 
             }
         }
@@ -940,7 +937,7 @@ public class LoggedInWriteHomeKidsUI extends AppCompatActivity {
 
                     Log.i("Woo", "Let's Party");
                     Thread.interrupted();
-                    new LoggedInWriteHomeKidsUI.ProcessPicture().execute();
+                    new RecordStory.ProcessPicture().execute();
                     slideOutViewAnimation(cameraButton);
                     slideInViewAnimation(archive);
                     commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.attachtag_app), false, null);

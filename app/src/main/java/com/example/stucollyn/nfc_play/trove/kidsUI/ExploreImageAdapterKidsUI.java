@@ -113,7 +113,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
             @Override
             public void onClick(View view) {
 ////                Toast.makeText(mContext, "Position =" + position, Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveKidsUI.class);
+//                Intent intent = new Intent(storyGallery.getApplicationContext(), ArchiveMainMenu.class);
 //                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                intent.putExtra("ObjectStoryRecord", folderToImageRef);
 //                storyGallery.getApplicationContext().startActivity(intent);

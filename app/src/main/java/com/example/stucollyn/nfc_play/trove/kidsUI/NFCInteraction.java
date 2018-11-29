@@ -7,33 +7,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
-import android.os.Bundle;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Adapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.stucollyn.nfc_play.R;
-import com.example.stucollyn.nfc_play.SavedStoryConfirmation;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.FileChannel;
 
 public class NFCInteraction {
 
@@ -208,8 +194,8 @@ public class NFCInteraction {
         if(complete) {
 
             Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
-            Intent intent = new Intent(context, LoggedInReadHomeKidsUI.class);
-            intent.putExtra("PreviousActivity", "LoggedInWriteHomeKidsUI");
+            Intent intent = new Intent(context, HomeScreen.class);
+            intent.putExtra("PreviousActivity", "RecordStory");
             intent.putExtra("Authenticated", authenticated);
             intent.putExtra("NewStory", true);
             intent.putExtra("StoryRef", tag_data);

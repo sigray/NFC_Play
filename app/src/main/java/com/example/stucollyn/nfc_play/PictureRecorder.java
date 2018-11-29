@@ -53,7 +53,7 @@ class PictureRecorder extends Application {
                 // Error occurred while creating the File
             }
 
-            // Continue only if the File was successfully created
+            // progressToRecordStory only if the File was successfully created
             if (photoFile != null) {
                // photoURI = FileProvider.getUriForFile(this,
                   //      "com.example.android.fileprovider",

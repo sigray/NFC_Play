@@ -101,7 +101,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
             logoutButton.setVisibility(View.INVISIBLE);
             signupButton.setVisibility(View.INVISIBLE);
-            loginButton.setText("Continue");
+            loginButton.setText("progressToRecordStory");
         }
 
         else {
@@ -111,7 +111,7 @@ public class LoginScreen extends FragmentActivity implements LoginDialogFragment
 
                 logoutButton.setVisibility(View.VISIBLE);
                 signupButton.setVisibility(View.INVISIBLE);
-                loginButton.setText("Continue");
+                loginButton.setText("progressToRecordStory");
                 welcome2.setText(user.getEmail());
                 welcome2.setGravity(Gravity.CENTER);
 
