@@ -89,7 +89,7 @@ public class CommentaryInstruction {
 
                 if(onCompleteChangeActivity) {
 
-                    if(activityName==HomeScreen.class) {
+                    if(activityName==HomeScreenKidsUI.class) {
 
                         HomeScreen();
                     }
@@ -117,7 +117,7 @@ public class CommentaryInstruction {
 
     void HomeScreen() {
 
-        Intent intent = new Intent(context, HomeScreen.class);
+        Intent intent = new Intent(context, HomeScreenKidsUI.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("NewStory", true);

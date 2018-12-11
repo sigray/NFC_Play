@@ -8,7 +8,7 @@
             android:layout_height="match_parent"
             android:background="#4559de"
             android:id="@+id/activity_logged_in_read_home"
-            tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HomeScreen">
+            tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HomeScreenKidsUI">
 
             <ImageView
                 android:id="@+id/small_shapes"

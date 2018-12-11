@@ -670,7 +670,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
     public void Home(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ArchiveKidsUI.this, HomeScreen.class);
+        Intent intent = new Intent(ArchiveKidsUI.this, HomeScreenKidsUI.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ArchiveKidsUI.this.startActivity(intent);
@@ -729,7 +729,7 @@ public class ArchiveKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ArchiveKidsUI.this, HomeScreen.class);
+                Intent intent = new Intent(ArchiveKidsUI.this, HomeScreenKidsUI.class);
                 intent.putExtra("PreviousActivity", "ArchiveMainMenu");
                 intent.putExtra("Authenticated", authenticated);
                 ArchiveKidsUI.this.startActivity(intent);

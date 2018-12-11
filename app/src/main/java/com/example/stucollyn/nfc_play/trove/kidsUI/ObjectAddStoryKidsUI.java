@@ -209,7 +209,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     void recordButtonController() {
 
-//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreenKidsUI.class);
 
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
@@ -222,7 +222,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 //                mLongPressed = new Runnable() {
 //                    public void run() {
 //                        Log.i("", "Long press!");
-//                        recordingManager(view, false);
+//                        audioRecordingManager(view, false);
 //                    }
 //                };
 
@@ -241,7 +241,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreen.class, "ObjectAddStoryKidsUI");
+//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreenKidsUI.class, "ObjectAddStoryKidsUI");
                         SaveNewStory();
                         break;
                 }
@@ -533,7 +533,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         ResetCamera();
         commentaryInstruction.stopPlaying();
         animationBackHandler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreen.class);
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreenKidsUI.class);
         intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
         intent.putExtra("Authenticated", authenticated);
         ObjectAddStoryKidsUI.this.startActivity(intent);

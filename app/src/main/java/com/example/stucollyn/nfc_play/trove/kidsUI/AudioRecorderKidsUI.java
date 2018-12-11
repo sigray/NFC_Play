@@ -9,17 +9,13 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.example.stucollyn.nfc_play.NFCRecord;
+import com.example.stucollyn.nfc_play.trove.prototype1UI.NFCRecord;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.UUID;
 
 /**

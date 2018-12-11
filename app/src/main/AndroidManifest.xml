@@ -40,7 +40,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".NFCRead"
+            android:name=".trove.prototype1UI.NFCRead"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
@@ -48,7 +48,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NFCRecord"
+            android:name=".trove.prototype1UI.NFCRecord"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
             <intent-filter>
@@ -56,22 +56,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SelectMode"
+            android:name=".trove.prototype1UI.SelectMode"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".SplashScreen"
+            android:name=".trove.prototype1UI.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".LoginScreen"
+            android:name=".trove.prototype1UI.LoginScreen"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_login_screen"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MainMenu"
+            android:name=".trove.prototype1UI.MainMenu"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_main_menu"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
@@ -86,47 +86,47 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".PictureStoryFragment" />
-        <activity android:name=".VideoStoryFragment" />
-        <activity android:name=".WrittenStoryFragment" />
-        <activity android:name=".StoryMediaChooser" />
+        <activity android:name=".trove.prototype1UI.PictureStoryFragment" />
+        <activity android:name=".trove.prototype1UI.VideoStoryFragment" />
+        <activity android:name=".trove.prototype1UI.WrittenStoryFragment" />
+        <activity android:name=".trove.prototype1UI.StoryMediaChooser" />
         <activity
-            android:name=".NewStoryReview"
+            android:name=".trove.prototype1UI.NewStoryReview"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
-            android:name=".SaveStoryToNFC"
+            android:name=".trove.prototype1UI.SaveStoryToNFC"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".SaveSelector"
+            android:name=".trove.prototype1UI.SaveSelector"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".SavedStoryConfirmation"
+            android:name=".trove.prototype1UI.SavedStoryConfirmation"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".ReviewAudioStory"
+            android:name=".trove.prototype1UI.ReviewAudioStory"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".ReviewVideoStory"
+            android:name=".trove.prototype1UI.ReviewVideoStory"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".ReviewWrittenStory"
+            android:name=".trove.prototype1UI.ReviewWrittenStory"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".ReviewPictureStory"
+            android:name=".trove.prototype1UI.ReviewPictureStory"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".LocalStoryGallery"
+            android:name=".trove.prototype1UI.LocalStoryGallery"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
-            android:name=".StoryGallerySaveOrView"
+            android:name=".trove.prototype1UI.StoryGallerySaveOrView"
             android:configChanges="orientation|keyboardHidden|screenSize" />
-        <activity android:name=".StoryGalleryMenu" />
-        <activity android:name=".CloudStoryGalleryMenu" />
-        <activity android:name=".CloudStoryGallery" />
-        <activity android:name=".NewStorySaveMetadata" />
-        <activity android:name=".ShowCloudStories" />
-        <activity android:name=".ShowCloudStoryContent" />
+        <activity android:name=".trove.prototype1UI.StoryGalleryMenu" />
+        <activity android:name=".trove.prototype1UI.CloudStoryGalleryMenu" />
+        <activity android:name=".trove.prototype1UI.CloudStoryGallery" />
+        <activity android:name=".trove.prototype1UI.NewStorySaveMetadata" />
+        <activity android:name=".trove.prototype1UI.ShowCloudStories" />
+        <activity android:name=".trove.prototype1UI.ShowCloudStoryContent" />
         <activity
             android:name=".trove.kidsUI.WelcomeScreenKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -146,7 +146,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".trove.kidsUI.HomeScreen"
+            android:name=".trove.kidsUI.HomeScreenKidsUI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"

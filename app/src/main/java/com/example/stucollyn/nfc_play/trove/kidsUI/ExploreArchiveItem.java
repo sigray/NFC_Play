@@ -421,7 +421,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void Home(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, HomeScreen.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, HomeScreenKidsUI.class);
         intent.putExtra("PreviousActivity", "ExploreArchiveItem");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);

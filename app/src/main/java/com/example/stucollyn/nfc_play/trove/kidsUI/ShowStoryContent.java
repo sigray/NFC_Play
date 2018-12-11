@@ -2,24 +2,13 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-import com.example.stucollyn.nfc_play.LoginDialogFragment;
-import com.example.stucollyn.nfc_play.R;
 
 import org.apache.commons.io.FilenameUtils;
 

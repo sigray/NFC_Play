@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.stucollyn.nfc_play.ReviewWrittenStory">
+    tools:context="com.example.stucollyn.nfc_play.trove.prototype1UI.ReviewWrittenStory">
 
     <TextView
         android:id="@+id/activity_review_written_text_story"

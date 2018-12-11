@@ -217,7 +217,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         try {
             if (mytag == null) {
 
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreen");
+                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreenKidsUI");
                 Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
             }
 
@@ -259,7 +259,7 @@ public class HamburgerKidsUI extends FragmentActivity {
             System.out.println("Fail 4");
             Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
-            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
+            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreenKidsUI");
         }
 
     }
@@ -292,7 +292,7 @@ public class HamburgerKidsUI extends FragmentActivity {
     public void LogOut(View view) {
 
         disableViewClickability();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HomeScreen.class, "HomeScreen");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HomeScreenKidsUI.class, "HomeScreenKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -439,7 +439,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerKidsUI.class, "HomeScreen");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerKidsUI.class, "HomeScreenKidsUI");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

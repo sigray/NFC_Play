@@ -189,19 +189,19 @@ public class NFCInteraction {
 
 
 
-    void Complete(boolean complete) {
-
-        if(complete) {
-
-            Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
-            Intent intent = new Intent(context, HomeScreen.class);
-            intent.putExtra("PreviousActivity", "RecordStory");
-            intent.putExtra("Authenticated", authenticated);
-            intent.putExtra("NewStory", true);
-            intent.putExtra("StoryRef", tag_data);
-            context.startActivity(intent);
-        }
-    }
+//    void Complete(boolean complete) {
+//
+//        if(complete) {
+//
+//            Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
+//            Intent intent = new Intent(context, HomeScreenKidsUI.class);
+//            intent.putExtra("PreviousActivity", "RecordStory");
+//            intent.putExtra("Authenticated", authenticated);
+//            intent.putExtra("NewStory", true);
+//            intent.putExtra("StoryRef", tag_data);
+//            context.startActivity(intent);
+//        }
+//    }
 
     void WriteModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter writeTagFilters[]){
 

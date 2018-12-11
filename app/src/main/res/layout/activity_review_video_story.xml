@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.stucollyn.nfc_play.ReviewVideoStory">
+    tools:context="com.example.stucollyn.nfc_play.trove.prototype1UI.ReviewVideoStory">
 
     <ImageView
         android:id="@+id/review_video_story_captured_video_background"
