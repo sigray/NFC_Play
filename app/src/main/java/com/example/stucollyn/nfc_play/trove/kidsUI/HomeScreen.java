@@ -39,7 +39,7 @@ This activity acts as the app's home page. Within this activity users are able t
 This is also the first activity to incorporate the hamburger menu where users can find out additional information about the app and log out.
  */
 
-public class HomeScreenKidsUI extends FragmentActivity {
+public class HomeScreen extends FragmentActivity {
 
     //The View group and ImageViews displayed on the activity layout
     ViewGroup mRootView;
@@ -244,10 +244,10 @@ public class HomeScreenKidsUI extends FragmentActivity {
         //Stop any current commentary.
         commentaryInstruction.stopPlaying();
         //Launch Hamburger activity using slide animation.
-        Intent intent = new Intent(HomeScreenKidsUI.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(HomeScreen.this, HamburgerKidsUI.class);
         intent.putExtra("Authenticated", authenticated);
-        intent.putExtra("PreviousActivity", "HomeScreenKidsUI");
-        HomeScreenKidsUI.this.startActivity(intent);
+        intent.putExtra("PreviousActivity", "HomeScreen");
+        HomeScreen.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
@@ -263,7 +263,7 @@ public class HomeScreenKidsUI extends FragmentActivity {
             //Uri of audio source file.
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcomehome);
             //Play audio file using CommentaryInstruction object.
-            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreenKidsUI");
+            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
         }
 
         //If previous activity is RecordStory, check whether there is a newly recorded story to review and, if so, play it.
@@ -295,7 +295,7 @@ public class HomeScreenKidsUI extends FragmentActivity {
 
                 //Source of audio instruction advising user how to record a new story or to play back an existing story using an NFC tag.
                 Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
-                commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreenKidsUI");
+                commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
             }
         }
 
@@ -303,7 +303,7 @@ public class HomeScreenKidsUI extends FragmentActivity {
 
             //Source of audio instruction advising user how to record a new story or to play back an existing story using an NFC tag.
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.scanpage);
-            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreenKidsUI");
+            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
         }
     }
 
@@ -344,7 +344,7 @@ public class HomeScreenKidsUI extends FragmentActivity {
                 //The containing files will be in the internal directory [package name]\Tags\[tag name]\
                 if (mytag == null) {
 
-                    commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreenKidsUI");
+                    commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreen");
                     Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG).show();
                 }
 
@@ -388,7 +388,7 @@ public class HomeScreenKidsUI extends FragmentActivity {
                 System.out.println("Fail 4");
                 Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG).show();
                 Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
-                commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreenKidsUI");
+                commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
             }
 
         }
@@ -450,9 +450,9 @@ public class HomeScreenKidsUI extends FragmentActivity {
         //Stop any commentary instructions.
         commentaryInstruction.stopPlaying();
         //Launch RecordStory activity.
-        Intent intent = new Intent(HomeScreenKidsUI.this, RecordStory.class);
+        Intent intent = new Intent(HomeScreen.this, RecordStory.class);
         intent.putExtra("Authenticated", authenticated);
-        HomeScreenKidsUI.this.startActivity(intent);
+        HomeScreen.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
@@ -483,15 +483,15 @@ public class HomeScreenKidsUI extends FragmentActivity {
         back.setImageDrawable(backRetrace);
         backRetrace.start();
         //Play the logout trove dialog.
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HomeScreenKidsUI.class, "HomeScreenKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HomeScreen.class, "HomeScreen");
         //Delay the change of activities for a second, to let the animations etc complete.
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(HomeScreenKidsUI.this, WelcomeScreenKidsUI.class);
-                HomeScreenKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HomeScreen.this, WelcomeScreenKidsUI.class);
+                HomeScreen.this.startActivity(intent);
             }
         }, 1000);
     }
@@ -589,8 +589,8 @@ Some potentially useful code.
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(HomeScreenKidsUI.this, RecordStory.class);
-                HomeScreenKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HomeScreen.this, RecordStory.class);
+                HomeScreen.this.startActivity(intent);
             }
 
             @Override

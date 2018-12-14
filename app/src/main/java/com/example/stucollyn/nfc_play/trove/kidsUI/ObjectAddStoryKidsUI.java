@@ -68,7 +68,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             permissionToRecordAccepted = false, isFullSizedVideo = false;
     //File Save Variables
 
-    AudioRecorderKidsUI audioRecorder;
+    AudioRecorder audioRecorder;
     AnimatedVectorDrawable recordButtonAnim, backBegin, backRetrace;
     Drawable recordButtonNonAnim;
     Handler animationHandler, animationBackHandler;
@@ -118,7 +118,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     FrameLayout preview;
     LinearLayout camera_linear;
     Animation fadein, fadeout;
-    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
+    HashMap<String, ArrayList<ObjectStoryRecord>> objectRecordMap;
     String objectName;
 
     //Grant permission to record audio (required for some newer Android devices)
@@ -159,7 +159,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectStoryRecord");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
         objectName = (String) getIntent().getExtras().get("ObjectName");
         mCamera = cameraRecorder.getCameraInstance();
         mPreview = new CameraPreview(getApplicationContext(), mCamera);
@@ -209,7 +209,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
 
     void recordButtonController() {
 
-//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreenKidsUI.class);
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
 
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
@@ -241,7 +241,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreenKidsUI.class, "ObjectAddStoryKidsUI");
+//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreen.class, "ObjectAddStoryKidsUI");
                         SaveNewStory();
                         break;
                 }
@@ -272,7 +272,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         //Request permission to record audio (required for some newer Android devices)
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         try {
-            audioRecorder = new AudioRecorderKidsUI(this, story_directory, null);
+            audioRecorder = new AudioRecorder(this, story_directory, null);
             audioRecorder.startRecording();
         } catch (IOException ex) {
             // Error occurred while creating the File
@@ -513,7 +513,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         // This bundle has also been passed to onCreate.
         authenticated = savedInstanceState.getBoolean("Authenticated");
         objectName = savedInstanceState.getString("ObjectName");
-        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) savedInstanceState.getSerializable("ObjectStoryRecord");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) savedInstanceState.getSerializable("ObjectStoryRecord");
     }
 
     @Override
@@ -533,7 +533,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         ResetCamera();
         commentaryInstruction.stopPlaying();
         animationBackHandler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreenKidsUI.class);
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreen.class);
         intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
         intent.putExtra("Authenticated", authenticated);
         ObjectAddStoryKidsUI.this.startActivity(intent);
@@ -554,7 +554,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ObjectAddStoryKidsUI.this, ArchiveKidsUI.class);
+                Intent intent = new Intent(ObjectAddStoryKidsUI.this, Archive.class);
                 intent.putExtra("ObjectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);

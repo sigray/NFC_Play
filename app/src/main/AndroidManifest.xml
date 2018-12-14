@@ -146,7 +146,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".trove.kidsUI.HomeScreenKidsUI"
+            android:name=".trove.kidsUI.HomeScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"
@@ -158,7 +158,7 @@
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".trove.kidsUI.ArchiveKidsUI"
+            android:name=".trove.kidsUI.Archive"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"

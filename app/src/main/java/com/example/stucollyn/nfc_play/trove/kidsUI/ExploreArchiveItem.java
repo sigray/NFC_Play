@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -28,8 +29,6 @@ import android.widget.ProgressBar;
 import com.example.stucollyn.nfc_play.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -40,59 +39,122 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+/*
+The explore archive item class is used when an object's story folder has been selected in the archive. This class presents all the audio and video files relating to a
+particular object. This is shown as a series of scrollable thumbnails. Upon clicking a thumbnail the file is opened. The user can also choose to select to add to the
+number of stories relating to this object.
+*/
 public class ExploreArchiveItem extends AppCompatActivity {
 
-    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> objectRecordMap;
+    //Story folder storage structures
+    HashMap<String, ArrayList<ObjectStoryRecord>> objectRecordMap;
     LinkedHashMap<String, File> fileMap;
     LinkedHashMap<String, Bitmap> storyCoverMap;
     LinkedHashMap<String, String> storyTypeMap;
-    ArrayList<ObjectStoryRecordKidsUI> objectFiles;
+    ArrayList<ObjectStoryRecord> objectFiles;
+    File story_directory;
+
+    //Thumbnail display
     ProgressBar progressBar;
     ExploreImageAdapterKidsUI cloudImageAdapter;
     HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
     int[] colourCode;
-    private StorageReference mStorageRef;
-    FirebaseAuth mAuth;
-    FirebaseFirestore db;
+
+    //Activity identifiers
     String objectName;
     Activity activity;
     Context context;
-    boolean authenticated;
-    File story_directory;
+
+    //Image views and Animations
     ImageView back;
     AnimatedVectorDrawable backRetrace, backBegin;
     Handler animationBackHandler;
+
+    //Firebase components
+    boolean authenticated;
+
+    //Commentary
     CommentaryInstruction commentaryInstruction;
 
+    //onCreate is called when the activity starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_explore_archive_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
-        storyCoverMap = new LinkedHashMap<String, Bitmap>();
-        storyTypeMap = new LinkedHashMap<String, String>();
-        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) getIntent().getExtras().get("ObjectStoryRecord");
-        objectName = (String) getIntent().getExtras().get("ObjectName");
         activity = this;
         context = this;
-        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-        fileMap = new LinkedHashMap<String, File>();
-        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.exploreobject), false, RecordStory.class, "RecordStory");
-        AnimationSetup();
-        LoadFiles();
+        //Check for data connection before allowing user to sign in via cloud account
+        checkConnection();
+        //Initialize the storage structures used to hold files and folders
+        initializeStorageStructures();
+        //Initialize commentary instructions
+        initializeCommentary();
+        //Initialize animations
+        initializeAnimations();
+        //Load the story files for the currently selected story
+        loadFiles();
     }
 
-    //Animation Setup
-    void AnimationSetup() {
+    //Initialize the commentary instructions.
+    void initializeCommentary() {
 
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.exploreobject), false, RecordStory.class, "RecordStory");
+    }
+
+    //Check for data connection before allowing user to sign in via cloud account.
+    void checkConnection() {
+
+        //Call method which checks for connection.
+        boolean isNetworkConnected = isNetworkConnected();
+
+        //If there is a data connection currently available for use, attempt to authenticate login details with Firebase,
+        // allow user to login offline but without a profile and access only to local storage.
+        if(isNetworkConnected) {
+
+            //If there is an active data connection, set authenticated value to true
+            authenticated = true;
+        }
+
+        else {
+
+            //If there is an active data connection, set authenticated value to false
+            authenticated = false;
+        }
+    }
+
+    //Check whether a network connection is present.
+    private boolean isNetworkConnected() {
+
+        //Use Android connectivity manager to get the status of whether connected to a data connection.
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    //Initialize the storage structures used to hold the files and folders loaded from local or cloud storage.
+    void initializeStorageStructures() {
+
+        storyCoverMap = new LinkedHashMap<String, Bitmap>();
+        storyTypeMap = new LinkedHashMap<String, String>();
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
+        fileMap = new LinkedHashMap<String, File>();
+        objectName = (String) getIntent().getExtras().get("ObjectName");
+    }
+
+    //Animation setup to handle the back button
+    void initializeAnimations() {
+
+        //Initialize back button, begin, and retrace AnimatedVectorVariable animations
         back = (ImageView) findViewById(R.id.back);
         backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_1);
         backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_2);
 
+        //Handler to undertake the animation - One second after the activity starts animate in the back button; Two seconds after activity starts change the back button
+        //colour to white.
         animationBackHandler = new Handler();
         animationBackHandler.postDelayed(new Runnable() {
             @Override
@@ -109,7 +171,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
             @Override
             public void run() {
 
-                Log.i("YUUUUUS", "yessir");
                 back.setVisibility(View.VISIBLE);
                 Drawable d = VectorDrawableCompat.create(getResources(), R.drawable.kids_ui_close, null);
                 d = DrawableCompat.wrap(d);
@@ -120,6 +181,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         }, 2000);
     }
 
+    //Setup the directory used to temporarily store the files
     File setupStoryDirectory(String ObjectName) {
 
         String packageLocation = ("/Cloud");
@@ -129,8 +191,12 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return story_directory;
     }
 
+    //Decide what should be shown on a story file thumbnail, based on the file type. If the file is audio show an music icon, if picture show image preview.
+    //To do: this method can be modified to include written or video content.
     void getStoryCover(String StoryName, String StoryType, File file) {
 
+        //For each file, save the story name in the storyCoverMap which couples it with an image preview. Also, save the story name in the storyTypeMap which
+        //couples it with a description of the file type.
         if(StoryType.equalsIgnoreCase("AudioFile")) {
 
             Bitmap icon = BitmapFactory.decodeResource(context.getResources(),
@@ -154,12 +220,14 @@ public class ExploreArchiveItem extends AppCompatActivity {
         }
     }
 
+    //Create the temporary file in internal memory, so that it can be replayed. It saves a temporary local copy rather than streaming content directly from the cloud.
     File TempFile(String StoryName, String StoryType, File story_directory) {
 
         File file = null;
         String type = "";
         String ext = "";
 
+        //Save file using a different extension based on the type of file it is.
         if(StoryType.equalsIgnoreCase("AudioFile")) {
 
             type = "audio";
@@ -169,21 +237,23 @@ public class ExploreArchiveItem extends AppCompatActivity {
         else if(StoryType.equalsIgnoreCase("PictureFile")) {
 
             type = "images";
-            ext = ".jpg";        }
+            ext = ".jpg";
+        }
 
         else if (StoryType.equalsIgnoreCase("WrittenFile")) {
 
             type = "text";
-            ext = ".txt";        }
+            ext = ".txt";
+        }
 
         else if(StoryType.equalsIgnoreCase("VideoFile")) {
 
             type = "video";
-            ext = ".mp4";        }
+            ext = ".mp4";
+        }
 
+        //Create the file
         try {
-
-
 
             file = File.createTempFile(StoryName, ext, story_directory);
 
@@ -192,6 +262,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
                     file.getAbsoluteFile());
         }
 
+        //Add exception warning message
         catch (IOException e) {
 
         }
@@ -199,8 +270,10 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return file;
     }
 
+    /*
+    We download all the story files for a particular object from the FireStore URL links passed from the Archive activity
+     */
     void DownloadFromCloud(String StoryName, String URLLink, String StoryType, File story_directory) {
-
 
         final String theStoryType = StoryType;
         final String theStoryName = StoryName;
@@ -211,15 +284,20 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         final File file = TempFile(theStoryName, theStoryType, story_directory);
 
+        //As files are successfully returned display them as thumbnails in the adapter view
             gsReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
+                    //Couple the name of the story folder with the corresponding file in a fileMap
                     fileMap.put(theStoryName, file);
+                    //Get the cover for each story file
                     getStoryCover(theStoryName, theStoryType, file);
-                    CloudThumbnailColours();
+                    //Define background thumbnail colours
+                    thumbnailColours();
+                    //As file thumbnails are completed, hide the progress bar
                     progressBar.setVisibility(View.INVISIBLE);
-
+                    //Update the image adapter used to display the list of story files
                     cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
                     gridview.invalidate();
                     gridview.setAdapter(cloudImageAdapter);
@@ -233,56 +311,54 @@ public class ExploreArchiveItem extends AppCompatActivity {
             });
     }
 
-    void LoadFiles() {
+    //Decide on how to load the files - from the cloud or local
+    void loadFiles() {
 
-        objectFiles = new ArrayList<ObjectStoryRecordKidsUI>();
+        objectFiles = new ArrayList<ObjectStoryRecord>();
         objectFiles = objectRecordMap.get(objectName);
         File story_directory = setupStoryDirectory(objectName);
 
+        //If connected to network, download the relevant story files from the cloud
         if(authenticated) {
 
             for (int i = 0; i < objectFiles.size(); i++) {
 
-//            if(objectFiles.get(i).getObjectContext().equals("Cloud")) {
-
-
                 DownloadFromCloud(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryRef(), objectFiles.get(i).getStoryType(), story_directory);
             }
-
         }
-//            else if(objectFiles.get(i).getObjectContext().equals("Local")) {
 
+        //If not network connected, launch a new Async Task to handle the loading of local files
         else {
             new LocalFiles().execute();
         }
     }
 
+    //Load the story files from internal local storage
     void LoadLocalFiles(){
 
+        //For all of the object file names listed in the objectFiles array, get the file and put it in a fileMap which couples each story file name with the file
+        //itself. Next, get the relevant cover for each story and the appropriate thumbnail colour.
         for(int i=0; i<objectFiles.size(); i++) {
 
             String path = objectFiles.get(i).getStoryRef();
-            Log.i("File Path: ", path);
             File file = new File(path);
             fileMap.put(objectFiles.get(i).getStoryName(), file);
-
-//            Log.i("FileMap: ", fileMap.toString());
-//            Log.i("getStoryCover: ", objectFiles.get(i).getStoryName() + ", " + objectFiles.get(i).getStoryType() + ", " + file.getName());
-
             getStoryCover(objectFiles.get(i).getStoryName(), objectFiles.get(i).getStoryType(), file);
-            CloudThumbnailColours();
+            thumbnailColours();
         }
     }
 
+    //The method is used to generate and variate thumbnail background shape colours for cloud stories. After 3 colours have been used, we return to the first colour.
+    void thumbnailColours() {
 
-
-    void CloudThumbnailColours() {
-
+        //Set colour counter to 0
         colourCounter = 0;
-        currentColour = Color.parseColor("#756bc7");;
+        //Initialize first colour
+        currentColour = Color.parseColor("#756bc7");
+        //Initialize array list of colours based on the length of the number of story folders (unique story identifiers) required.
         colourCode = new int[fileMap.size()];
 
-
+        //Loop over the coverImageMap of every story cover image (the first picture taken in the creation of the story about an object)
         for (int i = 0; i < fileMap.size(); i++) {
 
             if(colourCounter==0) {
@@ -307,6 +383,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         }
     }
 
+    //To Do: Make Bitmap Rescaler (ShowPicture) its own class as it is reused throughout the app OR consider using dedicated Picture Loaded like Glide.
     Bitmap ShowPicture(File pictureFile) {
 
         Bitmap adjustedBitmap;
@@ -334,50 +411,6 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
         return adjustedBitmap;
     }
-        /*
-        ExifInterface exif = null;
-        Bitmap adjustedBitmap;
-        try {
-            exif = new ExifInterface(pictureFile.getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-        int rotation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        int rotationInDegrees = exifToDegrees(rotation);
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int smallSizeScaleFactor = Math.min(photoW / 800, photoH / 800);
-
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = smallSizeScaleFactor;
-        bmOptions.inPurgeable = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(pictureFile.getAbsolutePath(), bmOptions);
-        Matrix matrix = new Matrix();
-        if (rotation != 0f) {
-            matrix.preRotate(rotationInDegrees);
-        }
-
-        if (rotationInDegrees == 90 || rotationInDegrees == 270) {
-            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } else if (rotationInDegrees == 180) {
-            adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } else {
-            // adjustedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            adjustedBitmap = bitmap;
-        }
-
-
-        return adjustedBitmap;
-        */
-
 
     private static int exifToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
@@ -391,7 +424,8 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return 0;
     }
 
-    public void Drawer(View view){
+    //Launch Hamburger activity
+    public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ExploreArchiveItem.this, HamburgerKidsUI.class);
@@ -401,11 +435,13 @@ public class ExploreArchiveItem extends AppCompatActivity {
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
+    //Forward all back button presses to onBackPressed()
     public void Back(View view) {
 
         onBackPressed();
     }
 
+    //Allow user to add another audio or picture file to the current object story folder
     public void AddStory(View view) {
 
         commentaryInstruction.stopPlaying();
@@ -418,10 +454,11 @@ public class ExploreArchiveItem extends AppCompatActivity {
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //Home button functionality - not currently in use
     public void Home(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, HomeScreenKidsUI.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, HomeScreen.class);
         intent.putExtra("PreviousActivity", "ExploreArchiveItem");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
@@ -450,6 +487,8 @@ public class ExploreArchiveItem extends AppCompatActivity {
         super.onDestroy();
     }
 
+    // Restore UI state from the savedInstanceState.
+    // This bundle has also been passed to onCreate.
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -457,9 +496,10 @@ public class ExploreArchiveItem extends AppCompatActivity {
         // This bundle has also been passed to onCreate.
         authenticated = savedInstanceState.getBoolean("Authenticated");
         objectName = savedInstanceState.getString("ObjectName");
-        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecordKidsUI>>) savedInstanceState.getSerializable("ObjectStoryRecord");
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) savedInstanceState.getSerializable("ObjectStoryRecord");
     }
 
+    // Save the current state of these bundled variables.
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
@@ -471,6 +511,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    //When the back button is pressed: stop any commentary instructions, disable the clickability of the back button, and begin animation transition
     @Override
     public void onBackPressed() {
 
@@ -484,7 +525,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ExploreArchiveItem.this, ArchiveKidsUI.class);
+                Intent intent = new Intent(ExploreArchiveItem.this, Archive.class);
                 intent.putExtra("PreviousActivity", "RecordStory");
                 intent.putExtra("Authenticated", authenticated);
                 ExploreArchiveItem.this.startActivity(intent);
@@ -504,6 +545,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Async task which allows the loading of local files on a separate thread - note, FireBase can do this on its own thread
     class LocalFiles extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {

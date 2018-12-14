@@ -19,12 +19,9 @@ import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 /**
- * Created by StuCollyn on 06/06/2018.
+The AudioRecorder class is used to record, save, and control audio
  */
-
-
-
-public class AudioRecorderKidsUI extends Application {
+public class AudioRecorder extends Application {
 
     private MediaRecorder mRecorder = null;
 
@@ -34,23 +31,28 @@ public class AudioRecorderKidsUI extends Application {
     private Context context;
     File audioFile, tagFile = null;
 
-    public AudioRecorderKidsUI(Context context, File story_directory, File tag_directory) {
+    //AudioRecorder constructor - initialize activity context, as well as file directory locations
+    public AudioRecorder(Context context, File story_directory, File tag_directory) {
             this.context=context;
             this.story_directory = story_directory;
             this.tag_directory = tag_directory;
 
     }
 
-
+    //Called to begin audio recording
     protected void startRecording() throws IOException {
 
-        // Check for permissions
+        // Check for permissions for this device
         checkAudioRecordingPermissions();
+        //Create the audio file - the file is created first and before any audio has been recorded
         createAudioFile();
+        //Setup recording protocols
         setupAudioRecorder();
+        //Start recording
         mRecorder.start();
     }
 
+    //Check the current device is able to record audio
     private void checkAudioRecordingPermissions() {
 
         // Check for permissions
@@ -63,26 +65,18 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
+    //Create the audio output file in advance of recording
     protected void createAudioFile() {
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "AudioMPEG4_" + timeStamp + "_";
-        UUID storyName = UUID.randomUUID();;
+
+        //Give the audio file a unique id as a name
+        UUID storyName = UUID.randomUUID();
+        //Convert this UUID to a string
         String imageFileName = storyName.toString();
-        File storageDir;
 
-        if (Build.VERSION.SDK_INT >= 19) {
-            //storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-            storageDir = story_directory;
-        }
-
-        else {
-            //storageDir = context.getExternalFilesDir(Environment.getExternalStorageDirectory() + "/Documents");
-            storageDir = story_directory;
-        }
-
+        //Create two files for the audio - create one in the story_directory and the other tag_directory. The latter is used to retrieve audio when NFC tags are scanned.
         try {
 
-            audioFile = File.createTempFile(imageFileName, ".mp3", storageDir);
+            audioFile = File.createTempFile(imageFileName, ".mp3", story_directory);
             audioFileName = audioFile.getAbsolutePath();
 
             if(tag_directory!=null) {
@@ -91,6 +85,7 @@ public class AudioRecorderKidsUI extends Application {
             }
         }
 
+        //If there is an error, log it
         catch (IOException e) {
 
             Log.i("Error", "Audio file creation failed");
@@ -98,23 +93,30 @@ public class AudioRecorderKidsUI extends Application {
 
     }
 
+    //Used to copy audio output file in story_directory to the tag_directory - creating a duplicate
     public static void copyFileToTag(File sourceFile, File destFile) throws IOException {
+
+        //If the file's storage destination doesn't exist, create it
         if (!destFile.getParentFile().exists())
             destFile.getParentFile().mkdirs();
 
+        //If the output file itself does not already exist, create it
         if (!destFile.exists()) {
             destFile.createNewFile();
         }
 
+        //Declare File channels
         FileChannel source = null;
         FileChannel destination = null;
 
+        //Apply channel to copy from the source file to the destination file
         try {
             source = new FileInputStream(sourceFile).getChannel();
             destination = new FileOutputStream(destFile).getChannel();
             destination.transferFrom(source, 0, source.size());
         }
 
+        //Close channels after try block has ended
         finally {
             if (source != null) {
                 source.close();
@@ -125,12 +127,13 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
-
+    //Return the audio file
     public File getAudioFile() {
 
         return audioFile;
     }
 
+    //Setup new media recorder and the associated variables required. Note, audio is recorded in MPEG_4 format.
     protected void setupAudioRecorder() {
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -140,6 +143,7 @@ public class AudioRecorderKidsUI extends Application {
         mRecorder.setOutputFile(audioFileName);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
+        //Prepare the media recorder
         try {
             mRecorder.prepare();
         } catch (IOException e) {
@@ -147,11 +151,13 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
+    //Stop the recording and release the resources
     protected void stopRecording() {
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
 
+        //Copy outputted audio file to the tag directory
         try {
 
             if(tagFile!=null) {
@@ -163,17 +169,20 @@ public class AudioRecorderKidsUI extends Application {
         }
     }
 
+    //Delete the recorded audio file
     protected void DiscardAudio() {
 
         File file = new File(audioFileName);
         file.delete();
     }
 
+    //Return the audioFileName
     protected String getAudioFileName() {
 
         return audioFileName;
     }
 
+    //Return the tagFileName
     protected String getTagFileName() {
 
         return tagFileName;

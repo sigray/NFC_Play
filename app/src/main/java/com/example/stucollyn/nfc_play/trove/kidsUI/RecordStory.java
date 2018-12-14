@@ -47,6 +47,13 @@ import java.util.UUID;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
+/*
+The RecordStory class is used for the recording of an audio story about a new object. In the activity, the user is prompted to either record an audio story
+or to visit the story archive. If they choose to record an audio story, the must press and hold the audio record button as they speak their story. Afterwards
+they can either choose to rerecord their story or take a picture of the object which relates to the story. If the user seeks to record a story about a previous
+object, they can do so by visiting the story archive. Presently audio stories created require a picture of the associated object because in the archive menu,
+stories are grouped by object image.
+ */
 public class RecordStory extends AppCompatActivity {
 
     //The View group and ImageViews displayed on the activity layout
@@ -78,7 +85,7 @@ public class RecordStory extends AppCompatActivity {
     boolean permissionToRecordAccepted = false;
     boolean recordingStatus = false;
     boolean recordButtonRunning = false;
-    AudioRecorderKidsUI audioRecorder;
+    AudioRecorder audioRecorder;
 
     //Camera variables
     private Camera mCamera;
@@ -146,7 +153,7 @@ public class RecordStory extends AppCompatActivity {
         initializeCommentary();
         //Initialize NFC components
         NFCSetup();
-        //Check for data connection before allowing user to sign in via cloud account
+        //Initialize animations
         initializeAnimations();
         //Setup control logic for record button
         recordButtonController();
@@ -235,7 +242,6 @@ public class RecordStory extends AppCompatActivity {
         return cm.getActiveNetworkInfo() != null;
     }
 
-
     //Animation and Layout Setup
     void initializeAnimations() {
 
@@ -306,7 +312,7 @@ public class RecordStory extends AppCompatActivity {
     //Method for controlling the audio record button.
     void recordButtonController() {
 
-//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreenKidsUI.class);
+//        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
 
         //Record button onTouchListener - when the button is touched take appropriate action.
         //Currently the record button will execute the MotionEvent.ACTION_DOWN code as long as the user touches and holds the record button. When the user
@@ -406,7 +412,7 @@ public class RecordStory extends AppCompatActivity {
         if(complete) {
 
             Toast.makeText(this, "Story saved to object.", Toast.LENGTH_LONG ).show();
-            Intent intent = new Intent(this, HomeScreenKidsUI.class);
+            Intent intent = new Intent(this, HomeScreen.class);
             intent.putExtra("PreviousActivity", "RecordStory");
             intent.putExtra("Authenticated", authenticated);
             intent.putExtra("NewStory", true);
@@ -469,7 +475,7 @@ public class RecordStory extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
         try {
             //Setup a new audio recorder object, used to handle the recording control and storage
-            audioRecorder = new AudioRecorderKidsUI(this, story_directory, tag_directory);
+            audioRecorder = new AudioRecorder(this, story_directory, tag_directory);
             audioRecorder.startRecording();
         } catch (IOException ex) {
             // Error occurred while creating the File
@@ -558,7 +564,7 @@ public class RecordStory extends AppCompatActivity {
         disableViewClickability();
         archive.setClickable(false);
         releaseCamera();
-        Intent intent = new Intent(RecordStory.this, ArchiveKidsUI.class);
+        Intent intent = new Intent(RecordStory.this, Archive.class);
         intent.putExtra("Authenticated", authenticated);
         RecordStory.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -839,17 +845,6 @@ public class RecordStory extends AppCompatActivity {
         authenticated = savedInstanceState.getBoolean("Authenticated");
     }
 
-    //Disable all view clickability
-    void disableViewClickability() {
-
-        back.setClickable(false);
-        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
-        for (int i = 0; i < layout.getChildCount(); i++) {
-            View child = layout.getChildAt(i);
-            child.setClickable(false);
-        }
-    }
-
     // Save the current state of these bundled variables.
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -860,6 +855,16 @@ public class RecordStory extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    //Disable all view clickability
+    void disableViewClickability() {
+
+        back.setClickable(false);
+        ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.logged_in_write_home_layout);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            child.setClickable(false);
+        }
+    }
 
     //When the hamburger menu is clicked, run this method.
     public void Hamburger(View view){
@@ -915,7 +920,7 @@ public class RecordStory extends AppCompatActivity {
             @Override
             public void run() {
                 releaseCamera();
-                Intent intent = new Intent(RecordStory.this, HomeScreenKidsUI.class);
+                Intent intent = new Intent(RecordStory.this, HomeScreen.class);
                 intent.putExtra("PreviousActivity", "RecordStory");
                 intent.putExtra("Authenticated", authenticated);
                 intent.putExtra("NewStory", false);

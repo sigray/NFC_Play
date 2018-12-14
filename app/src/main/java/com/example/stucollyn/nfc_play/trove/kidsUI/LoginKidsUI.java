@@ -576,7 +576,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
             public void onTransitionEnd(Transition transition) {
 
                 //Advance to Home Screen Activity.
-                Intent intent = new Intent(LoginKidsUI.this, HomeScreenKidsUI.class);
+                Intent intent = new Intent(LoginKidsUI.this, HomeScreen.class);
                 intent.putExtra("PreviousActivity", "LoginKidsUI");
                 intent.putExtra("Authenticated", authenticated);
                 LoginKidsUI.this.startActivity(intent);

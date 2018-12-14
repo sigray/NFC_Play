@@ -4,19 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.view.ViewGroup.LayoutParams;
 
 import com.example.stucollyn.nfc_play.R;
 
@@ -43,7 +36,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
     ArrayList<String> objectName;
     int[] colourCode;
     HashMap<String, Bitmap> imageMap;
-    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
+    LinkedHashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef;
     private List<String> elements;
     boolean authenticated = false;
     int[] shapeResource = new int[]{R.raw.archive_shape_1, R.raw.archive_shape_2, R.raw.archive_shape_1};
@@ -125,7 +118,7 @@ public class CloudImageAdapterKidsUI extends  RecyclerView.Adapter<CloudImageAda
         return this.elements.size();
     }
 
-    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated, CommentaryInstruction commentaryInstruction) {
+    public CloudImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, ArrayList<File>> filesOnTag, int[] colourCode, LinkedHashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef, HashMap<String, Bitmap> imageMap, boolean authenticated, CommentaryInstruction commentaryInstruction) {
 
         this.storyGallery = storyGallery;
         mContext = c;

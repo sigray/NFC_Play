@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by StuCollyn on 24/07/2018.
  */
 
-public class ObjectStoryRecordKidsUI implements Serializable {
+public class ObjectStoryRecord implements Serializable {
 
     String ObjectName;
     String StoryName;
@@ -18,7 +18,7 @@ public class ObjectStoryRecordKidsUI implements Serializable {
     String ObjectContext;
 
 
-    public ObjectStoryRecordKidsUI(String ObjectName, String StoryName, String StoryDate, String StoryRef, String StoryType, String CoverImage, String ObjectContext) {
+    public ObjectStoryRecord(String ObjectName, String StoryName, String StoryDate, String StoryRef, String StoryType, String CoverImage, String ObjectContext) {
 
         this.ObjectName = ObjectName;
         this.StoryName = StoryName;

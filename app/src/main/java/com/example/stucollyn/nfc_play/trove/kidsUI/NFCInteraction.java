@@ -194,7 +194,7 @@ public class NFCInteraction {
 //        if(complete) {
 //
 //            Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
-//            Intent intent = new Intent(context, HomeScreenKidsUI.class);
+//            Intent intent = new Intent(context, HomeScreen.class);
 //            intent.putExtra("PreviousActivity", "RecordStory");
 //            intent.putExtra("Authenticated", authenticated);
 //            intent.putExtra("NewStory", true);

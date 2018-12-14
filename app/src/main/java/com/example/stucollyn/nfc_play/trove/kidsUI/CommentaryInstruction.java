@@ -89,12 +89,12 @@ public class CommentaryInstruction {
 
                 if(onCompleteChangeActivity) {
 
-                    if(activityName==HomeScreenKidsUI.class) {
+                    if(activityName==HomeScreen.class) {
 
                         HomeScreen();
                     }
 
-                    else if(activityName==ArchiveKidsUI.class) {
+                    else if(activityName==Archive.class) {
 
                         ArchiveMainMenu();
                     }
@@ -109,7 +109,7 @@ public class CommentaryInstruction {
 
     void ArchiveMainMenu() {
 
-        Intent intent = new Intent(context, ArchiveKidsUI.class);
+        Intent intent = new Intent(context, Archive.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         context.startActivity(intent);
@@ -117,7 +117,7 @@ public class CommentaryInstruction {
 
     void HomeScreen() {
 
-        Intent intent = new Intent(context, HomeScreenKidsUI.class);
+        Intent intent = new Intent(context, HomeScreen.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("NewStory", true);

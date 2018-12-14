@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:layout_centerInParent="true"
     android:gravity="center_vertical"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.ArchiveKidsUI">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.Archive">
 
     <ImageView
         android:id="@+id/grid_item_background_kids_ui"

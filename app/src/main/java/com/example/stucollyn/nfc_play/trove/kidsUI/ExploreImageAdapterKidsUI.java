@@ -2,13 +2,9 @@ package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +37,8 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
     ArrayList<File> storyFile;
     int[] colourCode;
     HashMap<String, Bitmap> imageMap;
-    HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef;
-    LinkedHashMap<String, ArrayList<ObjectStoryRecordKidsUI>> storyTypeMap;
+    HashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef;
+    LinkedHashMap<String, ArrayList<ObjectStoryRecord>> storyTypeMap;
     private List<String> elements;
     private MediaPlayer mPlayer = null;
     ShowStoryContent showStoryContent;
@@ -144,7 +140,7 @@ public class ExploreImageAdapterKidsUI extends  RecyclerView.Adapter<ExploreImag
 
 
     public ExploreImageAdapterKidsUI(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> filesOnTag, int[] colourCode,
-                                     HashMap<String, ArrayList<ObjectStoryRecordKidsUI>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
+                                     HashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
                                      LinkedHashMap<String, String> storyTypeMap, CommentaryInstruction commentaryInstruction) {
 
         this.storyGallery = storyGallery;
