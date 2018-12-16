@@ -87,10 +87,15 @@ public class RecordStory extends AppCompatActivity {
     boolean recordButtonRunning = false;
     AudioRecorder audioRecorder;
 
-    //Camera variables
+    //Camera Variables
     private Camera mCamera;
     private CameraPreview mPreview;
     CameraRecorder cameraRecorder;
+
+    //Camera Views
+    ImageButton captureButton;
+    FrameLayout preview;
+    LinearLayout camera_linear;
 
     //Request Code Variables
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -104,9 +109,6 @@ public class RecordStory extends AppCompatActivity {
 
     //trove voice
     CommentaryInstruction commentaryInstruction;
-    ImageButton captureButton;
-    FrameLayout preview;
-    LinearLayout camera_linear;
 
 
     //Grant permission to record audio and to take pictures (required for some newer Android devices)
@@ -163,7 +165,7 @@ public class RecordStory extends AppCompatActivity {
     void NFCSetup() {
 
         //Initialize nfcInteraction object, which processes any nfc interactions.
-        nfcInteraction = new NFCInteraction(this, this, authenticated);
+        nfcInteraction = new NFCInteraction(this, this);
         //Initialize adapter to gather NFC tag data.
         adapter = NfcAdapter.getDefaultAdapter(this);
         //Enable external NFC software to launch an intent within this activity.
@@ -416,7 +418,7 @@ public class RecordStory extends AppCompatActivity {
             intent.putExtra("PreviousActivity", "RecordStory");
             intent.putExtra("Authenticated", authenticated);
             intent.putExtra("NewStory", true);
-            intent.putExtra("StoryRef", tag_data);
+            intent.putExtra("storyRef", tag_data);
             this.startActivity(intent);
         }
     }
@@ -882,7 +884,7 @@ public class RecordStory extends AppCompatActivity {
         //Stop any commentary instructions
         commentaryInstruction.stopPlaying();
         //Open Hamburger activity
-        Intent intent = new Intent(RecordStory.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(RecordStory.this, HamburgerScreen.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         RecordStory.this.startActivity(intent);

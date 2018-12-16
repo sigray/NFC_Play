@@ -13,6 +13,10 @@ import android.widget.ImageView;
 
 import com.example.stucollyn.nfc_play.*;
 
+/*
+This fragment class launches a dialog fragment allowing the user to enter sign up credentials.
+ */
+
 public class LoginOrSignUpDialogFragment extends DialogFragment {
 
     /* The activity that creates an instance of this dialog fragment must

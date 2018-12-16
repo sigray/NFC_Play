@@ -47,17 +47,16 @@ public class HomeScreen extends FragmentActivity {
             leaf, umbrella, tear, teddy, heart, trove, back, halfcircle;
 
     //The animations used on the ImageViews
-    Animation spin, shrink, blink, draw, bounce, fadein, alpha, fadeout;
+    Animation bounce, fadein, alpha, fadeout;
     AnimatedVectorDrawable backRetrace;
 
     //Arrays for grouping specific views together
-    ImageView zigzagArray[], largeItemArray[], allViews[];
+    ImageView allViews[];
 
     //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
     HashMap<ImageView, Integer> IvDrawable;
 
     //Handlers, runnables, and logical components governing the appearance, timing and repetition of animations
-    Handler startupZigZagHandler, startupLargeObjectsHandler;
     Integer[] paintColourArray;
     int paintColourArrayInt = 0;
 
@@ -71,15 +70,12 @@ public class HomeScreen extends FragmentActivity {
     //Story playback components and variables
     ShowStoryContent showStoryContent;
     CommentaryInstruction commentaryInstruction;
-    boolean record_button_on, video_record_button_on, recordingStatus = false,
-            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
-            permissionToRecordAccepted = false, isFullSizedVideo = false;
 
     //Firebase - networked activities
     boolean authenticated = false; //if connected to a network, authenticated is set to true
 
     //Hamburger menu control
-    ImageView drawerButton;
+    ImageView hamburgerButton;
     NavigationView navigationView;
 
     //Activity governance
@@ -114,7 +110,7 @@ public class HomeScreen extends FragmentActivity {
         //Initialize the root group of image views to control multiple views in a single command
         mRootView = (ViewGroup) findViewById(R.id.activity_logged_in_read_home);
         //Initialize drawer button for hamburger menu
-        drawerButton = findViewById(R.id.drawer_button);
+        hamburgerButton = findViewById(R.id.drawer_button);
 
         //Initialize the four different colours used to denote background object image views.
         paintColourArray = new Integer[4];
@@ -224,7 +220,7 @@ public class HomeScreen extends FragmentActivity {
     void nfcSetup() {
 
         //Initialize NFCInteraction object which handles the logic for any NFC interactions.
-        nfcInteraction = new NFCInteraction(this, this, authenticated);
+        nfcInteraction = new NFCInteraction(this, this);
         //Initialize adapter to gather NFC tag data.
         adapter = NfcAdapter.getDefaultAdapter(this);
         //Enable external NFC software to launch an intent within this activity.
@@ -244,7 +240,7 @@ public class HomeScreen extends FragmentActivity {
         //Stop any current commentary.
         commentaryInstruction.stopPlaying();
         //Launch Hamburger activity using slide animation.
-        Intent intent = new Intent(HomeScreen.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(HomeScreen.this, HamburgerScreen.class);
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("PreviousActivity", "HomeScreen");
         HomeScreen.this.startActivity(intent);
@@ -257,8 +253,8 @@ public class HomeScreen extends FragmentActivity {
         //Get previous activity String value passed in last activity change intent.
         previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
 
-        //If previous activity is LoginKidsUI, play relevant trove instruction.
-        if(previousActivity.equals("LoginKidsUI")) {
+        //If previous activity is Login, play relevant trove instruction.
+        if(previousActivity.equals("Login")) {
 
             //Uri of audio source file.
             Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.welcomehome);
@@ -282,13 +278,13 @@ public class HomeScreen extends FragmentActivity {
                 */
 
                 //Get storyRef reference number.
-                String storyRef = (String) getIntent().getExtras().get("StoryRef");
+                String storyRef = (String) getIntent().getExtras().get("storyRef");
                 //Find the file directory with the corresponding name.
                 File directory = new File (getFilesDir() + File.separator + "Tag" + File.separator + storyRef);
                 //List the files at the directory and save them in an array.
                 File[] filesOnTag = directory.listFiles();
                 //Play the files listed.
-                PlayStory(filesOnTag);
+                playStory(filesOnTag);
             }
 
             else {
@@ -308,7 +304,7 @@ public class HomeScreen extends FragmentActivity {
     }
 
     //Play a story stored on an NFC tag immediately after it is scanned.
-    void PlayStory(File[] filesOnTag) {
+    void playStory(File[] filesOnTag) {
 
         //If a story is already being played, stop it.
         commentaryInstruction.stopPlaying();
@@ -355,16 +351,10 @@ public class HomeScreen extends FragmentActivity {
                     String packageName = getPackageName();
                     File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
 
-//                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
-//                Uri story_directory_uri = FileProvider.getUriForFile(this,
-//                        "com.example.android.fileprovider",
-//                        filesOnTag[0].getAbsoluteFile());
-//                Log.i("NFC URI: ", String.valueOf(story_directory_uri));
-
                     //If the referenced internal directory exists and there are files within, play the story.
                     if (filesOnTag != null) {
 
-                        PlayStory(filesOnTag);
+                        playStory(filesOnTag);
                     }
                 }
             }

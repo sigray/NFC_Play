@@ -34,25 +34,34 @@ import java.util.UUID;
 
 class CameraRecorder extends Application {
 
-    //File Save Variables
+    //File save variables
     File story_directory, tag_directory = null, cover_directory = null, image, tagFile, coverFile;
-    private Context context;
     String videoPath, photoPath;
+
+    //Activity variables
+    private Context context;
     Activity activity;
+
+    //Picture variables
     int rotationInDegrees;
     Bitmap adjustedBitmap;
     Uri photoURI;
+
+    //ImageViews and animations
+    Animation fadein, fadeout;
+
+    //Camera components
     ImageButton captureButton;
     FrameLayout preview;
     LinearLayout camera_linear;
-    Animation fadein, fadeout;
     Camera mCamera;
     CameraPreview mPreview;
     public static final int MEDIA_TYPE_IMAGE = 1;
-    boolean pictureSave = false;
     private boolean safeToTakePicture = false;
 
+    //CameraRecorder constructor
     public CameraRecorder(Activity activity, Context context, File story_directory, File tag_directory, File cover_directory, Camera mCamera, CameraPreview mPreview) {
+        //Initialize received values for variables
         this.context = context;
         this.story_directory = story_directory;
         this.tag_directory = tag_directory;
@@ -61,75 +70,76 @@ class CameraRecorder extends Application {
         this.mCamera = mCamera;
         this.mPreview = mPreview;
 
+        //Initialize layouts and animations
         captureButton = (ImageButton) activity.findViewById(R.id.button_capture);
         preview = (FrameLayout) activity.findViewById(R.id.camera_preview);
         camera_linear = (LinearLayout) activity.findViewById(R.id.camera_linear);
         fadein = AnimationUtils.loadAnimation(context, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(context, R.anim.fadeout);
-
-        Log.i("SD: ", story_directory.toString());
     }
 
-
-
+    //Get instance of the camera and open it.
     public static Camera getCameraInstance() {
 
-            Camera c = null;
-            try {
-                c = Camera.open(1); // attempt to get a Camera instance
-            }
-            catch (Exception e){
-                // Camera is not available (in use or does not exist)
-                Log.i("Tag", "No Camera here mate");
-            }
-            return c; // returns null if camera is unavailable
+        Camera c = null;
+        try {
+            c = Camera.open(1); // attempt to get a front Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
+            Log.i("Tag", "No Camera here mate");
         }
+        return c; // returns null if camera is unavailable
+    }
 
+    //Set the boolean denoting the safety to take a picture
     void setSafeToTakePicture(boolean safeToTakePicture) {
 
         this.safeToTakePicture = safeToTakePicture;
     }
 
+    //Return boolean denoting whether it is safe to take a picture
     boolean getSafeToTakePicture() {
 
         return safeToTakePicture;
     }
 
-    /** Create a file Uri for saving an image or video */
-    Uri getOutputMediaFileUri(int type){
+    /**
+     * Create a file Uri for saving an image or video
+     */
+    Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    /** Create a File for saving an image or video */
-    File getOutputMediaFile(int type){
-
-
-//        File mediaStorageDir = story_directory;
-
+    /**
+     * Create a File for saving an image or video
+     */
+    File getOutputMediaFile(int type) {
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
-//            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-//                    "IMG_"+ timeStamp + ".jpg");
+        if (type == MEDIA_TYPE_IMAGE) {
+
+            //Give picture story file a UUID
             UUID storyName = UUID.randomUUID();
             String imageFileName = storyName.toString();
 
-            Log.i("SD2: ", story_directory.toString());
 
+            /*Create output media files for the captured picture data - one in story_directory, one int tag_directory, and one in cover_directory. In other parts of
+            the app, these three files are used in different ways when retrieving LOCAL files (not cloud based). When displaying the story in the archive explorer the
+            file is read from the story_directory. When reading from a NFC tag, it is read from the tag_directory. When displaying story thumbnail covers, it is read
+            from the cover_directory.*/
             mediaFile = new File(story_directory.getPath() + File.separator +
-                        imageFileName + ".jpg");
+                    imageFileName + ".jpg");
             photoPath = mediaFile.getAbsolutePath();
 
-
-            if(tag_directory!=null) {
+            if (tag_directory != null) {
                 Log.i("Cool", "t directory empty" + ": " + tag_directory.toString());
                 tagFile = new File(tag_directory.getPath() + File.separator +
                         imageFileName + ".jpg");
             }
 
-            if(cover_directory!=null) {
+            if (cover_directory != null) {
                 Log.i("Cool", "c directory empty" + ": " + cover_directory.toString());
                 coverFile = new File(cover_directory.getPath() + File.separator +
                         imageFileName + ".jpg");
@@ -139,50 +149,72 @@ class CameraRecorder extends Application {
             return null;
         }
 
+        //Return the file
         return mediaFile;
     }
 
-    File getTagFile(){
+    //Return the tagFile
+    File getTagFile() {
 
         return tagFile;
     }
 
-    File getCoverFile(){
+    //Return the coverFile
+    File getCoverFile() {
 
         return coverFile;
     }
 
+    //This method is used to copy the original picture file to other folders.
+    //To do: as this code is used in other parts of the program, this could be made its own class.
+    public void copyFile(File sourceFile, File destFile) throws IOException {
 
+        //If the file's storage destination doesn't exist, create it
+        if (!destFile.getParentFile().exists())
+            destFile.getParentFile().mkdirs();
 
-/*
-
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-
-            // progressToRecordStory only if the File was successfully created
-            if (photoFile != null) {
-               // photoURI = FileProvider.getUriForFile(this,
-                  //      "com.example.android.fileprovider",
-                    //    photoFile);
-                photoURI = FileProvider.getUriForFile(context, "com.example.android.fileprovider", photoFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                  intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-//        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
-//        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
-                activity.startActivityForResult(intent, 100);
-            }
+        //If the output file itself does not already exist, create it
+        if (!destFile.exists()) {
+            destFile.createNewFile();
         }
 
-        */
+        //Declare File channels
+        FileChannel source = null;
+        FileChannel destination = null;
+
+        //Apply channel to copy from the source file to the destination file
+        try {
+            source = new FileInputStream(sourceFile).getChannel();
+            destination = new FileOutputStream(destFile).getChannel();
+            destination.transferFrom(source, 0, source.size());
+        }
+
+        //Close channels after try block has ended
+        finally {
+            if (source != null) {
+                source.close();
+            }
+            if (destination != null) {
+                destination.close();
+            }
+        }
+    }
+
+    //Note - not currently used. Return processed and scaled bitmap
+    Bitmap getAdjustedBitmap() {
+
+        return adjustedBitmap;
+    }
+
+    //Note - not currently used. Rotate image bitmap
+    int getRotationInDegrees() {
+
+        return rotationInDegrees;
+    }
+}
+
+/* Additional code for taking and processing picture images: currently not required
+
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -210,19 +242,7 @@ class CameraRecorder extends Application {
         return image;
     }
 
-    private static int exifToDegrees(int exifOrientation) {
-        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
-            return 90;
-        } else if (
-                exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
-            return 180;
-        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
-            return 270;
-        }
-        return 0;
-    }
-
-    void PictureProcessing() {
+     void PictureProcessing() {
 
         ExifInterface exif = null;
         try {
@@ -263,46 +283,19 @@ class CameraRecorder extends Application {
         }
     }
 
-    public void copyFile(File sourceFile, File destFile) throws IOException {
-
-        Log.i("UMMM", "t directory" + ": " + destFile.toString());
-
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
+        private static int exifToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (
+                exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
         }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        }
-
-        finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
-        }
+        return 0;
     }
 
-    Bitmap getAdjustedBitmap() {
-
-        return adjustedBitmap;
-    }
-
-    int getRotationInDegrees() {
-
-        return rotationInDegrees;
-    }
-
+       //Return the photo
     String getPhotoPath() {
 
         return photoPath;
@@ -313,4 +306,5 @@ class CameraRecorder extends Application {
         return photoURI;
     }
 
-}
+    */
+

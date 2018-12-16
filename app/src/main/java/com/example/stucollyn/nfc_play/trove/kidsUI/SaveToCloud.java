@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by StuCollyn on 18/09/2018.
- */
+/*
+This class is used to save a new series of story files to the cloud - FireBase database and FireStore cloud storage.
+*/
 
 public class SaveToCloud {
 
@@ -165,11 +165,11 @@ public class SaveToCloud {
 
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("Username", name);
-        newUser.put("StoryName", storyName.toString());
+        newUser.put("storyName", storyName.toString());
         newUser.put("Type", fileType);
         newUser.put("URL", storage);
         newUser.put( "Date", FieldValue.serverTimestamp());
-        newUser.put( "ObjectName", objectName.toString());
+        newUser.put( "objectName", objectName.toString());
         newUser.put( "Cover", coverImage);
 
 

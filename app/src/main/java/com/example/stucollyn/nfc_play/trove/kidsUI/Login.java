@@ -53,8 +53,8 @@ To do: //Note, the need to enter a passcode could be completely removed once the
        //authenticated passcode / useraccount works (locally in the short-term) as stories are currently saved to internal folders.
  */
 
-    public class LoginKidsUI extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragment.NoticeSignUpDialogListener,
-            LoginDialogFragmentKidsUI.NoticeLoginDialogListener {
+    public class Login extends FragmentActivity implements LoginOrSignUpDialogFragment.LoginOrSignUpDialogListener, SignUpDialogFragment.NoticeSignUpDialogListener,
+            LoginDialogFragment.NoticeLoginDialogListener {
 
         //The ImageViews displayed on the activity layout
         ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
@@ -219,7 +219,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         //If the previous activity was WelcomeScreen, play the welcome commentary instruction.
         if(previousActivity.equals("WelcomeScreenKidsUI")) {
 
-            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.helloandpassword), false, null, "LoginKidsUI");
+            commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.helloandpassword), false, null, "Login");
         }
     }
 
@@ -243,7 +243,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     }
 
     //The login dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the LoginDialogFragmentKidsUI.NoticeLoginDialogListener interface.
+    //defined by the LoginDialogFragment.NoticeLoginDialogListener interface.
     @Override
     public void onLoginDialogPositiveClick(String username, String password) {
         // User touched the dialog's positive imageView
@@ -252,7 +252,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     }
 
     //The login dialog fragment receives a reference to this Activity from Fragment.onAttach() callback. It uses this to call the following methods
-    //defined by the LoginDialogFragmentKidsUI.NoticeLoginDialogListener interface.
+    //defined by the LoginDialogFragment.NoticeLoginDialogListener interface.
     @Override
     public void onLoginDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative imageView
@@ -264,7 +264,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     @Override
     public void onLoginButton() {
 
-        DialogFragment dialog = new LoginDialogFragmentKidsUI();
+        DialogFragment dialog = new LoginDialogFragment();
         dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
@@ -306,7 +306,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         if (user != null) {
 
             //Launch visible text message on screen to show the name of the user successfully attempting to login
-            Toast.makeText(LoginKidsUI.this,
+            Toast.makeText(Login.this,
                     "Logged in as " + user.getEmail(),
                     Toast.LENGTH_LONG).show();
             //Set the value of 'authenticated' variable to true - this variable is then passed to subsequent activities to denote the current user has been authenticated
@@ -332,14 +332,14 @@ To do: //Note, the need to enter a passcode could be completely removed once the
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginKidsUI.this, "Logging in as: " + user.getEmail(),
+                            Toast.makeText(Login.this, "Logging in as: " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
                             PasscodePhase();
                         }
 
                         else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                            Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -361,7 +361,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
                             FirebaseDatabaseNewUser(username, password, firstName, lastName);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                            Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -387,7 +387,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
                     @Override
                     public void onSuccess(Void aVoid) {
                         // Sign in success, update UI with the signed-in user's information
-                        Toast.makeText(LoginKidsUI.this, "Account Created.",
+                        Toast.makeText(Login.this, "Account Created.",
                                 Toast.LENGTH_SHORT).show();
                         FirebaseLogin(username, password);
                     }
@@ -395,7 +395,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginKidsUI.this, "Authentication failed.",
+                        Toast.makeText(Login.this, "Authentication failed.",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -560,7 +560,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
     void Login() {
 
         //Play chime noise.
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null, "LoginKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, null, "Login");
 
         //Initialize explode transition which sends shapes flying in all directions.
         Transition explode = new Explode();
@@ -576,10 +576,10 @@ To do: //Note, the need to enter a passcode could be completely removed once the
             public void onTransitionEnd(Transition transition) {
 
                 //Advance to Home Screen Activity.
-                Intent intent = new Intent(LoginKidsUI.this, HomeScreen.class);
-                intent.putExtra("PreviousActivity", "LoginKidsUI");
+                Intent intent = new Intent(Login.this, HomeScreen.class);
+                intent.putExtra("PreviousActivity", "Login");
                 intent.putExtra("Authenticated", authenticated);
-                LoginKidsUI.this.startActivity(intent);
+                Login.this.startActivity(intent);
             }
 
             @Override
@@ -662,7 +662,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
 
    /* public void setPasscodeReady(){
 
-//        VectorChildFinder vector = new VectorChildFinder(LoginKidsUI.this, IvDrawable.get(passCodeItemArray[0]), passCodeItemArray[0]);
+//        VectorChildFinder vector = new VectorChildFinder(Login.this, IvDrawable.get(passCodeItemArray[0]), passCodeItemArray[0]);
 //
 //        VectorDrawableCompat.VFullPath path1 = vector.findPathByName("path1");
 //        path1.setFillColor(Color.RED);
@@ -675,7 +675,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
                 passCodeItemArray[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(LoginKidsUI.this,
+                    Toast.makeText(Login.this,
                             "The favorite list would appear on clicking this icon",
                             Toast.LENGTH_LONG).show();
 

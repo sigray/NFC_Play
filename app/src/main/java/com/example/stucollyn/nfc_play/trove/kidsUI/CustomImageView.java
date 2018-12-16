@@ -16,7 +16,8 @@ import com.svgandroid.SVG;
 import com.svgandroid.SVGParser;
 
 /**
- * Created by StuCollyn on 27/09/2018.
+ This class extends the SvgImageView Github project but it now let's us dynamically change the shape of the background archive image views and the image views themselves.
+ This class cuts ImageViews into custom shapes using local svg vector resources.
  */
 
 public class CustomImageView extends com.meg7.widget.SvgImageView {
@@ -43,6 +44,7 @@ public class CustomImageView extends com.meg7.widget.SvgImageView {
         a.recycle();
     }
 
+    //Get local svg resource and convert it to a Bitmap
     public static Bitmap getBitmap(Context context, int width, int height, int svgRawResourceId) {
 
         Log.i("Building shape", String.valueOf(svgRawResourceId));
@@ -64,11 +66,13 @@ public class CustomImageView extends com.meg7.widget.SvgImageView {
         return bitmap;
     }
 
+    //This can be called to change the active svg resource that is desired
     public void setCustomImageResource(int resource) {
 
         mSvgRawResourceId= resource;
     }
 
+    //Returns the bitmap
     @Override
     public Bitmap getBitmap() {
         return getBitmap(mContext, getWidth(), getHeight(), mSvgRawResourceId);

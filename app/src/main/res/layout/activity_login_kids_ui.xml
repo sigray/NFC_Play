@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#4559de"
     android:id="@+id/login_kids_ui"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.LoginKidsUI">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.Login">
 
     <ImageView
         android:id="@+id/small_shapes"

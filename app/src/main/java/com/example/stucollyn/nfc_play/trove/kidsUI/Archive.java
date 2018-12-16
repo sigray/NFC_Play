@@ -71,7 +71,7 @@ public class Archive extends AppCompatActivity {
     HashMap<String, Bitmap> coverImageMap;
 
     //Thumbnail display
-    CloudImageAdapterKidsUI cloudImageAdapter;
+    ArchiveImageAdapter cloudImageAdapter;
     HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
@@ -400,9 +400,9 @@ public class Archive extends AppCompatActivity {
 
                                 //Initialize meta-data variables about document
                                 String StoryDate = ""; // Error with server data currently
-                                String ObjectName = document.getData().get("ObjectName").toString();
-                                String StoryName = document.getData().get("StoryName").toString();
-//                                String StoryDate = document.getData().get("Date").toString();
+                                String ObjectName = document.getData().get("objectName").toString();
+                                String StoryName = document.getData().get("storyName").toString();
+//                                String storyDate = document.getData().get("Date").toString();
                                 String URLlink = document.getData().get("URL").toString(); //This is the download FireStore reference link to the file itself
                                 String StoryType = document.getData().get("Type").toString();
                                 String CoverImage = document.getData().get("Cover").toString();
@@ -485,7 +485,7 @@ public class Archive extends AppCompatActivity {
                         //Set the progress bar to be invisible
                         progressBar.setVisibility(View.INVISIBLE);
                         //Update the image adapter to reflect the image thumbnails downloaded
-                        cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCodeArray, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
+                        cloudImageAdapter = new ArchiveImageAdapter(activity, context, numberOfThumbs, folderFiles, colourCodeArray, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
                         gridview.invalidate();
                         gridview.setAdapter(cloudImageAdapter);
                     }
@@ -527,7 +527,7 @@ public class Archive extends AppCompatActivity {
                 //If the current subfile is a jpg or audio
                     if (extension.equalsIgnoreCase("jpg")&&!setCoverImage) {
 
-//                        CoverImage = "yes";
+//                        coverImage = "yes";
                         FileType = "PictureFile";
                     }
 
@@ -654,7 +654,7 @@ public class Archive extends AppCompatActivity {
     public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(Archive.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(Archive.this, HamburgerScreen.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         Archive.this.startActivity(intent);
@@ -777,7 +777,7 @@ public class Archive extends AppCompatActivity {
             progressBar.setVisibility(View.INVISIBLE);
 
             if(success) {
-                cloudImageAdapter = new CloudImageAdapterKidsUI(activity, context, numberOfThumbs, folderFiles, colourCodeArray, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
+                cloudImageAdapter = new ArchiveImageAdapter(activity, context, numberOfThumbs, folderFiles, colourCodeArray, objectRecordMap, coverImageMap, authenticated, commentaryInstruction);
                 gridview.invalidate();
                 gridview.setAdapter(cloudImageAdapter);
             }

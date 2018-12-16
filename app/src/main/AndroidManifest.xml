@@ -140,7 +140,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".trove.kidsUI.LoginKidsUI"
+            android:name=".trove.kidsUI.Login"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="trove"
             android:screenOrientation="landscape"
@@ -173,7 +173,7 @@
             android:label="trove"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".trove.kidsUI.HamburgerKidsUI"
+        <activity android:name=".trove.kidsUI.HamburgerScreen"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="trove"
             android:screenOrientation="landscape"

@@ -20,7 +20,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,7 +55,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
     //Thumbnail display
     ProgressBar progressBar;
-    ExploreImageAdapterKidsUI cloudImageAdapter;
+    ExploreImageAdapter cloudImageAdapter;
     HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
@@ -142,7 +141,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         storyTypeMap = new LinkedHashMap<String, String>();
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
         fileMap = new LinkedHashMap<String, File>();
-        objectName = (String) getIntent().getExtras().get("ObjectName");
+        objectName = (String) getIntent().getExtras().get("objectName");
     }
 
     //Animation setup to handle the back button
@@ -298,7 +297,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
                     //As file thumbnails are completed, hide the progress bar
                     progressBar.setVisibility(View.INVISIBLE);
                     //Update the image adapter used to display the list of story files
-                    cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
+                    cloudImageAdapter = new ExploreImageAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
                     gridview.invalidate();
                     gridview.setAdapter(cloudImageAdapter);
 
@@ -428,7 +427,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, HamburgerScreen.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
@@ -448,7 +447,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         Intent intent = new Intent(ExploreArchiveItem.this, ObjectAddStoryKidsUI.class);
         intent.putExtra("PreviousActivity", "ExploreArchiveItem");
         intent.putExtra("ObjectStoryRecord", objectRecordMap);
-        intent.putExtra("ObjectName", objectName);
+        intent.putExtra("objectName", objectName);
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -495,7 +494,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
         authenticated = savedInstanceState.getBoolean("Authenticated");
-        objectName = savedInstanceState.getString("ObjectName");
+        objectName = savedInstanceState.getString("objectName");
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) savedInstanceState.getSerializable("ObjectStoryRecord");
     }
 
@@ -504,7 +503,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putBoolean("Authenticated", authenticated);
-        savedInstanceState.putString("ObjectName", objectName);
+        savedInstanceState.putString("objectName", objectName);
         savedInstanceState.putSerializable("ObjectStoryRecord", objectRecordMap);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -558,7 +557,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         protected void onPostExecute(Void result) {
 
             progressBar.setVisibility(View.INVISIBLE);
-            cloudImageAdapter = new ExploreImageAdapterKidsUI(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
+            cloudImageAdapter = new ExploreImageAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }

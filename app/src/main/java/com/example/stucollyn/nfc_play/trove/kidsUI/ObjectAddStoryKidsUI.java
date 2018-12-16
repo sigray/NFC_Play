@@ -160,7 +160,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
-        objectName = (String) getIntent().getExtras().get("ObjectName");
+        objectName = (String) getIntent().getExtras().get("objectName");
         mCamera = cameraRecorder.getCameraInstance();
         mPreview = new CameraPreview(getApplicationContext(), mCamera);
         preview.addView(mPreview);
@@ -512,7 +512,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
         authenticated = savedInstanceState.getBoolean("Authenticated");
-        objectName = savedInstanceState.getString("ObjectName");
+        objectName = savedInstanceState.getString("objectName");
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) savedInstanceState.getSerializable("ObjectStoryRecord");
     }
 
@@ -520,7 +520,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putBoolean("Authenticated", authenticated);
-        savedInstanceState.putString("ObjectName", objectName);
+        savedInstanceState.putString("objectName", objectName);
         savedInstanceState.putSerializable("ObjectStoryRecord", objectRecordMap);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -555,7 +555,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent = new Intent(ObjectAddStoryKidsUI.this, Archive.class);
-                intent.putExtra("ObjectName", objectName);
+                intent.putExtra("objectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);
                 ObjectAddStoryKidsUI.this.startActivity(intent);
@@ -569,7 +569,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     public void Drawer(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerKidsUI.class);
+        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerScreen.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ObjectAddStoryKidsUI.this.startActivity(intent);
@@ -597,7 +597,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             public void run() {
                 ReleaseCamera();
                 Intent intent = new Intent(ObjectAddStoryKidsUI.this, ExploreArchiveItem.class);
-                intent.putExtra("ObjectName", objectName);
+                intent.putExtra("objectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);
                 ObjectAddStoryKidsUI.this.startActivity(intent);

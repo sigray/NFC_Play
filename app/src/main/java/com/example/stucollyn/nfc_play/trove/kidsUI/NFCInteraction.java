@@ -21,46 +21,33 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+/*
+The NFCInteraction class is responsible for handling activity NFC intents - to read and write tags.
+ */
+
 public class NFCInteraction {
 
-    String action;
-    String themessage;
-    String owner;
-    String type;
-    String id;
-    String colour;
-    TextView instruction;
-    static String display;
+    //Tag variables
     Tag mytag;
-    // File fileDirectory;
     String tag_data = "";
-    int mode;
+    NdefMessage tagContents;
+
+    //Activity variables
     Context context;
     Activity activity;
-    NdefMessage tagContents;
     File[] filesOnTag;
-    boolean authenticated = false;
 
-    public NFCInteraction(Context context, Activity activity, boolean authenticated) {
+    //NFCInteraction constructor
+    public NFCInteraction(Context context, Activity activity) {
 
         this.context = context;
         this.activity = activity;
-        this.authenticated = authenticated;
     }
 
-    protected void onNewIntent(Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(context, "Object found.", Toast.LENGTH_LONG).show();
-        }
-
-        if (tag_data != null) {
-            doWrite(mytag, tag_data);
-        }
-    }
-
+    //NFC tag read operation
     File[] read(Tag tag, PackageManager pacMan, String packageName) throws IOException, FormatException, IndexOutOfBoundsException, NullPointerException {
 
+        //Initialize a null String
         String s = null;
         // Get an instance of Ndef for the tag.
         Ndef ndef = Ndef.get(tag);
@@ -74,6 +61,7 @@ public class NFCInteraction {
         NdefRecord[] ndefRecords = ndefMesg.getRecords();
         int len = ndefRecords.length;
 
+        //Convert byte array given by nfc tag, to a string
         byte[] mesg = null;
         String[] recTypes = new String[len];     // will contain the NDEF record types
         for (int i = 0; i < len; i++) {
@@ -82,7 +70,7 @@ public class NFCInteraction {
             s = new String(mesg);
         }
 
-        s = s.substring(3);
+        s = s.substring(3); //Trim the returned string
 
         try {
             PackageInfo p = pacMan.getPackageInfo(packageName, 0);
@@ -91,13 +79,14 @@ public class NFCInteraction {
             Log.w("yourtag", "Error Package name not found ", e);
         }
 
+        //End tag interaction
         ndef.close();
 
-//        String path = packageName.toString()+"/validStoryFolders";
-//        String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Tag/" + s;
+        //Find file directory in phone internal memory based on the tag data read.
+        //Tag contents are always strings of the name of the story folder
         File directory = new File (context.getFilesDir() + File.separator + "Tag" + File.separator + s);
 
-//        File directory = new File(path);
+        //Based on the directory given, list the names of the contained story files and add them to the files array, which is returned by this method.
         File[] files = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
 
@@ -109,9 +98,10 @@ public class NFCInteraction {
         return filesOnTag;
     }
 
+    //Write files to nfc tag
     private void write(Tag tag) throws IOException, FormatException {
 
-//        String fileToWrite = fileDirectory.getAbsolutePath();
+        //Create a record to write on to the nfc tag (the tags consist of a store of memory "records")
         String fileToWrite = tag_data;
         NdefRecord[] records = {
                 createRecord(fileToWrite)
@@ -127,6 +117,7 @@ public class NFCInteraction {
         ndef.close();
     }
 
+    //Create an nfc tag record - the tags consist of multiple memory records
     private NdefRecord createRecord(String text) throws UnsupportedEncodingException {
         String lang = "en";
         byte[] textBytes = text.getBytes();
@@ -144,11 +135,11 @@ public class NFCInteraction {
 
         NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload);
 
-
         return recordNFC;
     }
 
-
+    //Control the nfc write functionality
+    //To do: could be assimilated by write() method
     public boolean doWrite(Tag mytag, String tag_data) {
 
         boolean success = false;
@@ -181,42 +172,27 @@ public class NFCInteraction {
             success = false;
         }
 
-        Log.i("Success Value NFC", String.valueOf(success));
-
-
         return success;
     }
 
-
-
-//    void Complete(boolean complete) {
-//
-//        if(complete) {
-//
-//            Toast.makeText(context, "Story saved to object.", Toast.LENGTH_LONG ).show();
-//            Intent intent = new Intent(context, HomeScreen.class);
-//            intent.putExtra("PreviousActivity", "RecordStory");
-//            intent.putExtra("Authenticated", authenticated);
-//            intent.putExtra("NewStory", true);
-//            intent.putExtra("StoryRef", tag_data);
-//            context.startActivity(intent);
-//        }
-//    }
-
+    //Turn nfc write filters on
     void WriteModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter writeTagFilters[]){
 
         adapter.enableForegroundDispatch(activity, pendingIntent, writeTagFilters, null);
     }
 
+    //Turn nfc write filters off
     void WriteModeOff(NfcAdapter adapter){
         adapter.disableForegroundDispatch(activity);
     }
 
+    //Turn nfc read filters on
     void ReadModeOn(NfcAdapter adapter, PendingIntent pendingIntent, IntentFilter readTagFilters[]){
 
         adapter.enableForegroundDispatch(activity, pendingIntent, readTagFilters, null);
     }
 
+    //Turn nfc read filters off
     void ReadModeOff(NfcAdapter adapter){
         adapter.disableForegroundDispatch(activity);
     }

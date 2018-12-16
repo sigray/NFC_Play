@@ -13,30 +13,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by StuCollyn on 25/09/2018.
+The Commentary Instruction class is used to generate trove's voice and audio instructions.
  */
-
 public class CommentaryInstruction {
 
+    //Activity variables
     Activity activity;
     Context context;
+
+    //Media player variables
     MediaPlayer mPlayer;
     Uri audioFileUri;
     boolean playbackStatus = false;
     boolean authenticated = false;
     Handler inputHandler;
+    float volume = 0;
+
+    //Storage variables
     String tag_data;
     String currentActivityName;
 
-    float volume = 0;
-
+    //Commentary Instruction constructor
     public CommentaryInstruction(Activity activity, Context context, boolean playbackStatus, boolean authenticated) {
 
         this.activity = activity;
         this.context = context;
         this.playbackStatus = playbackStatus;
         this.authenticated = authenticated;
-
         mPlayer = new MediaPlayer();
     }
 
@@ -45,8 +48,11 @@ public class CommentaryInstruction {
     between media player pause and play*/
     public void onPlay(Uri audioFileUri, final boolean onCompleteChangeActivitiy, final Class targetActivityName, String currentActivityName) {
 
+        //Set the volume to 1 when the commentary instruction is played
         volume = 1;
+        //Setup the audio media player
         setupAudioMediaPlayer(audioFileUri);
+        //If there is not already commentary playing, start playing a new audio commentary
         if (!playbackStatus) {
             startPlaying(onCompleteChangeActivitiy, targetActivityName, currentActivityName);
             playbackStatus = true;
@@ -56,6 +62,7 @@ public class CommentaryInstruction {
     //Setup new audio media player drawing from audio file location
     protected void setupAudioMediaPlayer(Uri audioFileUri) {
 
+        //If there is already a commentary instruction being played, stop it and reset the player
         try {
 
             if(mPlayer!=null) {
@@ -63,10 +70,12 @@ public class CommentaryInstruction {
                 mPlayer.reset();
                 playbackStatus = false;
             }
-//            Log.i("audioFile", audioFileUri.toString());
+
+            //Set the commentary audio file data source
             mPlayer.setDataSource(context, audioFileUri);
             mPlayer.prepare();
-//            mPlayerSetup = true;
+
+            //Catch any errors
         } catch (IOException e) {
             Log.e("Error", "prepare() failed");
         }
@@ -74,19 +83,22 @@ public class CommentaryInstruction {
 
     //Start audio media player and start listening for stop imageView to be pressed. Upon completion of instruction
     public void startPlaying(final boolean onCompleteChangeActivity, final Class activityName, final String currentActivityName) {
+
+        //Start the media player
         mPlayer.start();
+
+        //Listen for the current audio instruction to finish, then take appropriate action
         mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
 
+                //Stop the media player
                 mPlayer.stop();
+                //Reset the player
                 mPlayer.reset();
+                //Set the current playbackStatus to false
                 playbackStatus = false;
 
-//                if(inputHandler!=null) {
-//
-//                    inputHandler.removeCallbacksAndMessages(null);
-//                }
-
+                //When the instruction is finished, choose whether to launch a new activity or to do nothing
                 if(onCompleteChangeActivity) {
 
                     if(activityName==HomeScreen.class) {
@@ -107,6 +119,7 @@ public class CommentaryInstruction {
         });
     }
 
+    //Launch the Archive activity
     void ArchiveMainMenu() {
 
         Intent intent = new Intent(context, Archive.class);
@@ -115,21 +128,18 @@ public class CommentaryInstruction {
         context.startActivity(intent);
     }
 
+    //Launch the HomeScreen activity
     void HomeScreen() {
 
         Intent intent = new Intent(context, HomeScreen.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("NewStory", true);
-        intent.putExtra("StoryRef", tag_data);
+        intent.putExtra("storyRef", tag_data);
         context.startActivity(intent);
     }
 
-    void setTagData(String data) {
-
-        tag_data = data;
-    }
-
+    //Stop the media player and reset it for reuse
     public void stopPlaying() {
 
         if(mPlayer.isPlaying()) {
@@ -139,18 +149,14 @@ public class CommentaryInstruction {
         }
     }
 
-    void setInputHandler(Handler input){
-
-        inputHandler = input;
-    }
-
+    //Return the current media player
     MediaPlayer getmPlayer(){
 
         return mPlayer;
     }
 
 
-
+    //Note: Currently not used. Can be used to faze audio out.
     void startFadeOut(){
 
         if(mPlayer.isPlaying()) {

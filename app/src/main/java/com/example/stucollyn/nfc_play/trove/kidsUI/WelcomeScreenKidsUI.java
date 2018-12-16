@@ -396,7 +396,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     //If the user presses the star ImageView (the first image visible), skip the animations and continue to the Login activity.
     public void Skip(View view) {
 
-        Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        Intent intent = new Intent(WelcomeScreenKidsUI.this, Login.class);
         intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
         WelcomeScreenKidsUI.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
@@ -407,7 +407,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         idleTroveHandler.removeCallbacks(TroveRunnable);
         trove.clearAnimation();
-        Intent intent = new Intent(WelcomeScreenKidsUI.this, LoginKidsUI.class);
+        Intent intent = new Intent(WelcomeScreenKidsUI.this, Login.class);
         intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
         WelcomeScreenKidsUI.this.startActivity(intent);
     }

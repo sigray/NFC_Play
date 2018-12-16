@@ -12,7 +12,11 @@ import android.widget.EditText;
 
 import com.example.stucollyn.nfc_play.R;
 
-public class LoginDialogFragmentKidsUI extends DialogFragment {
+/*
+This fragment class launches a dialog fragment allowing the user to enter login credentials.
+ */
+
+public class LoginDialogFragment extends DialogFragment {
 
     String username = "";
     String password = "";
@@ -70,7 +74,7 @@ public class LoginDialogFragmentKidsUI extends DialogFragment {
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        LoginDialogFragmentKidsUI.this.getDialog().cancel();
+                        LoginDialogFragment.this.getDialog().cancel();
                     }
                 });
         return builder.create();

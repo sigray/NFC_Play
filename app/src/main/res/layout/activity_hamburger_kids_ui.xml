@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#4559de"
     android:id="@+id/activity_hamburger_kids_ui"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HamburgerKidsUI">
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.HamburgerScreen">
 
     <ImageView
         android:id="@+id/small_shapes"

@@ -1,12 +1,14 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.nfc.FormatException;
 import android.nfc.NfcAdapter;
@@ -14,21 +16,18 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.NavigationView;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,66 +39,147 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class HamburgerKidsUI extends FragmentActivity {
+public class HamburgerScreen extends FragmentActivity {
 
-    //The ImageViews displayed on the activity layout
-
-    //The animations used on the ImageViews
-
-    //Arrays for grouping specific views together
-
-    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
-
-    //Handlers, runnables, and logical components governing the timing and repetition of animations
-
+    //The View group and ImageViews displayed on the activity layout
+    ViewGroup mRootView;
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
             leaf, umbrella, tear, teddy, heart, back, back2, halfcircle;
-    Handler startupZigZagHandler, startupLargeObjectsHandler;
-    Animation spin, shrink, blink, draw, bounce, fadein, alpha, fadeout;
-    ImageView zigzagArray[], largeItemArray[], allViews[];
-    Integer[] paintColourArray;
-    int paintColourArrayInt = 0;
-    HashMap<ImageView, Integer> IvDrawable;
-    ViewGroup mRootView;
+
+    //The animations used on the ImageViews
+    Animation bounce, fadein, alpha, fadeout;
     AnimatedVectorDrawable backRetrace;
+
+    //trove Text
+    TextView troveTitle, troveBody;
+
+    //Arrays for grouping specific views together
+    ImageView allViews[];
+
+    //Hash map which couples each image view with an image resource. This is used later in the activity to load image recources into corresponding ImageViews.
+    HashMap<ImageView, Integer> IvDrawable;
+
+    //Handlers, runnables, and logical components governing the appearance, timing and repetition of animations
+    Integer[] paintColourArray;
+
+    //NFC components and variables
     NFCInteraction nfcInteraction;
     Tag mytag;
     boolean newStoryReady = false;
     NfcAdapter adapter;
     PendingIntent pendingIntent;
     IntentFilter readTagFilters[];
+
+    //Networking
+    boolean authenticated = false;
+
+    //Story playback components and variables
     ShowStoryContent showStoryContent;
     CommentaryInstruction commentaryInstruction;
-    String previousActivity;
-    boolean authenticated = false;
-    boolean record_button_on, video_record_button_on, recordingStatus = false,
-            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
-            permissionToRecordAccepted = false, isFullSizedVideo = false;
-//    DrawerLayout mDrawerLayout;
-    ImageView drawerButton;
-    NavigationView navigationView;
-    Class targetClass;
-    TextView troveTitle, troveBody;
-    ScrollView troveBodyScroll;
-    int deleteCounter = 0;
 
+    //Other Variables
+    String previousActivity;
+    ImageView hamburgerButton;
+    Class targetClass;
+    int deleteCounter = 0; //Used to reset the app story storage folders
+
+    //onCreate is called when the activity starts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Layout associated with this activity
         setContentView(R.layout.activity_hamburger_kids_ui);
+        //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        mRootView = (ViewGroup) findViewById(R.id.activity_hamburger_kids_ui);
-//        mDrawerLayout = findViewById(R.id.drawer_layout);
-//        navigationView = findViewById(R.id.nav_view);
-        drawerButton = findViewById(R.id.drawer_button);
-        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        //Initialize views
+        initializeViews();
+        //Paint background imageView
+        paintViews();
+        //Initialize commentary instructions
+        initializeCommentary();
+        //Check for data connection before allowing user to sign in via cloud account
+        checkConnection();
+        //Setup and initialize NFC functionality
+        nfcSetup();
+        //Check what the previous activity was and what action is required
+        checkPreviousActivity();
+    }
 
+    //Check what the previous activity was and what action is required
+    void checkPreviousActivity() {
+
+        previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
+
+        try {
+            targetClass = Class.forName("com.example.stucollyn.nfc_play.trove.kidsUI."+previousActivity);
+        }
+        catch (Exception e) {
+
+        }
+    }
+
+    //Setup nfc components
+    void nfcSetup() {
+
+        nfcInteraction = new NFCInteraction(this, this);
+        adapter = NfcAdapter.getDefaultAdapter(this);
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        readTagFilters = new IntentFilter[] {tagDetected };
+    }
+
+    //Initialize commentary instructions
+    void initializeCommentary() {
+
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+    }
+
+    //Check for data connection before allowing user to sign in via cloud account.
+    void checkConnection() {
+
+        //Call method which checks for connection.
+        boolean isNetworkConnected = isNetworkConnected();
+
+        //If there is a data connection currently available for use, attempt to authenticate login details with Firebase,
+        // allow user to login offline but without a profile and access only to local storage.
+        if(isNetworkConnected) {
+
+            //If there is an active data connection, set authenticated value to true
+            authenticated = true;
+        }
+
+        else {
+
+            //If there is an active data connection, set authenticated value to false
+            authenticated = false;
+        }
+    }
+
+    //Check whether a network connection is present.
+    private boolean isNetworkConnected() {
+
+        //Use Android connectivity manager to get the status of whether connected to a data connection.
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+
+    //Initialize views
+    void initializeViews(){
+
+        //Initialize the root group of image views to control multiple views in a single command
+        mRootView = (ViewGroup) findViewById(R.id.activity_hamburger_kids_ui);
+
+        //Initialize the four different colours used to denote background object image views.
         paintColourArray = new Integer[4];
         paintColourArray[0] = Color.rgb(255, 157, 0);
         paintColourArray[1] = Color.rgb(253, 195, 204);
         paintColourArray[2] = Color.rgb(0, 235, 205);
         paintColourArray[3] = Color.WHITE;
 
+        //Initialize the image views themselves.
+        hamburgerButton = findViewById(R.id.drawer_button);
         backgroundShapes = (ImageView) findViewById(R.id.small_shapes);
         zigzag1 = (ImageView) findViewById(R.id.zigzag_1);
         zigzag2 = (ImageView) findViewById(R.id.zigzag_2);
@@ -122,6 +202,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         troveTitle = (TextView) findViewById(R.id.trove_title);
         troveBody = (TextView) findViewById(R.id.trove_body);
 
+        //Hashmap which we can use to reference the image resource of each imageview.
         IvDrawable = new HashMap<ImageView, Integer>();
         IvDrawable.put(star, R.drawable.kids_ui_star);
         IvDrawable.put(moon, R.drawable.kids_ui_moon);
@@ -141,6 +222,7 @@ public class HamburgerKidsUI extends FragmentActivity {
         IvDrawable.put(back,  R.drawable.kids_ui_back);
         IvDrawable.put(back2,  R.drawable.kids_ui_back);
 
+        //Initialize array of all image views present in the activity.
         allViews = new ImageView[17];
         allViews[0] = zigzag2;
         allViews[1] = zigzag1;
@@ -160,147 +242,139 @@ public class HamburgerKidsUI extends FragmentActivity {
         allViews[15] = back2;
         allViews[16] = key;
 
+        //Initialize animations
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
         alpha = AnimationUtils.loadAnimation(this, R.anim.alpha);
         bounce = AnimationUtils.loadAnimation(this, R.anim.bounce_infinite);
-        previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
-        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-
-        try {
-            targetClass = Class.forName("com.example.stucollyn.nfc_play.trove.kidsUI."+previousActivity);
-        }
-        catch (Exception e) {
-
-        }
-
-        Log.i("Target Class", targetClass.toString());
-
-        paintViews();
-
-        nfcInteraction = new NFCInteraction(this, this, authenticated);
-        adapter = NfcAdapter.getDefaultAdapter(this);
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        readTagFilters = new IntentFilter[] {tagDetected };
     }
 
-    public void Drawer(View view){
+    //When the hamburger button is pressed, do the following
+    public void Hamburger(View view){
 
         disableViewClickability();
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(HamburgerKidsUI.this, targetClass);
+        Intent intent = new Intent(HamburgerScreen.this, targetClass);
         intent.putExtra("Authenticated", authenticated);
-        intent.putExtra("PreviousActivity", "HamburgerKidsUI");
-        HamburgerKidsUI.this.startActivity(intent);
+        intent.putExtra("PreviousActivity", "HamburgerScreen");
+        HamburgerScreen.this.startActivity(intent);
         overridePendingTransition(R.anim.right_to_left_slide_in_activity, R.anim.right_to_left_slide_out_activity);
     }
 
-    void PlayStory(File[] filesOnTag) {
+    //Play a story stored on an NFC tag immediately after it is scanned.
+    void playStory(File[] filesOnTag) {
 
+        //If a story is already being played, stop it.
+        commentaryInstruction.stopPlaying();
 
-//        Toast.makeText(this, "Test Tag Content", Toast.LENGTH_LONG ).show();
-        ShowStoryContent showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
+        //If there is already a story content fragment open, close it.
+        if(showStoryContent!=null) {
+
+            //Get a currently open dialog fragment and close it.
+            ShowStoryContentDialog currentDialog = showStoryContent.returnDialog();
+            showStoryContent.closeOpenFragments(currentDialog);
+        }
+
+        //Show story content for a newly scanned tag using a showStoryContent object.
+        showStoryContent = new ShowStoryContent(commentaryInstruction.getmPlayer(), this, this, filesOnTag);
         showStoryContent.checkFilesOnTag();
     }
 
+    //When a new intent is generated by an NFC scanning operation, read its content and take a course of action.
     @Override
     protected void onNewIntent(Intent intent) {
+
+        //If the new intent matches the filtered NFC intent, read in the tag's raw data.
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-
             mytag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            Toast.makeText(this, "Object found.", Toast.LENGTH_LONG ).show();
-        }
+            //Display a visible notification showing the object has been found.
+            Toast.makeText(this, "Object found.", Toast.LENGTH_LONG).show();
 
+            //Try and read and decode the tag's content if there is content to read.
+            try {
+                //If the tag is null, play an audio message and written text to show that requested tag is empty.
+                // Else, use the tag's contained reference to find the corresponding files in device internal storage.
+                //The containing files will be in the internal directory [package name]\Tags\[tag name]\
+                if (mytag == null) {
 
-        try {
-            if (mytag == null) {
-
-                commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreen");
-                Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
-            }
-
-            else {
-
-                PackageManager m = getPackageManager();
-                String packageName = getPackageName();
-                File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
-                Log.d("NFC_Tag_Files_Format B", "FileName:" + filesOnTag[0].getName());
-//                Toast.makeText(this, "Tag Read", Toast.LENGTH_LONG ).show();
-
-//                Uri story_directory_uri = FileProvider.getUriForFile(this,
-//                        "com.example.android.fileprovider",
-//                        filesOnTag[0].getAbsoluteFile());
-
-//                Log.i("NFC URI: ", String.valueOf(story_directory_uri));
-
-                if(filesOnTag!=null){
-
-                    PlayStory(filesOnTag);
+                    commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.emptytag), false, null, "HomeScreen");
+                    Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG).show();
                 }
+
+                else {
+                    //Get the name of the current package, which we then use to help us to locate our files.
+                    PackageManager m = getPackageManager();
+                    String packageName = getPackageName();
+                    File[] filesOnTag = nfcInteraction.read(mytag, m, packageName);
+
+                    //If the referenced internal directory exists and there are files within, play the story.
+                    if (filesOnTag != null) {
+
+                        playStory(filesOnTag);
+                    }
+                }
+
             }
-
-        } catch (IOException e) {
-            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            System.out.println("Fail 1");
-        } catch (FormatException e) {
-            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            System.out.println("Fail 2");
-        } catch (IndexOutOfBoundsException e) {
-            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            System.out.println("Fail 3");
-        } catch (NullPointerException e) {
-            // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-            System.out.println("Fail 4");
-            Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG ).show();
-            Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
-            commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
+            //Catch various exceptions which may arise from failures in the scanning process or with regards to content data.
+            catch (IOException e) {
+                // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                System.out.println("Fail 1");
+            } catch (FormatException e) {
+                // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                System.out.println("Fail 2");
+            } catch (IndexOutOfBoundsException e) {
+                // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                System.out.println("Fail 3");
+            } catch (NullPointerException e) {
+                // Toast.makeText(ctx, "Error", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                System.out.println("Fail 4");
+                Toast.makeText(this, "This object has no story.", Toast.LENGTH_LONG).show();
+                Uri audioFileUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.empty);
+                commentaryInstruction.onPlay(audioFileUri, false, null, "HomeScreen");
+            }
         }
-
     }
 
+    //Paint all the background image views one of three possible colours.
     void paintViews() {
 
+        //Cycle through each image view in IvDrawable and set each a default colour.
         for(int i=0; i<16; i++) {
 
             Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(allViews[i]), null);
             d = DrawableCompat.wrap(d);
             DrawableCompat.setTint(d, android.graphics.Color.rgb(111,133,226));
             allViews[i].setImageDrawable(d);
-
         }
-
-//        Drawable d = VectorDrawableCompat.create(getResources(), IvDrawable.get(key), null);
-//        d = DrawableCompat.wrap(d);
-//        DrawableCompat.setTint(d, paintColourArray[1]);
-//        key.setImageDrawable(d);
     }
 
+    //Toggle the visibility of submitted image views on and off.
     private static void toggleVisibility(View... views) {
         for (View view : views) {
             view.setVisibility(View.INVISIBLE);
-//            boolean isVisible = view.getVisibility() == View.VISIBLE;
-//            view.setVisibility(isVisible ? View.INVISIBLE : View.VISIBLE);
         }
     }
 
+    //Log out of the app
+    //To do: delete all temporarily downloaded cloud files on logout
     public void LogOut(View view) {
 
+        //Stop clickability of other imageViews
         disableViewClickability();
+        //Play logout message
         commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HomeScreen.class, "HomeScreen");
+        //Undertake explode animation and return to welcome screen
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // Do something after 5s = 5000ms
+                // Do something after 1s = 1000ms
 
         Transition explode = new Explode();
-
 
         explode.addListener(new Transition.TransitionListener() {
             @Override
@@ -311,8 +385,8 @@ public class HamburgerKidsUI extends FragmentActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(HamburgerKidsUI.this, WelcomeScreenKidsUI.class);
-                HamburgerKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HamburgerScreen.this, WelcomeScreenKidsUI.class);
+                HamburgerScreen.this.startActivity(intent);
             }
 
             @Override
@@ -331,16 +405,16 @@ public class HamburgerKidsUI extends FragmentActivity {
             }
         });
 
-
         TransitionManager.beginDelayedTransition(mRootView, explode);
         toggleVisibility(backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
-                leaf, umbrella, tear, teddy, halfcircle, heart, back, back2, troveTitle, troveBody, drawerButton);
+                leaf, umbrella, tear, teddy, halfcircle, heart, back, back2, troveTitle, troveBody, hamburgerButton);
 
             }
         }, 1000);
 
     }
 
+    //Make all views in this activity unclickable.
     void disableViewClickability() {
 
         ConstraintLayout layout = (ConstraintLayout) findViewById(R.id.activity_hamburger_kids_ui);
@@ -350,12 +424,14 @@ public class HamburgerKidsUI extends FragmentActivity {
         }
     }
 
+    //Reset folder delete counter
     public void Reset(View view) {
 
         deleteCounter++;
         deleteDirectories();
     }
 
+    //Delete story directory folders
     void deleteDirectories() {
 
 
@@ -363,21 +439,10 @@ public class HamburgerKidsUI extends FragmentActivity {
 
             Toast.makeText(this, "Resetting archive", Toast.LENGTH_LONG).show();
 
-//            String LocalStoryFolder = ("/Stories");
-//            String TagFolder = ("/Tag");
-//            String CoverFolder = ("/Covers");
-//            String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy", Locale.ENGLISH).format(new Date());
-//
-//            String newDirectory = LocalStoryFolder + "/";
-//            String newDirectory2 = TagFolder + "/";
-//            String newDirectory3 = CoverFolder + "/";
-//            File story_directory = getExternalFilesDir(newDirectory);
-//            File tag_directory = getExternalFilesDir(newDirectory2);
-//            File cover_directory = getExternalFilesDir(newDirectory3);
-
             File story_directory = new File (getFilesDir() + File.separator + "Stories");
             File tag_directory = new File (getFilesDir() + File.separator + "Tag");
             File cover_directory = new File (getFilesDir() + File.separator + "Covers");
+            File cloud_directory = new File (getFilesDir() + File.separator + "Cloud");
 
             if (story_directory != null && !newStoryReady) {
                 deleteStoryDirectory(story_directory);
@@ -390,10 +455,27 @@ public class HamburgerKidsUI extends FragmentActivity {
             if (cover_directory != null && !newStoryReady) {
                 deleteCoverDirectory(cover_directory);
             }
-
+            if (cloud_directory != null && !newStoryReady) {
+                deleteCloudDirectory(cloud_directory);
+            }
         }
     }
 
+    //Delete cloud directory folder
+    void deleteCloudDirectory(File cloud_directory) {
+
+        try {
+
+            FileUtils.cleanDirectory(cloud_directory);
+        }
+
+        catch (IOException e) {
+
+        }
+
+    }
+
+    //Delete story directory folder
     void deleteStoryDirectory(File story_directory) {
 
         try {
@@ -407,6 +489,7 @@ public class HamburgerKidsUI extends FragmentActivity {
 
     }
 
+    //Delete tag directory folder
     void deleteTagDirectory(File tag_directory) {
 
         try {
@@ -420,6 +503,7 @@ public class HamburgerKidsUI extends FragmentActivity {
 
     }
 
+    //Delete cover directory folder
     void deleteCoverDirectory(File cover_directory) {
 
         try {
@@ -433,20 +517,21 @@ public class HamburgerKidsUI extends FragmentActivity {
 
     }
 
+    //onBackPressed
     @Override
     public void onBackPressed() {
 
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerKidsUI.class, "HomeScreen");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerScreen.class, "HomeScreen");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(HamburgerKidsUI.this, WelcomeScreenKidsUI.class);
-                HamburgerKidsUI.this.startActivity(intent);
+                Intent intent = new Intent(HamburgerScreen.this, WelcomeScreenKidsUI.class);
+                HamburgerScreen.this.startActivity(intent);
             }
         }, 1000);
 
