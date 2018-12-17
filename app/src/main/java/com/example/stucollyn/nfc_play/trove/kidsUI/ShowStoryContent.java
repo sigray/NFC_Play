@@ -16,19 +16,23 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by StuCollyn on 08/09/2018.
+This class is called when the user requests to view a story - either audio or image, from the archive or after scanning a tag. In response, this class launches a
  */
 
 public class ShowStoryContent {
 
-    MediaPlayer mPlayer;
+    //Activity variables
     Context context;
     Activity activity;
+
+    //Story playback
     ShowStoryContentDialog newFragment;
+    MediaPlayer mPlayer;
     File[] filesOnTag;
     FragmentManager ft;
 
 
+    //ShowStoryContent constructor
     public ShowStoryContent(MediaPlayer mPlayer, Context context, Activity activity, File[] filesOnTag) {
 
         this.mPlayer = mPlayer;
@@ -38,10 +42,10 @@ public class ShowStoryContent {
         ft = ((FragmentActivity)activity).getSupportFragmentManager();
     }
 
+    //Run when a story file is selected within the archive
     void checkFilesOnArchive(){
 
         for(int i=0; i<filesOnTag.length; i++) {
-
 
             String extension = FilenameUtils.getExtension(filesOnTag[i].toString());
             String fileName = filesOnTag[i].toString();
@@ -53,12 +57,6 @@ public class ShowStoryContent {
                 Uri story_directory_uri = FileProvider.getUriForFile(context,
                         "com.example.android.fileprovider",
                         filesOnTag[i]);
-
-//                Uri audioFileUri = Uri.parse("android.resource://" + activity.getPackageName() + "/" + R.raw.welcome_app);
-
-
-//                Log.i("Files on Tag (C)", story_directory_uri.toString());
-
 
                 mPlayer = new MediaPlayer();
                 try {
@@ -80,6 +78,7 @@ public class ShowStoryContent {
         }
     }
 
+    //Run when a story file is selected from a tag scan
     void checkFilesOnTag(){
 
         for(int i=0; i<filesOnTag.length; i++) {
@@ -95,8 +94,6 @@ public class ShowStoryContent {
                         "com.example.android.fileprovider",
                         filesOnTag[i]);
 
-
-
                 mPlayer = new MediaPlayer();
                 try {
                     mPlayer.setDataSource(context, story_directory_uri);
@@ -117,20 +114,22 @@ public class ShowStoryContent {
         }
     }
 
+    //Return fragment
     ShowStoryContentDialog returnDialog() {
 
         return newFragment;
     }
 
+    //Close any fragments left open
     void closeOpenFragments(ShowStoryContentDialog currentFragment) {
 
         if(currentFragment!=null) {
-
 
             currentFragment.dismiss();
         }
     }
 
+    //Launch new fragment dialog activity
     void showStoryContentDialog(File imageFile) {
         // Create an instance of the dialog fragment and show it
         Bundle bundle = new Bundle();

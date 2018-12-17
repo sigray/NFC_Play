@@ -23,21 +23,21 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by StuCollyn on 08/09/2018.
+ShowStoryContentDialog is responsible for showing a DialogFragment containing an image of a story file selected.
  */
 
 public class ShowStoryContentDialog extends DialogFragment {
 
-//    /* The activity that creates an instance of this dialog fragment must
-//   * implement this interface in order to receive event callbacks.
-//   * Each method passes the DialogFragment in case the host needs to query it. */
-//    public interface LoginOrSignUpDialogListener {
-//        public void onLoginDialogPositiveClick(String username, String password);
-//        public void onLoginDialogNegativeClick(DialogFragment dialog);
-//    }
-//
-//    // Use this instance of the interface to deliver action events
-//    LoginDialogFragmentKidsUI.LoginOrSignUpDialogListener mListener;
+/*  The activity that creates an instance of this dialog fragment must implement this interface in order to receive event callbacks.
+    Each method passes the DialogFragment in case the host needs to query it.
+
+    public interface LoginOrSignUpDialogListener {
+        public void onLoginDialogPositiveClick(String username, String password);
+        public void onLoginDialogNegativeClick(DialogFragment dialog);
+    }
+
+    Use this instance of the interface to deliver action events
+    LoginDialogFragmentKidsUI.LoginOrSignUpDialogListener mListener; */
 
     ImageView imageView;
     Uri story_directory_uri;
@@ -50,6 +50,7 @@ public class ShowStoryContentDialog extends DialogFragment {
         this.imageFile = imageFile;
     }
 
+    //Get the image from the image's file path, generate it as a bitmap and orientate it so that it faces the right way
     public void displayImage() {
 
         ExifInterface exif = null;
@@ -91,8 +92,10 @@ public class ShowStoryContentDialog extends DialogFragment {
             adjustedBitmap = bitmap;
         }
 
+        //Set the imageView to the bitmap of the image file
         imageView.setImageBitmap(adjustedBitmap);
 
+        //When you click on the image, close the dialog
         imageView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -101,6 +104,7 @@ public class ShowStoryContentDialog extends DialogFragment {
         });
     }
 
+    //Depending on the image orientation, rotate the image
     private static int exifToDegrees(int exifOrientation) {
         if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
             return 90;
@@ -113,7 +117,7 @@ public class ShowStoryContentDialog extends DialogFragment {
         return 0;
     }
 
-    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+    //Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -127,6 +131,7 @@ public class ShowStoryContentDialog extends DialogFragment {
         }
     }
 
+    //Run when the dialog box is created
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -136,21 +141,16 @@ public class ShowStoryContentDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-//        builder.setView(inflater.inflate(R.layout.dialog_signin, null));
         View prompt = inflater.inflate(R.layout.dialog_show_story_kids_ui, null);
         imageView = (ImageView) prompt.findViewById(R.id.imageView);
         final AlertDialog alertDio = new AlertDialog.Builder(getActivity(), R.style.CustomDialog)
                 .setView(prompt)
                 .show();
 
+        //Set dialog background to be transparent and colour and the layout to match the parameters of the parent activity
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        alertDio.getWindow().setLayout(width, height);
         alertDio.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.CustomDialog);
-//        builder.setView(prompt);
         displayImage();
-//        return builder.create();
 
         return alertDio;
     }

@@ -654,7 +654,7 @@ public class Archive extends AppCompatActivity {
     public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(Archive.this, HamburgerScreen.class);
+        Intent intent = new Intent(Archive.this, AboutAndLogout.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         Archive.this.startActivity(intent);

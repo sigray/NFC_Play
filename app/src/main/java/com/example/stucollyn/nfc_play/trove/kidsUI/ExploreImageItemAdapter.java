@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by StuCollyn on 07/06/2018.
+ This class is used to present the scrollable ImageView adapter in the ExploreImageItem activity.
  */
 
-public class ExploreImageAdapter extends  RecyclerView.Adapter<ExploreImageAdapter.SimpleViewHolder> {
+public class ExploreImageItemAdapter extends  RecyclerView.Adapter<ExploreImageItemAdapter.SimpleViewHolder> {
 
     //Activity context
     private Context mContext;
@@ -148,10 +148,10 @@ public class ExploreImageAdapter extends  RecyclerView.Adapter<ExploreImageAdapt
         return this.elements.size();
     }
 
-    //ExploreImageAdapter constructor - takes in given values which are used to setup the structures for the gallery
-    public ExploreImageAdapter(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> fileList, int[] colourCode,
-                               HashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
-                               LinkedHashMap<String, String> storyTypeMap, CommentaryInstruction commentaryInstruction) {
+    //ExploreImageItemAdapter constructor - takes in given values which are used to setup the structures for the gallery
+    public ExploreImageItemAdapter(Activity storyGallery, Context c, int numberOfThumbs, LinkedHashMap<String, File> fileList, int[] colourCode,
+                                   HashMap<String, ArrayList<ObjectStoryRecord>> folderToImageRef, LinkedHashMap<String, Bitmap> imageMap,
+                                   LinkedHashMap<String, String> storyTypeMap, CommentaryInstruction commentaryInstruction) {
 
         this.storyGallery = storyGallery;
         mContext = c;

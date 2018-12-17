@@ -39,7 +39,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class HamburgerScreen extends FragmentActivity {
+/*
+The AboutAndLogout fragment activity is activated when the user presses the hamburger screen button from any other activity which features the button in the app.
+The activity displays some information about the trove project and allows the user to logout at short notice. There is an inbuilt function in this activity which
+allows us to clear all the internal file storage directories - tapping the leaf image 5+ times.
+ */
+public class AboutAndLogout extends FragmentActivity {
 
     //The View group and ImageViews displayed on the activity layout
     ViewGroup mRootView;
@@ -88,7 +93,7 @@ public class HamburgerScreen extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Layout associated with this activity
-        setContentView(R.layout.activity_hamburger_kids_ui);
+        setContentView(R.layout.activity_about_and_logout_kids_ui);
         //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Initialize views
@@ -254,10 +259,10 @@ public class HamburgerScreen extends FragmentActivity {
 
         disableViewClickability();
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(HamburgerScreen.this, targetClass);
+        Intent intent = new Intent(AboutAndLogout.this, targetClass);
         intent.putExtra("Authenticated", authenticated);
-        intent.putExtra("PreviousActivity", "HamburgerScreen");
-        HamburgerScreen.this.startActivity(intent);
+        intent.putExtra("PreviousActivity", "AboutAndLogout");
+        AboutAndLogout.this.startActivity(intent);
         overridePendingTransition(R.anim.right_to_left_slide_in_activity, R.anim.right_to_left_slide_out_activity);
     }
 
@@ -385,8 +390,8 @@ public class HamburgerScreen extends FragmentActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(HamburgerScreen.this, WelcomeScreenKidsUI.class);
-                HamburgerScreen.this.startActivity(intent);
+                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreenKidsUI.class);
+                AboutAndLogout.this.startActivity(intent);
             }
 
             @Override
@@ -524,14 +529,14 @@ public class HamburgerScreen extends FragmentActivity {
         back.setClickable(false);
         back.setImageDrawable(backRetrace);
         backRetrace.start();
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, HamburgerScreen.class, "HomeScreen");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.goodbye), false, AboutAndLogout.class, "HomeScreen");
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(HamburgerScreen.this, WelcomeScreenKidsUI.class);
-                HamburgerScreen.this.startActivity(intent);
+                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreenKidsUI.class);
+                AboutAndLogout.this.startActivity(intent);
             }
         }, 1000);
 

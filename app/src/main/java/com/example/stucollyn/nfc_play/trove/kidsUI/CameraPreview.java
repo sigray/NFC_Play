@@ -1,7 +1,7 @@
 package com.example.stucollyn.nfc_play.trove.kidsUI;
 
 /**
- * Created by StuCollyn on 25/09/2018.
+This class defines the camera preview, which is used to display live content from the camera prior to taking a photo.
  */
 
 import android.content.Context;
@@ -31,8 +31,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
-
-
 
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.

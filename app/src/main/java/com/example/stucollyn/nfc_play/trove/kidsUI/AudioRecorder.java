@@ -19,7 +19,7 @@ import java.nio.channels.FileChannel;
 import java.util.UUID;
 
 /**
-The AudioRecorder class is used to record, save, and control audio
+The AudioRecorder class is used to record, save, and control audio.
  */
 public class AudioRecorder extends Application {
 

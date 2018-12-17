@@ -17,18 +17,15 @@ import com.example.stucollyn.nfc_play.R;
  */
 
 /*
-This activity acts as the app's home page. Within this activity users are able to scan object's NFC tags to be read, with their content being displayed on screen.
-This is also the first activity to incorporate the hamburger menu where users can find out additional information about the app and log out.
+This DialogFragment is used to display a sign up dialog box, allowing users to enter their details for signing up to trove.
  */
 
 public class SignUpDialogFragment extends DialogFragment {
-
 
     String username = "";
     String password = "";
     String firstName = "";
     String lastName = "";
-
 
     /* The activity that creates an instance of this dialog fragment must
      * implement this interface in order to receive event callbacks.
@@ -56,6 +53,7 @@ public class SignUpDialogFragment extends DialogFragment {
         }
     }
 
+    //Run when the dialog box is created
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

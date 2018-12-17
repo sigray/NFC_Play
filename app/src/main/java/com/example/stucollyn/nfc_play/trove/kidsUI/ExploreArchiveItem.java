@@ -43,6 +43,9 @@ The explore archive item class is used when an object's story folder has been se
 particular object. This is shown as a series of scrollable thumbnails. Upon clicking a thumbnail the file is opened. The user can also choose to select to add to the
 number of stories relating to this object.
 */
+/*
+To do: There is currently no functionality to save specific stories to nfc tags. This is desirable.
+ */
 public class ExploreArchiveItem extends AppCompatActivity {
 
     //Story folder storage structures
@@ -55,7 +58,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
 
     //Thumbnail display
     ProgressBar progressBar;
-    ExploreImageAdapter cloudImageAdapter;
+    ExploreImageItemAdapter cloudImageAdapter;
     HorizontalGridView gridview;
     int colourCounter;
     int currentColour;
@@ -81,7 +84,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explore_archive_kids_ui);
+        setContentView(R.layout.activity_explore_archive_item_kids_ui);
         gridview = (HorizontalGridView) findViewById(R.id.gridView);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         activity = this;
@@ -297,7 +300,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
                     //As file thumbnails are completed, hide the progress bar
                     progressBar.setVisibility(View.INVISIBLE);
                     //Update the image adapter used to display the list of story files
-                    cloudImageAdapter = new ExploreImageAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
+                    cloudImageAdapter = new ExploreImageItemAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
                     gridview.invalidate();
                     gridview.setAdapter(cloudImageAdapter);
 
@@ -427,7 +430,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, HamburgerScreen.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, AboutAndLogout.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
         ExploreArchiveItem.this.startActivity(intent);
@@ -444,7 +447,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
     public void AddStory(View view) {
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ExploreArchiveItem.this, ObjectAddStoryKidsUI.class);
+        Intent intent = new Intent(ExploreArchiveItem.this, ObjectAddStory.class);
         intent.putExtra("PreviousActivity", "ExploreArchiveItem");
         intent.putExtra("ObjectStoryRecord", objectRecordMap);
         intent.putExtra("objectName", objectName);
@@ -557,7 +560,7 @@ public class ExploreArchiveItem extends AppCompatActivity {
         protected void onPostExecute(Void result) {
 
             progressBar.setVisibility(View.INVISIBLE);
-            cloudImageAdapter = new ExploreImageAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
+            cloudImageAdapter = new ExploreImageItemAdapter(activity, context, fileMap.size(), fileMap, colourCode, objectRecordMap, storyCoverMap, storyTypeMap, commentaryInstruction);
             gridview.invalidate();
             gridview.setAdapter(cloudImageAdapter);
         }

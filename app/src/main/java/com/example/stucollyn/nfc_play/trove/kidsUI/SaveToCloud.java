@@ -31,27 +31,27 @@ This class is used to save a new series of story files to the cloud - FireBase d
 
 public class SaveToCloud {
 
-    boolean authenticated;
-    File fileDirectory = null;
-    String tag_data = "";
-    String tag1String, tag2String, tag3String, object;
-    int mode;
+    //FireBase Variables
     private StorageReference mStorageRef;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    Date FireStoreTime;
     FirebaseStorage storage;
-    boolean isNetworkConnected;
+
+    //File Storage Variables
+    File fileDirectory = null;
+    String object;
     HashMap<String,String> selectedMedia;
     UUID objectName;
     String fileType;
     String coverImage;
 
+    //SaveToCloud Constructor - requires source file directory and the name of the object the associated story files concern
     SaveToCloud(File fileDirectory, UUID objectName) {
 
        this.fileDirectory = fileDirectory;
        this.objectName = objectName;
 
+       //Get FireBase cloud storage and database credentials
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -61,16 +61,19 @@ public class SaveToCloud {
         storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
     }
 
-    //Save to cloud
+    //Prepare to save to cloud story files about an existing object
+    //To do: Currently it uploads every file in the containing folder. This may not be appropriate or desired if some of these stories have already been previously
+    //uploaded.
     void CloudSaveNewStory() {
 
+        //Find an object's story folder and list the contained files
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
+        //For every file in the story folder, find out what its story type is. Launch an upload operation on each file to the cloud.
         for (int i = 0; i < files.length; i++) {
 
             String extension = FilenameUtils.getExtension(files[i].toString());
@@ -81,8 +84,6 @@ public class SaveToCloud {
 
                 Log.i("Uploading Audio", files[i].toString());
                 fileType = "PictureFile";
-//                    File to = new File(Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName(),".jpg");
-//                    validStoryFolders[i].renameTo(to);
             }
 
             else if (extension.equalsIgnoreCase("mp3")) {
@@ -91,18 +92,21 @@ public class SaveToCloud {
                 fileType = "AudioFile";
             }
 
+            //Upload file to cloud
             uploadToCloud(files[i], i);
         }
     }
 
-    //Save to cloud
+    //Prepare to upload a new object and its associated stories to the cloud.
     void CloudSaveNewObject() {
 
+        //Find an object's story folder and list the contained files
         String path = Environment.getExternalStorageDirectory().toString() + "/Android/data/com.example.stucollyn.nfc_play/validStoryFolders/Stories/"+fileDirectory.getName();
         File directory = new File(path);
         File[] files = directory.listFiles();
 
-            for (int i = 0; i < files.length; i++) {
+        //For every file in the story folder, find out what its story type is. Launch an upload operation on each file to the cloud.
+        for (int i = 0; i < files.length; i++) {
 
                 String extension = FilenameUtils.getExtension(files[i].toString());
                 String fileName = files[i].toString();
@@ -123,18 +127,25 @@ public class SaveToCloud {
                     fileType = "AudioFile";
                 }
 
-                uploadToCloud(files[i], i);
+            //Launch upload file to cloud operation
+            uploadToCloud(files[i], i);
             }
     }
 
+    //Upload file to cloud
     void uploadToCloud(File fileToUpload, int i) {
 
+        //Create new upload task
         UploadTask uploadTask;
         Uri file = Uri.fromFile(fileToUpload);
         String number = String.valueOf(i);
+        //Use authorization token to get the current user's ID
         String userID = mAuth.getCurrentUser().getUid();
+        //Create new storage reference which makes use of the object's unique identifier name as a cloud storage sub-folder
         StorageReference reference = mStorageRef.child(userID).child(objectName.toString()).child(number);
+        //Upload object/story details to a database as well as the file cloud storage
         uploadToDatabase(reference);
+        //Launch upload operation
         uploadTask = reference.putFile(file);
 
         // Register observers to listen for when the download is done or if it fails
@@ -152,17 +163,28 @@ public class SaveToCloud {
                 // ...
                 Log.i("Mission Accomplished", "Completed ");
 
+                /*
+
+
+                At this point, delete any temporary local files to save storage.
+
+
+                 */
             }
         });
     }
 
+    //Upload to database information about the uploaded file
     void uploadToDatabase(StorageReference reference) {
 
+        //Connect with database
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String name = user.getEmail();
         String storage = reference.toString();
+        //Generate new random identifier for the story
         String storyName = UUID.randomUUID().toString();
 
+        //Create a Hash Map of values
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("Username", name);
         newUser.put("storyName", storyName.toString());
@@ -189,10 +211,8 @@ public class SaveToCloud {
                 });
     }
 
+    //Delete local versions of successfully uploaded files
     void DeleteLocalFiles(File fileToDelete) {
-
-//        Log.i("File Directory", fileDirectory.toString());
-
 
         if (fileDirectory.isDirectory()) {
             String[] children = fileDirectory.list();

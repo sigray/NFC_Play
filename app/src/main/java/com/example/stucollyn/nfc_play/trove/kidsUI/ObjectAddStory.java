@@ -54,72 +54,80 @@ import java.util.UUID;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 /**
- * Created by StuCollyn on 28/09/2018.
+ The ObjectAddStory activity is used for the recording of an audio or picture story about an existing object. In the activity, the user can choose to record an audio or
+ picture story in the same way it is done in the RecordStory activity. Afterwards, they can either choose to rerecord their story or take a picture of the object which
+ relates to the story.
  */
 
-public class ObjectAddStoryKidsUI extends AppCompatActivity {
+/*
+To do: There appears to be an intermittent bug in this activity where the app crashes after recording a new story. The screen goes white and returns to the archive.
+To do: There is also no functionality to attach these new stories to nfc tags yet.
+ */
 
+public class ObjectAddStory extends AppCompatActivity {
+
+    //The View group and ImageViews displayed on the activity layout
     ImageView recordButton, cameraButton, back;
-    //    AnimatedVectorDrawable d;
-    //Request Code Variables
-    //General Variables
-    boolean record_button_on, video_record_button_on,
-            playbackStatus = false, mPlayerSetup = false, fullSizedPicture = false,
-            permissionToRecordAccepted = false, isFullSizedVideo = false;
-    //File Save Variables
 
-    AudioRecorder audioRecorder;
+    //Animations
+    Animation fadein, fadeout;
     AnimatedVectorDrawable recordButtonAnim, backBegin, backRetrace;
     Drawable recordButtonNonAnim;
-    Handler animationHandler, animationBackHandler;
-    Runnable RecordButtonRunnable;
-    private MediaPlayer mPlayer = null;
-    String photoPath;
     Animation slideout, slidein;
 
-    private Camera mCamera;
-    private CameraPreview mPreview;
+    //Handlers, runnables, and logical components
+    Handler archiveStoryHandler;
+    Handler animationHandler, animationBackHandler;
+    Runnable RecordButtonRunnable;
 
-    //Request Code Variables
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int CAMERA_REQUEST = 1888;
-    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
-
-    //File Save Variables
-    private static String audioFileName = null, pictureFileName = null, videoFileName = null;
-    File image, video;
-    Uri videoURI, photoUri;
-    File story_directory;
-    File tag_directory = null;
-    File cover_directory = null;
-    String story_directory_path;
-    Uri story_directory_uri;
-    String tag_data = null;
-//    NFCInteraction nfcInteraction;
-    Tag mytag;
-    boolean newStoryReady = false;
-    NfcAdapter adapter;
-    PendingIntent pendingIntent;
-    IntentFilter writeTagFilters[];
-    //Classes
-    CameraRecorder cameraRecorder;
+    //FireBase
     boolean authenticated = false;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     Date FireStoreTime;
     FirebaseStorage storage;
     private StorageReference mStorageRef;
-    boolean recordingStatus = false;
-    boolean currentlyRecording = false;
-    CommentaryInstruction commentaryInstruction;
-    Handler archiveStoryHandler;
+
+    //NFC Components
+    NFCInteraction nfcInteraction;
+    Tag mytag;
+    NfcAdapter adapter;
+    PendingIntent pendingIntent;
+    IntentFilter writeTagFilters[];
+    boolean newStoryReady = false;
+
+    //File Save Variables
+    File story_directory;
+    File tag_directory = null;
+    File cover_directory = null;
+    HashMap<String, ArrayList<ObjectStoryRecord>> objectRecordMap;
+    String objectName;
+
+    //Camera Variables
+    CameraRecorder cameraRecorder;
+    private Camera mCamera;
+    private CameraPreview mPreview;
     ImageButton captureButton;
     FrameLayout preview;
     LinearLayout camera_linear;
-    Animation fadein, fadeout;
-    HashMap<String, ArrayList<ObjectStoryRecord>> objectRecordMap;
-    String objectName;
+
+    //Request Code Variables
+    private static final int CAMERA_REQUEST = 1888;
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+
+    //File Save Variables
+    private static String audioFileName = null, pictureFileName = null, videoFileName = null;
+    File image;
+
+    //Recording Controller
+    AudioRecorder audioRecorder;
+    boolean recordingStatus = false;
+    boolean currentlyRecording = false;
+    boolean permissionToRecordAccepted = false;
+
+    //Commentary
+    CommentaryInstruction commentaryInstruction;
 
     //Grant permission to record audio (required for some newer Android devices)
     @Override
@@ -147,17 +155,31 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Layout associated with this activity
         setContentView(R.layout.activity_add_story_to_object_kids_ui);
+        //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //Initialize views
+        initializeViews();
+        //Initialize camera components
+//        initializeCamera();
+        //Check for data connection before allowing user to sign in via cloud account
+//        checkConnection();
+        //Initialize commentary instructions
+//        initializeCommentary();
+        //Initialize NFC components
+//        NFCSetup();
+        //Initialize animations
+        initializeAnimations();
+        //Setup control logic for record button
+        recordButtonController();
 
-        recordButton = (ImageView) findViewById(R.id.record);
-        cameraButton = (ImageView) findViewById(R.id.camera);
-        back = (ImageView) findViewById(R.id.back);
-        captureButton = (ImageButton) findViewById(R.id.button_capture);
-        preview = (FrameLayout) findViewById(R.id.camera_preview);
-        camera_linear = (LinearLayout) findViewById(R.id.camera_linear);
-        fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
-        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
+
+
+
+
+
+
         authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
         objectName = (String) getIntent().getExtras().get("objectName");
@@ -166,10 +188,27 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         preview.addView(mPreview);
         archiveStoryHandler = new Handler();
         commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, RecordStory.class, "ObjectAddStoryKidsUI");
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, RecordStory.class, "ObjectAddStory");
         SetupStoryLocation();
         AnimationSetup();
         recordButtonController();
+    }
+
+    //Initialize views
+    void initializeViews() {
+
+        recordButton = (ImageView) findViewById(R.id.record);
+        cameraButton = (ImageView) findViewById(R.id.camera);
+        back = (ImageView) findViewById(R.id.back);
+        captureButton = (ImageButton) findViewById(R.id.button_capture);
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
+        camera_linear = (LinearLayout) findViewById(R.id.camera_linear);
+    }
+
+    void initializeAnimations() {
+
+        fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
+        fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
     }
 
     //Animation and Layout Setup
@@ -241,7 +280,7 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
                         recordingStatus = true;
                         recordingManager(v);
                         recordButtonAnimationController();
-//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreen.class, "ObjectAddStoryKidsUI");
+//                        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.chime), false, HomeScreen.class, "ObjectAddStory");
                         SaveNewStory();
                         break;
                 }
@@ -533,10 +572,10 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         ResetCamera();
         commentaryInstruction.stopPlaying();
         animationBackHandler.removeCallbacksAndMessages(null);
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HomeScreen.class);
-        intent.putExtra("PreviousActivity", "ObjectAddStoryKidsUI");
+        Intent intent = new Intent(ObjectAddStory.this, HomeScreen.class);
+        intent.putExtra("PreviousActivity", "ObjectAddStory");
         intent.putExtra("Authenticated", authenticated);
-        ObjectAddStoryKidsUI.this.startActivity(intent);
+        ObjectAddStory.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
@@ -554,12 +593,12 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(ObjectAddStoryKidsUI.this, Archive.class);
+                Intent intent = new Intent(ObjectAddStory.this, Archive.class);
                 intent.putExtra("objectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);
-                ObjectAddStoryKidsUI.this.startActivity(intent);
-                ObjectAddStoryKidsUI.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+                ObjectAddStory.this.startActivity(intent);
+                ObjectAddStory.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         }, 1000);
@@ -569,10 +608,10 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
     public void Drawer(View view){
 
         commentaryInstruction.stopPlaying();
-        Intent intent = new Intent(ObjectAddStoryKidsUI.this, HamburgerScreen.class);
+        Intent intent = new Intent(ObjectAddStory.this, AboutAndLogout.class);
         intent.putExtra("PreviousActivity", "ArchiveMainMenu");
         intent.putExtra("Authenticated", authenticated);
-        ObjectAddStoryKidsUI.this.startActivity(intent);
+        ObjectAddStory.this.startActivity(intent);
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
@@ -596,12 +635,12 @@ public class ObjectAddStoryKidsUI extends AppCompatActivity {
             @Override
             public void run() {
                 ReleaseCamera();
-                Intent intent = new Intent(ObjectAddStoryKidsUI.this, ExploreArchiveItem.class);
+                Intent intent = new Intent(ObjectAddStory.this, ExploreArchiveItem.class);
                 intent.putExtra("objectName", objectName);
                 intent.putExtra("ObjectStoryRecord", objectRecordMap);
                 intent.putExtra("Authenticated", authenticated);
-                ObjectAddStoryKidsUI.this.startActivity(intent);
-                ObjectAddStoryKidsUI.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
+                ObjectAddStory.this.startActivity(intent);
+                ObjectAddStory.this.overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
 //                overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
             }
         }, 1000);

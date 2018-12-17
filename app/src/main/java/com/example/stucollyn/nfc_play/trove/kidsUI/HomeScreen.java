@@ -240,7 +240,7 @@ public class HomeScreen extends FragmentActivity {
         //Stop any current commentary.
         commentaryInstruction.stopPlaying();
         //Launch Hamburger activity using slide animation.
-        Intent intent = new Intent(HomeScreen.this, HamburgerScreen.class);
+        Intent intent = new Intent(HomeScreen.this, AboutAndLogout.class);
         intent.putExtra("Authenticated", authenticated);
         intent.putExtra("PreviousActivity", "HomeScreen");
         HomeScreen.this.startActivity(intent);

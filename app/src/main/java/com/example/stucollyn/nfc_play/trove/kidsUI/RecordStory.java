@@ -48,7 +48,7 @@ import java.util.UUID;
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 /*
-The RecordStory class is used for the recording of an audio story about a new object. In the activity, the user is prompted to either record an audio story
+The RecordStory activity is used for the recording of an audio story about a new object. In the activity, the user is prompted to either record an audio story
 or to visit the story archive. If they choose to record an audio story, the must press and hold the audio record button as they speak their story. Afterwards
 they can either choose to rerecord their story or take a picture of the object which relates to the story. If the user seeks to record a story about a previous
 object, they can do so by visiting the story archive. Presently audio stories created require a picture of the associated object because in the archive menu,
@@ -884,7 +884,7 @@ public class RecordStory extends AppCompatActivity {
         //Stop any commentary instructions
         commentaryInstruction.stopPlaying();
         //Open Hamburger activity
-        Intent intent = new Intent(RecordStory.this, HamburgerScreen.class);
+        Intent intent = new Intent(RecordStory.this, AboutAndLogout.class);
         intent.putExtra("PreviousActivity", "RecordStory");
         intent.putExtra("Authenticated", authenticated);
         RecordStory.this.startActivity(intent);

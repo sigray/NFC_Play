@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by StuCollyn on 07/06/2018.
+ The CameraRecorder class handles setup and control of the camera, as well as saving and processing taken image.
  */
 
 class CameraRecorder extends Application {
