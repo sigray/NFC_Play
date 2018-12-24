@@ -6,16 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
-import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -156,45 +154,100 @@ public class ObjectAddStory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Layout associated with this activity
-        setContentView(R.layout.activity_add_story_to_object_kids_ui);
+        setContentView(R.layout.activity_object_add_story_kids_ui);
         //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //Initialize current object content
+        initializeCurrentObject();
         //Initialize views
         initializeViews();
         //Initialize camera components
-//        initializeCamera();
+        initializeCamera();
         //Check for data connection before allowing user to sign in via cloud account
-//        checkConnection();
+        checkConnection();
         //Initialize commentary instructions
-//        initializeCommentary();
+        initializeCommentary();
         //Initialize NFC components
-//        NFCSetup();
+        NFCSetup();
         //Initialize animations
         initializeAnimations();
         //Setup control logic for record button
         recordButtonController();
-
-
-
-
-
-
-
-        authenticated = (Boolean) getIntent().getExtras().get("Authenticated");
-        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
-        objectName = (String) getIntent().getExtras().get("objectName");
-        mCamera = cameraRecorder.getCameraInstance();
-        mPreview = new CameraPreview(getApplicationContext(), mCamera);
-        preview.addView(mPreview);
-        archiveStoryHandler = new Handler();
-        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
-        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, RecordStory.class, "ObjectAddStory");
-        SetupStoryLocation();
-        AnimationSetup();
+        //Setup the storage location of new stories
+        setupStoryLocation();
+        //Begin to animate imageViews
+        beginAnimation();
+        //Start record button control logic
         recordButtonController();
     }
 
-    //Initialize views
+    //Initialize commentary messages
+    void initializeCurrentObject() {
+
+        objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) getIntent().getExtras().get("ObjectStoryRecord");
+        objectName = (String) getIntent().getExtras().get("objectName");
+    }
+
+    //Initialize NFC components.
+    void NFCSetup() {
+
+        //Initialize nfcInteraction object, which processes any nfc interactions.
+        nfcInteraction = new NFCInteraction(this, this);
+        //Initialize adapter to gather NFC tag data.
+        adapter = NfcAdapter.getDefaultAdapter(this);
+        //Enable external NFC software to launch an intent within this activity.
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] {
+                tagDetected
+        };
+    }
+
+    //Initialize commentary messages
+    void initializeCommentary() {
+
+        commentaryInstruction = new CommentaryInstruction(this, this, false, authenticated);
+        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.addnewobjectstory), false, RecordStory.class, "ObjectAddStory");
+    }
+
+    //Check for data connection before allowing user to sign in via cloud account.
+    void checkConnection() {
+
+        //Call method which checks for connection.
+        boolean isNetworkConnected = isNetworkConnected();
+
+        //If there is a data connection currently available for use, attempt to authenticate login details with Firebase,
+        // allow user to login offline but without a profile and access only to local storage.
+        if(isNetworkConnected) {
+
+            //If there is an active data connection, set authenticated value to true
+            authenticated = true;
+        }
+
+        else {
+
+            //If there is an active data connection, set authenticated value to false
+            authenticated = false;
+        }
+    }
+
+    //Check whether a network connection is present.
+    private boolean isNetworkConnected() {
+
+        //Use Android connectivity manager to get the status of whether connected to a data connection.
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    void initializeCamera() {
+
+        mCamera = cameraRecorder.getCameraInstance();
+        mPreview = new CameraPreview(getApplicationContext(), mCamera);
+        preview.addView(mPreview);
+    }
+
+    //Initialize views and layout components
     void initializeViews() {
 
         recordButton = (ImageView) findViewById(R.id.record);
@@ -205,21 +258,21 @@ public class ObjectAddStory extends AppCompatActivity {
         camera_linear = (LinearLayout) findViewById(R.id.camera_linear);
     }
 
+    //Initialize animations
     void initializeAnimations() {
 
         fadein = AnimationUtils.loadAnimation(this, R.anim.fadein);
         fadeout = AnimationUtils.loadAnimation(this, R.anim.fadeout);
-    }
-
-    //Animation and Layout Setup
-    void AnimationSetup() {
-
         recordButtonAnim = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_record_anim_alt);
         recordButtonNonAnim = (Drawable) getDrawable(R.drawable.kids_ui_record_circle);
         backRetrace = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_2);
         backBegin = (AnimatedVectorDrawable) getDrawable(R.drawable.kids_ui_close_1);
         slideout = AnimationUtils.loadAnimation(this, R.anim.slideout);
         slidein = AnimationUtils.loadAnimation(this, R.anim.slidein);
+    }
+
+    //Animation and Layout Setup
+    void beginAnimation() {
 
         animationBackHandler = new Handler();
         animationBackHandler.postDelayed(new Runnable() {
@@ -246,6 +299,7 @@ public class ObjectAddStory extends AppCompatActivity {
         }, 3000);
     }
 
+    //Record button logic
     void recordButtonController() {
 
 //        commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.holdrecordbutton), true, HomeScreen.class);
@@ -253,17 +307,6 @@ public class ObjectAddStory extends AppCompatActivity {
         recordButton.setOnTouchListener((new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
-//                final View view = v;
-//                final Handler handler;
-//                Runnable mLongPressed;
-//                handler = new Handler();
-//                mLongPressed = new Runnable() {
-//                    public void run() {
-//                        Log.i("", "Long press!");
-//                        audioRecordingManager(view, false);
-//                    }
-//                };
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
@@ -290,6 +333,7 @@ public class ObjectAddStory extends AppCompatActivity {
         }));
     }
 
+    //Paint image views the default colour
     void paintViews() {
 
         int paintColour = android.graphics.Color.rgb(253, 195, 204);
@@ -300,27 +344,16 @@ public class ObjectAddStory extends AppCompatActivity {
     }
 
     //Setup new storage folder
-    private void SetupStoryLocation() {
+    private void setupStoryLocation() {
 
+        archiveStoryHandler = new Handler();
         story_directory = new File (getFilesDir() + File.separator + "Stories" + File.separator + objectName);
     }
 
-    //Recording Audio Management
-    void recordAudio(View view) {
-
-        //Request permission to record audio (required for some newer Android devices)
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
-        try {
-            audioRecorder = new AudioRecorder(this, story_directory, null);
-            audioRecorder.startRecording();
-        } catch (IOException ex) {
-            // Error occurred while creating the File
-        }
-        audioFileName = audioRecorder.getAudioFileName();
-    }
-
+    //This handles the animation of the record button
     void recordButtonAnimationController() {
 
+        //Create new Handler to repeat animation on the background thread
         animationHandler = new Handler();
 
         //Runnable to handle idle trove animation
@@ -330,13 +363,13 @@ public class ObjectAddStory extends AppCompatActivity {
             public void run() {
                 recordButtonAnim.start();
 
+                //If currently recording, repeat animation in one second intervals
                 if(currentlyRecording) {
                     animationHandler.postDelayed(this, 1000);
-                    Log.i("Tag", "I'm a barbie girl");
                 }
 
+                //Else, stop the animations and return the button image to default
                 else {
-                    Log.i("Tag", "In a barbie world");
                     animationHandler.removeCallbacks(RecordButtonRunnable);
                     recordButton.setImageDrawable(recordButtonNonAnim);
                 }
@@ -344,36 +377,48 @@ public class ObjectAddStory extends AppCompatActivity {
         };
 
         animationHandler.post(RecordButtonRunnable);
-
     }
 
+
+    //This method sends commands to both the audio recorder and the button imageView
     void recordingManager(View view) {
 
         try {
 
-
+            //If not already recording, set the record button image to the record drawable, and begin recording
             if (!recordingStatus) {
 
                 recordButton.setImageDrawable(recordButtonAnim);
-                recordAudio(view);
-                Log.i("Tag", "Starting Recording");
-            } else {
-                Log.i("Tag", "Stopping Recording");
+                //Request permission to record audio (required for some newer Android devices)
+                ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+                try {
+                    //Create a new AudioRecorder object, responsible for managing the audio recording - preparing the media recorder, creating output files etc.
+                    audioRecorder = new AudioRecorder(this, story_directory, null);
+                    audioRecorder.startRecording();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+                }
+                audioFileName = audioRecorder.getAudioFileName();
+            }
+
+            //Otherwise, stop recording audio, stop the animations, return the record button image to default, and set the new audio recording as ready to be saved to a tag
+            else {
+
                 audioRecorder.stopRecording();
                 animationHandler.removeCallbacks(RecordButtonRunnable);
                 recordButton.setImageDrawable(recordButtonNonAnim);
                 newStoryReady = true;
             }
 
+            //When the button is pressed, recordingStatus becomes the inverse of itself
             recordingStatus = !recordingStatus;
-
         }
 
         catch (RuntimeException r) {
-
         }
     }
 
+    //Check the current system has a camera
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             // this device has a camera
@@ -384,16 +429,17 @@ public class ObjectAddStory extends AppCompatActivity {
         }
     }
 
-    //Camera Management
+    //When the start camera button is pressed, do the following
     public void Camera(View view) {
 
+        //Check application permission to use the camera
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST);
         }
 
+        //Create a new CameraRecorder object, and begin to animate camera components into the layout
         try {
-            Log.i("Tag", "This far A");
 
             cameraRecorder = new CameraRecorder(this, this, story_directory, tag_directory, cover_directory, mCamera, mPreview);
             final Handler handler = new Handler();
@@ -401,7 +447,6 @@ public class ObjectAddStory extends AppCompatActivity {
                 @Override
                 public void run() {
                     // Do something after 5s = 5000ms
-                    Log.i("Tag", "This far C");
 
                     camera_linear.startAnimation(fadein);
                     captureButton.startAnimation(fadein);
@@ -409,6 +454,8 @@ public class ObjectAddStory extends AppCompatActivity {
                     preview.setVisibility(View.VISIBLE);
                     captureButton.setVisibility(View.VISIBLE);
                     camera_linear.setVisibility(View.VISIBLE);
+
+                    //When the camera 'take photo' button is pressed
                     captureButton.setOnClickListener(
                             new View.OnClickListener() {
                                 @Override
@@ -430,23 +477,27 @@ public class ObjectAddStory extends AppCompatActivity {
     }
 
 
+    //Callback method for when a picture is returned by the camera
     Camera.PictureCallback mPicture = new Camera.PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
 
+            //Return screen to default by closing camera components
             camera_linear.startAnimation(fadeout);
             captureButton.startAnimation(fadeout);
-            //preview.startAnimation(fadeout);
             captureButton.setVisibility(View.GONE);
             preview.setVisibility(View.GONE);
             camera_linear.setVisibility(View.GONE);
+
+            //Get camera snapshot picture in a file
             File pictureFile = cameraRecorder.getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if (pictureFile == null){
                 Log.d("Tag", "Error creating media file, check storage permissions");
                 return;
             }
 
+            //Write byte values to picture file
             try {
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 fos.write(data);
@@ -457,19 +508,25 @@ public class ObjectAddStory extends AppCompatActivity {
                 Log.d("Tag", "Error accessing file: " + e.getMessage());
             }
 
+            //Async task for picture processing: currently not in use
 //            new RecordStory.ProcessPicture().execute();
-            UUID objectUUID = UUID.randomUUID();
 
+            //Generate a new unique identifier for the new image story
+            UUID newImageUUID = UUID.randomUUID();
+
+            //If the user is connected to the network, create a new saveToCloud object for saving the story to FireStore storage
             if(authenticated) {
-                SaveToCloud saveToCloud = new SaveToCloud(story_directory, objectUUID);
+                SaveToCloud saveToCloud = new SaveToCloud(story_directory, newImageUUID);
                 saveToCloud.CloudSaveNewStory();
             }
 
+            //Commentary instruction, instructing users to save files on tag
 //            commentaryInstruction.setTagData(tag_data);
             SaveNewStory();
         }
     };
 
+    //Reset the current camera to take a new picture
     void ResetCamera() {
 
         if(mCamera!=null) {
@@ -479,44 +536,12 @@ public class ObjectAddStory extends AppCompatActivity {
         }
     }
 
+    //Release the current camera
     void ReleaseCamera() {
 
         if(mCamera!=null) {
             mCamera.stopPreview();
             mCamera.release();
-        }
-    }
-
-
-    class ProcessPicture extends AsyncTask<View, Void, Void> {
-
-        Bitmap processedBitmap;
-
-        @Override
-        protected Void doInBackground(View... params) {
-
-//            imageView = params[0];
-
-            try {
-
-//                cameraRecorder.PictureProcessing();
-//                photoPath = cameraRecorder.getPhotoPath();
-//                photoUri = cameraRecorder.getPhotoURI();
-////                picture_story_fragment.setPictureBoxDimensions(pictureRecorder.getRotationInDegrees());
-//                processedBitmap = cameraRecorder.getAdjustedBitmap();
-
-            } catch (NullPointerException e) {
-
-            } catch (IllegalArgumentException e) {
-
-            }
-
-            return null;
-
-        }
-
-        protected void onPostExecute(Void result) {
-
         }
     }
 
@@ -545,6 +570,8 @@ public class ObjectAddStory extends AppCompatActivity {
 
     }
 
+    // Restore UI state from the savedInstanceState.
+    // This bundle has also been passed to onCreate.
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -555,6 +582,7 @@ public class ObjectAddStory extends AppCompatActivity {
         objectRecordMap = (HashMap<String, ArrayList<ObjectStoryRecord>>) savedInstanceState.getSerializable("ObjectStoryRecord");
     }
 
+    // Save the current state of these bundled variables.
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
@@ -566,6 +594,8 @@ public class ObjectAddStory extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    //Functionality for a home button
+    //Note, not currently in use
     public void Home(View view) {
 
         back.setClickable(false);
@@ -579,6 +609,7 @@ public class ObjectAddStory extends AppCompatActivity {
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
+    //This method is called after a new audio or picture story file has been captured
     public void SaveNewStory() {
 
         commentaryInstruction.stopPlaying();
@@ -605,7 +636,8 @@ public class ObjectAddStory extends AppCompatActivity {
 
     }
 
-    public void Drawer(View view){
+    //When Hamburger button is clicked launch AboutAndLogout activity
+    public void Hamburger(View view){
 
         commentaryInstruction.stopPlaying();
         Intent intent = new Intent(ObjectAddStory.this, AboutAndLogout.class);
@@ -615,11 +647,13 @@ public class ObjectAddStory extends AppCompatActivity {
         overridePendingTransition(R.anim.left_to_right_slide_in_activity, R.anim.left_to_right_slide_out_activity);
     }
 
+    //When the back button is pressed, forward to onBackPressed()
     public void Back(View view) {
 
         onBackPressed();
     }
 
+    //When the back button is pressed return to the ExploreArchiveItem activity of current story folder
     @Override
     public void onBackPressed() {
 

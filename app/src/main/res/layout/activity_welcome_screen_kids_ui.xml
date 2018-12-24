@@ -5,7 +5,7 @@
     android:id="@+id/welcome_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.WelcomeScreenKidsUI"
+    tools:context="com.example.stucollyn.nfc_play.trove.kidsUI.WelcomeScreen"
     android:background="#4559de"
     >
 

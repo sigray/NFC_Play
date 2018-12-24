@@ -86,7 +86,7 @@ public class HomeScreen extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Layout associated with this activity
-        setContentView(R.layout.activity_logged_in_read_home_plus);
+        setContentView(R.layout.activity_home_screen_kids_ui);
         //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Initialize views
@@ -480,7 +480,7 @@ public class HomeScreen extends FragmentActivity {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(HomeScreen.this, WelcomeScreenKidsUI.class);
+                Intent intent = new Intent(HomeScreen.this, WelcomeScreen.class);
                 HomeScreen.this.startActivity(intent);
             }
         }, 1000);

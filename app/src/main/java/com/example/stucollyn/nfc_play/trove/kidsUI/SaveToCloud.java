@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /*
-This class is used to save a new series of story files to the cloud - FireBase database and FireStore cloud storage.
+This class is used to save a new series of story files to the cloud - FireBase database cloud storage.
 */
 
 public class SaveToCloud {

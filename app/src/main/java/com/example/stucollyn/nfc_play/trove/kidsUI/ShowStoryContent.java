@@ -16,7 +16,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
-This class is called when the user requests to view a story - either audio or image, from the archive or after scanning a tag. In response, this class launches a
+This class is called when the user requests to view a story - either audio or image, from the archive or after scanning a tag.
+In response, this class plays any audio media files and launches a ShowStoryContentDialog box, showing the associated image.
  */
 
 public class ShowStoryContent {

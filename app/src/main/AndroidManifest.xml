@@ -128,7 +128,7 @@
         <activity android:name=".trove.prototype1UI.ShowCloudStories" />
         <activity android:name=".trove.prototype1UI.ShowCloudStoryContent" />
         <activity
-            android:name=".trove.kidsUI.WelcomeScreenKidsUI"
+            android:name=".trove.kidsUI.WelcomeScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="trove"
             android:screenOrientation="landscape"

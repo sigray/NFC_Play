@@ -22,7 +22,7 @@ import java.util.HashMap;
 This activity is the opening animation sequence for the trove app and the first activity run on launch.
  */
 
-public class WelcomeScreenKidsUI extends AppCompatActivity {
+public class WelcomeScreen extends AppCompatActivity {
 
     //The ImageViews displayed on the activity layout
     ImageView backgroundShapes, zigzag1, zigzag2, zigzag3, zigzag4, star, moon, shell, book, key,
@@ -50,7 +50,7 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Layout associated with this activity
-        setContentView(R.layout.kids_ui_activity_welcome_screen);
+        setContentView(R.layout.activity_welcome_screen_kids_ui);
         //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Initialize the ImageViews for programmatic use
@@ -396,9 +396,9 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
     //If the user presses the star ImageView (the first image visible), skip the animations and continue to the Login activity.
     public void Skip(View view) {
 
-        Intent intent = new Intent(WelcomeScreenKidsUI.this, Login.class);
-        intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
-        WelcomeScreenKidsUI.this.startActivity(intent);
+        Intent intent = new Intent(WelcomeScreen.this, Login.class);
+        intent.putExtra("PreviousActivity", "WelcomeScreen");
+        WelcomeScreen.this.startActivity(intent);
         overridePendingTransition(R.anim.splash_screen_fade_in, R.anim.full_fade_out);
     }
 
@@ -407,9 +407,9 @@ public class WelcomeScreenKidsUI extends AppCompatActivity {
 
         idleTroveHandler.removeCallbacks(TroveRunnable);
         trove.clearAnimation();
-        Intent intent = new Intent(WelcomeScreenKidsUI.this, Login.class);
-        intent.putExtra("PreviousActivity", "WelcomeScreenKidsUI");
-        WelcomeScreenKidsUI.this.startActivity(intent);
+        Intent intent = new Intent(WelcomeScreen.this, Login.class);
+        intent.putExtra("PreviousActivity", "WelcomeScreen");
+        WelcomeScreen.this.startActivity(intent);
     }
 
 }

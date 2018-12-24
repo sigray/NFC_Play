@@ -49,7 +49,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 /*
 The RecordStory activity is used for the recording of an audio story about a new object. In the activity, the user is prompted to either record an audio story
-or to visit the story archive. If they choose to record an audio story, the must press and hold the audio record button as they speak their story. Afterwards
+or to visit the story archive. If they choose to record an audio story, they must press and hold the audio record button as they speak their story. Afterwards
 they can either choose to rerecord their story or take a picture of the object which relates to the story. If the user seeks to record a story about a previous
 object, they can do so by visiting the story archive. Presently audio stories created require a picture of the associated object because in the archive menu,
 stories are grouped by object image.
@@ -142,7 +142,7 @@ public class RecordStory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Layout associated with this activity
-        setContentView(R.layout.activity_logged_in_write_home);
+        setContentView(R.layout.activity_record_story_kids_ui);
         //Ensure screen always stays on and never dims
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //Initialize views
@@ -868,7 +868,7 @@ public class RecordStory extends AppCompatActivity {
         }
     }
 
-    //When the hamburger menu is clicked, run this method.
+    //When the hamburger menu is clicked, run this method which launches AboutAndLogout activity
     public void Hamburger(View view){
 
         //Ensure no other views can interrupt process by removing their clickability.

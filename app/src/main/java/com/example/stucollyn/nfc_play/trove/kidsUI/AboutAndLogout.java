@@ -390,7 +390,7 @@ public class AboutAndLogout extends FragmentActivity {
             @Override
             public void onTransitionEnd(Transition transition) {
 
-                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreenKidsUI.class);
+                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreen.class);
                 AboutAndLogout.this.startActivity(intent);
             }
 
@@ -535,7 +535,7 @@ public class AboutAndLogout extends FragmentActivity {
             @Override
             public void run() {
                 // Do something after 5s = 5000ms
-                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreenKidsUI.class);
+                Intent intent = new Intent(AboutAndLogout.this, WelcomeScreen.class);
                 AboutAndLogout.this.startActivity(intent);
             }
         }, 1000);

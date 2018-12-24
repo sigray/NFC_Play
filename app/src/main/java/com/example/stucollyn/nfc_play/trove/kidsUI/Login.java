@@ -217,7 +217,7 @@ To do: //Note, the need to enter a passcode could be completely removed once the
         String previousActivity = (String) getIntent().getExtras().get("PreviousActivity");
 
         //If the previous activity was WelcomeScreen, play the welcome commentary instruction.
-        if(previousActivity.equals("WelcomeScreenKidsUI")) {
+        if(previousActivity.equals("WelcomeScreen")) {
 
             commentaryInstruction.onPlay(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.helloandpassword), false, null, "Login");
         }
